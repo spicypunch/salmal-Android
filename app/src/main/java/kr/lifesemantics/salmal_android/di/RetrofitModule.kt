@@ -13,7 +13,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object RetrofitModule {
-    private const val BASE_URL = ""
+    private const val BASE_URL = "https://api.sal-mal.com/api"
 
     @Singleton
     @Provides
