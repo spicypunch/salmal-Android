@@ -108,10 +108,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:2.7.0")
 
-    // room
-//    implementation("androidx.room:room-runtime:2.6.1")
-//    implementation("androidx.room:room-ktx:2.6.1")
-//    kapt("androidx.room:room-compiler:2.6.1")
+    // Coil
+    implementation("io.coil-kt:coil-compose:2.2.2")
 
     // Firebase
 //    implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
