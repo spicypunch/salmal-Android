@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -75,9 +76,7 @@ fun AgreementScreen() {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(top = 180.dp)
         ) {
-            Checkbox(checked = isChecked.value, onCheckedChange = {
-                isChecked.value = !isChecked.value
-            })
+            Image(painter = rememberAsyncImagePainter(model = R.drawable.checkbox_false), modifier = Modifier.size(24.dp), contentDescription = "checkBox")
             Text(
                 text = "약관 전체동의",
                 fontFamily = Pretendard,
@@ -88,11 +87,10 @@ fun AgreementScreen() {
             )
         }
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(top = 41.dp)
         ) {
-            Checkbox(checked = isChecked.value, onCheckedChange = {
-                isChecked.value = !isChecked.value
-            })
+            Image(painter = rememberAsyncImagePainter(model = R.drawable.checkbox_false), modifier = Modifier.size(24.dp), contentDescription = "checkBox")
             Text(
                 text = "이용약관동의(필수)",
                 fontFamily = Pretendard,
@@ -110,11 +108,10 @@ fun AgreementScreen() {
             )
         }
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(top = 41.dp)
         ) {
-            Checkbox(checked = isChecked.value, onCheckedChange = {
-                isChecked.value = !isChecked.value
-            })
+            Image(painter = rememberAsyncImagePainter(model = R.drawable.checkbox_false), modifier = Modifier.size(24.dp), contentDescription = "checkBox")
             Text(
                 text = "개인정보 수집 밎 이용동의(필수)",
                 fontFamily = Pretendard,
@@ -132,13 +129,13 @@ fun AgreementScreen() {
             )
         }
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(top = 41.dp)
         ) {
-            Checkbox(checked = isChecked.value, onCheckedChange = {
-                isChecked.value = !isChecked.value
-            })
+            Image(painter = rememberAsyncImagePainter(model = R.drawable.checkbox_false), modifier = Modifier.size(24.dp), contentDescription = "checkBox")
             Text(
                 text = "E-mail 및 SMS 광고성 정보 수신동의(선택)",
+                style = TextStyle(letterSpacing = (-0.7).sp),
                 fontFamily = Pretendard,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
