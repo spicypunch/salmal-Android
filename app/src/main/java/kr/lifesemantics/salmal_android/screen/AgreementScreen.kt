@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import kr.lifesemantics.salmal_android.R
+import kr.lifesemantics.salmal_android.screen.component.BasicButton
 import kr.lifesemantics.salmal_android.ui.theme.Gray2
 import kr.lifesemantics.salmal_android.ui.theme.Gray3
 import kr.lifesemantics.salmal_android.ui.theme.Pretendard
@@ -76,7 +78,11 @@ fun AgreementScreen() {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(top = 180.dp)
         ) {
-            Image(painter = rememberAsyncImagePainter(model = R.drawable.checkbox_false), modifier = Modifier.size(24.dp), contentDescription = "checkBox")
+            Image(
+                painter = rememberAsyncImagePainter(model = R.drawable.checkbox_false),
+                modifier = Modifier.size(24.dp),
+                contentDescription = "checkBox"
+            )
             Text(
                 text = "약관 전체동의",
                 fontFamily = Pretendard,
@@ -90,7 +96,11 @@ fun AgreementScreen() {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(top = 41.dp)
         ) {
-            Image(painter = rememberAsyncImagePainter(model = R.drawable.checkbox_false), modifier = Modifier.size(24.dp), contentDescription = "checkBox")
+            Image(
+                painter = rememberAsyncImagePainter(model = R.drawable.checkbox_false),
+                modifier = Modifier.size(24.dp),
+                contentDescription = "checkBox"
+            )
             Text(
                 text = "이용약관동의(필수)",
                 fontFamily = Pretendard,
@@ -111,7 +121,11 @@ fun AgreementScreen() {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(top = 41.dp)
         ) {
-            Image(painter = rememberAsyncImagePainter(model = R.drawable.checkbox_false), modifier = Modifier.size(24.dp), contentDescription = "checkBox")
+            Image(
+                painter = rememberAsyncImagePainter(model = R.drawable.checkbox_false),
+                modifier = Modifier.size(24.dp),
+                contentDescription = "checkBox"
+            )
             Text(
                 text = "개인정보 수집 밎 이용동의(필수)",
                 fontFamily = Pretendard,
@@ -132,7 +146,11 @@ fun AgreementScreen() {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(top = 41.dp)
         ) {
-            Image(painter = rememberAsyncImagePainter(model = R.drawable.checkbox_false), modifier = Modifier.size(24.dp), contentDescription = "checkBox")
+            Image(
+                painter = rememberAsyncImagePainter(model = R.drawable.checkbox_false),
+                modifier = Modifier.size(24.dp),
+                contentDescription = "checkBox"
+            )
             Text(
                 text = "E-mail 및 SMS 광고성 정보 수신동의(선택)",
                 style = TextStyle(letterSpacing = (-0.7).sp),
@@ -150,24 +168,7 @@ fun AgreementScreen() {
                 contentDescription = "rightArrow"
             )
         }
-        Button(
-            onClick = {
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(end = 18.dp)
-                .padding(top = 44.dp)
-                .padding(bottom = 32.dp),
-            shape = RoundedCornerShape(50),
-            colors = ButtonDefaults.buttonColors(containerColor = primaryGreen)
-        ) {
-            Text(
-                text = "다음",
-                fontSize = 24.sp,
-                color = primaryBlack,
-                modifier = Modifier.weight(3f),
-                textAlign = TextAlign.Center
-            )
+        BasicButton(text = "다음", end = 18, top = 44, bottom = 32) {
 
         }
     }
