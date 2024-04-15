@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.core.content.ContextCompat
 import dagger.hilt.android.AndroidEntryPoint
 import kr.lifesemantics.salmal_android.screen.LoginScreen
+import kr.lifesemantics.salmal_android.screen.SetFirstProfileScreen
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -16,7 +17,7 @@ class MainActivity : ComponentActivity() {
         window.statusBarColor = ContextCompat.getColor(this, R.color.black)
         setContent {
             MaterialTheme {
-                LoginScreen()
+                SetFirstProfileScreen()
             }
         }
     }
