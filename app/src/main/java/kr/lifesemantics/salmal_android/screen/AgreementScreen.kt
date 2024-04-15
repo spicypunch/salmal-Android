@@ -2,6 +2,7 @@ package kr.lifesemantics.salmal_android.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -56,7 +57,13 @@ fun AgreementScreen() {
     ) {
         Image(
             painter = rememberAsyncImagePainter(model = R.drawable.salmal_icon_transparen),
-            modifier = Modifier.size(size = 94.dp),
+            modifier = Modifier
+                .size(size = 94.dp)
+                .clickable {
+                    /**
+                     * 이미지 추가 기능 구현
+                     */
+                },
             contentDescription = "salmalIconBlack"
         )
         Text(
