@@ -1,6 +1,7 @@
 package kr.lifesemantics.salmal_android
 
 import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -17,12 +18,19 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.statusBarColor = ContextCompat.getColor(this, R.color.black)
-        val list = arrayListOf(
-            Manifest.permission.READ_MEDIA_IMAGES,
-            Manifest.permission.CAMERA,
-            Manifest.permission.POST_NOTIFICATIONS
-        )
-        requestPermissions(list, onGranted = {}, onDenied = {})
+        val list = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU) {
+            arrayListOf(
+                Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.CAMERA,
+                Manifest.permission.POST_NOTIFICATIONS
+            )
+        } else {
+            arrayListOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA,
+            )
+        }
+        requestPermissions(list, false, onGranted = {}, onDenied = {})
 
         setContent {
             MaterialTheme {

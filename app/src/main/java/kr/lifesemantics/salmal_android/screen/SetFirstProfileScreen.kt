@@ -1,25 +1,21 @@
 package kr.lifesemantics.salmal_android.screen
 
+import android.Manifest
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -44,7 +40,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -82,11 +77,24 @@ fun SetFirstProfileScreen() {
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.GetContent(),
             onResult = { uri ->
-                imageUri = uri.toString()
+                if (uri != null) {
+                    imageUri = uri.toString()
+                }
             }
         )
     val openGallery = {
         galleryLauncher.launch("image/*")
+    }
+    val list = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU) {
+        arrayListOf(
+            Manifest.permission.READ_MEDIA_IMAGES,
+            Manifest.permission.CAMERA,
+        )
+    } else {
+        arrayListOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.CAMERA,
+        )
     }
     val keyboardController = LocalSoftwareKeyboardController.current
     Scaffold(
@@ -101,7 +109,9 @@ fun SetFirstProfileScreen() {
                 .padding(it)
         ) {
             Image(
-                painter = if (imageUri == null) rememberAsyncImagePainter(model = R.drawable.salmal_icon_circle)
+                painter = if (imageUri == null) rememberAsyncImagePainter(
+                    model = R.drawable.salmal_icon_circle
+                )
                 else rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current).data(imageUri).build()
                 ),
@@ -109,16 +119,15 @@ fun SetFirstProfileScreen() {
                     .size(89.dp)
                     .clip(CircleShape)
                     .clickable {
-//                        requestPermissions(
-//                            onGranted = {
-//                                openGallery()
-//                            },
-//                            onDenied = {
-//                                scope.launch {
-//                                    snackbarHostState.showSnackbar("접근 권한을 허용해주세요.")
-//                                }
-//                            }
-//                        )
+                        requestPermissions(
+                            list,
+                            true,
+                            onGranted = {
+                                openGallery()
+                            },
+                            onDenied = {
+                            }
+                        )
                     },
                 contentScale = ContentScale.Crop,
                 contentDescription = "salmal_logo"
