@@ -17,21 +17,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.statusBarColor = ContextCompat.getColor(this, R.color.black)
-        val list = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU) {
-            arrayListOf(
-                Manifest.permission.READ_MEDIA_IMAGES,
-                Manifest.permission.CAMERA,
-                Manifest.permission.POST_NOTIFICATIONS
-            )
-        } else {
-            arrayListOf(
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.CAMERA,
-            )
-        }
-        Utils.requestPermissions(list, false, onGranted = {}, onDenied = {})
-
         setContent {
             MaterialTheme {
                 SetFirstProfileScreen()

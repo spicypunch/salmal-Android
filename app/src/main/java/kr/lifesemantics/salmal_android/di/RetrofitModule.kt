@@ -4,10 +4,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kr.lifesemantics.salmal_android.service.SalmalApiService
+import kr.lifesemantics.salmal_android.service.CertifiedApiService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 import javax.inject.Singleton
 
 @Module
@@ -17,9 +16,9 @@ object RetrofitModule {
 
     @Singleton
     @Provides
-    fun provideOpenApiService(): SalmalApiService {
+    fun provideOpenApiService(): CertifiedApiService {
         return Retrofit.Builder().baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create()).build()
-            .create(SalmalApiService::class.java)
+            .create(CertifiedApiService::class.java)
     }
 }
