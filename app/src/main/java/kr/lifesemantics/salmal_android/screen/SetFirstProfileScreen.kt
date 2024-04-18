@@ -1,7 +1,9 @@
 package kr.lifesemantics.salmal_android.screen
 
 import android.Manifest
+import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -9,19 +11,25 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,18 +53,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
-import kotlinx.coroutines.launch
 import kr.lifesemantics.salmal_android.R
 import kr.lifesemantics.salmal_android.screen.component.BasicButton
+import kr.lifesemantics.salmal_android.ui.theme.Gray4
 import kr.lifesemantics.salmal_android.ui.theme.Pretendard
 import kr.lifesemantics.salmal_android.ui.theme.black1b
 import kr.lifesemantics.salmal_android.ui.theme.primaryBlack
 import kr.lifesemantics.salmal_android.ui.theme.primaryGreen
 import kr.lifesemantics.salmal_android.ui.theme.primaryWhite
 import kr.lifesemantics.salmal_android.ui.theme.white36
-import kr.lifesemantics.salmal_android.utils.requestPermissions
+import kr.lifesemantics.salmal_android.utils.Utils
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SetFirstProfileScreen() {
     val (nickName, setNickName) = rememberSaveable {
@@ -68,23 +76,50 @@ fun SetFirstProfileScreen() {
     var showText by rememberSaveable {
         mutableStateOf(false)
     }
-    var imageUri by rememberSaveable {
-        mutableStateOf<String?>(null)
+    var imageUri: Uri? by rememberSaveable {
+        mutableStateOf(null)
     }
+
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    /**
+     * Modal
+     */
+    var showBottomSheet by rememberSaveable { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
+
+    /**
+     * Gallery
+     */
     val galleryLauncher =
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.GetContent(),
             onResult = { uri ->
                 if (uri != null) {
-                    imageUri = uri.toString()
+                    imageUri = uri
                 }
             }
         )
     val openGallery = {
         galleryLauncher.launch("image/*")
     }
+    /**
+     * Camera
+     */
+    var cameraImageFile: Uri? by rememberSaveable {
+        mutableStateOf(null)
+    }
+    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+        if (success) {
+            imageUri = cameraImageFile
+        }
+    }
+
+    /**
+     * PermissionList
+     */
     val list = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU) {
         arrayListOf(
             Manifest.permission.READ_MEDIA_IMAGES,
@@ -93,10 +128,13 @@ fun SetFirstProfileScreen() {
     } else {
         arrayListOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA,
         )
     }
+
     val keyboardController = LocalSoftwareKeyboardController.current
+
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) {
@@ -119,11 +157,11 @@ fun SetFirstProfileScreen() {
                     .size(89.dp)
                     .clip(CircleShape)
                     .clickable {
-                        requestPermissions(
+                        Utils.requestPermissions(
                             list,
                             true,
                             onGranted = {
-                                openGallery()
+                                showBottomSheet = true
                             },
                             onDenied = {
                             }
@@ -190,6 +228,66 @@ fun SetFirstProfileScreen() {
             )
             BasicButton(text = "확인", start = 18, end = 18, top = 18, bottom = 32) {
 
+            }
+
+            if (showBottomSheet) {
+                ModalBottomSheet(
+                    onDismissRequest = { showBottomSheet = false },
+                    sheetState = sheetState,
+                    containerColor = Gray4
+                ) {
+                    Column(
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.clickable {
+                                openGallery()
+                                showBottomSheet = false
+                            }
+                        ) {
+                            Image(
+                                painter = rememberAsyncImagePainter(model = R.drawable.modal_gallery_icon),
+                                modifier = Modifier.padding(start = 18.dp),
+                                contentDescription = "modal_gallery_icon"
+                            )
+                            Text(
+                                text = "사진첩에서 선택하기",
+                                fontFamily = Pretendard,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 16.sp,
+                                color = primaryWhite,
+                                modifier = Modifier.padding(start = 6.dp)
+                            )
+                        }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .padding(top = 32.dp)
+                                .clickable {
+                                    cameraImageFile = Utils.createImageFile(context)
+                                    cameraImageFile?.let {
+                                        cameraLauncher.launch(it)
+                                    }
+                                    showBottomSheet = false
+                                }
+                        ) {
+                            Image(
+                                painter = rememberAsyncImagePainter(model = R.drawable.modal_camera_icon),
+                                modifier = Modifier.padding(start = 18.dp),
+                                contentDescription = "modal_camera_icon"
+                            )
+                            Text(
+                                text = "촬영하기",
+                                fontFamily = Pretendard,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 16.sp,
+                                color = primaryWhite,
+                                modifier = Modifier.padding(start = 6.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(64.dp))
+                    }
+                }
             }
         }
     }
