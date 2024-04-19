@@ -1,0 +1,179 @@
+package kr.jm.salmal_android.screen
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
+import kr.jm.salmal_android.screen.component.BasicButton
+import kr.jm.salmal_android.ui.theme.Gray2
+import kr.jm.salmal_android.ui.theme.Gray3
+import kr.jm.salmal_android.ui.theme.Pretendard
+import kr.jm.salmal_android.ui.theme.primaryBlack
+import kr.jm.salmal_android.ui.theme.primaryWhite
+import kr.lifesemantics.salmal_android.R
+
+@Composable
+fun AgreementScreen() {
+    var isChecked = rememberSaveable {
+        mutableStateOf(false)
+    }
+    Column(
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.Bottom,
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = primaryBlack)
+            .padding(start = 18.dp)
+    ) {
+        Image(
+            painter = rememberAsyncImagePainter(model = R.drawable.salmal_icon_transparen),
+            modifier = Modifier
+                .size(size = 94.dp)
+                .clickable {
+                    /**
+                     * 이미지 추가 기능 구현
+                     */
+                },
+            contentDescription = "salmalIconBlack"
+        )
+        Text(
+            text = "환영합니다!",
+            fontFamily = Pretendard,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = primaryWhite
+        )
+        Text(
+            text = "지금까지의 쇼핑 고민, 살말이 해결해드릴게요!",
+            fontFamily = Pretendard,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = Gray2,
+            modifier = Modifier.padding(top = 12.dp)
+        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(top = 180.dp)
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(model = R.drawable.checkbox_false),
+                modifier = Modifier.size(24.dp),
+                contentDescription = "checkBox"
+            )
+            Text(
+                text = "약관 전체동의",
+                fontFamily = Pretendard,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = primaryWhite,
+                modifier = Modifier.padding(start = 14.dp)
+            )
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(top = 41.dp)
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(model = R.drawable.checkbox_false),
+                modifier = Modifier.size(24.dp),
+                contentDescription = "checkBox"
+            )
+            Text(
+                text = "이용약관동의(필수)",
+                fontFamily = Pretendard,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = primaryWhite,
+                modifier = Modifier.padding(start = 14.dp)
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowRight,
+                tint = Gray3,
+                modifier = Modifier.padding(end = 18.dp),
+                contentDescription = "rightArrow"
+            )
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(top = 41.dp)
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(model = R.drawable.checkbox_false),
+                modifier = Modifier.size(24.dp),
+                contentDescription = "checkBox"
+            )
+            Text(
+                text = "개인정보 수집 밎 이용동의(필수)",
+                fontFamily = Pretendard,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = primaryWhite,
+                modifier = Modifier.padding(start = 14.dp)
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowRight,
+                tint = Gray3,
+                modifier = Modifier.padding(end = 18.dp),
+                contentDescription = "rightArrow"
+            )
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(top = 41.dp)
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(model = R.drawable.checkbox_false),
+                modifier = Modifier.size(24.dp),
+                contentDescription = "checkBox"
+            )
+            Text(
+                text = "E-mail 및 SMS 광고성 정보 수신동의(선택)",
+                style = TextStyle(letterSpacing = (-0.7).sp),
+                fontFamily = Pretendard,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = primaryWhite,
+                modifier = Modifier.padding(start = 14.dp)
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowRight,
+                tint = Gray3,
+                modifier = Modifier.padding(end = 18.dp),
+                contentDescription = "rightArrow"
+            )
+        }
+        BasicButton(text = "다음", end = 18, top = 44, bottom = 32) {
+
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun AgreementScreenPreview() {
+    AgreementScreen()
+}

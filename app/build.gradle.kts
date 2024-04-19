@@ -111,6 +111,9 @@ dependencies {
     // Coil
     implementation("io.coil-kt:coil-compose:2.2.2")
 
+    // Kakao
+    implementation("com.kakao.sdk:v2-user:2.11.0")
+
     // Firebase
 //    implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
 //    implementation("com.google.firebase:firebase-analytics")
