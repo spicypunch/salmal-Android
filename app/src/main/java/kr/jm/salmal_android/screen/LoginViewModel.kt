@@ -6,6 +6,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.JsonParser
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 import kr.jm.salmal_android.data.LoginRequest
 import kr.jm.salmal_android.data.LoginResponse
 import kr.jm.salmal_android.repository.RepositoryImpl
+import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -75,10 +77,19 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _loginResponse.value = repository.login(LoginRequest(providerId = providerId))
-            } catch (e: Exception) {
-                Log.e("LoginErr", e.toString())
+            } catch (e: HttpException) {
+                val errorBody = e.response()?.errorBody()?.string()
+
+                if (errorBody != null) {
+                    val jsonObject = JsonParser.parseString(errorBody).asJsonObject
+                    val errorCode = jsonObject.get("code").asInt
+                    when(errorCode) {
+
+                    }
+                }
+            } finally {
+                isLoading.value = false
             }
-            isLoading.value = false
         }
     }
 }
