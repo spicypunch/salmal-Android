@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,11 +30,14 @@ import kr.jm.salmal_android.screen.component.BasicButton
 import kr.jm.salmal_android.ui.theme.Gray2
 import kr.jm.salmal_android.ui.theme.Gray3
 import kr.jm.salmal_android.ui.theme.Pretendard
+import kr.jm.salmal_android.ui.theme.primaryBlack
 import kr.jm.salmal_android.ui.theme.primaryWhite
 import kr.lifesemantics.salmal_android.R
 
 @Composable
-fun AgreementScreen() {
+fun AgreementScreen(
+    moveToWebView: (String) -> Unit
+) {
     val selectAll = rememberSaveable {
         mutableStateOf(false)
     }
@@ -51,7 +55,7 @@ fun AgreementScreen() {
         verticalArrangement = Arrangement.Bottom,
         modifier = Modifier
             .fillMaxSize()
-            .background(color = primaryWhite)
+            .background(color = primaryBlack)
             .padding(start = 18.dp)
     ) {
         Image(
@@ -125,13 +129,13 @@ fun AgreementScreen() {
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
                 color = primaryWhite,
-                modifier = Modifier.padding(start = 14.dp)
+                modifier = Modifier.padding(start = 14.dp).clickable { moveToWebView("https://velog.io/") }
             )
             Spacer(modifier = Modifier.weight(1f))
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 tint = Gray3,
-                modifier = Modifier.padding(end = 18.dp),
+                modifier = Modifier.padding(end = 18.dp).clickable { moveToWebView("https://velog.io/") },
                 contentDescription = "rightArrow"
             )
         }
@@ -154,13 +158,13 @@ fun AgreementScreen() {
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
                 color = primaryWhite,
-                modifier = Modifier.padding(start = 14.dp)
+                modifier = Modifier.padding(start = 14.dp).clickable { moveToWebView("https://velog.io/") }
             )
             Spacer(modifier = Modifier.weight(1f))
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 tint = Gray3,
-                modifier = Modifier.padding(end = 18.dp),
+                modifier = Modifier.padding(end = 18.dp).clickable { moveToWebView("https://velog.io/") },
                 contentDescription = "rightArrow"
             )
         }
@@ -184,13 +188,13 @@ fun AgreementScreen() {
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
                 color = primaryWhite,
-                modifier = Modifier.padding(start = 14.dp)
+                modifier = Modifier.padding(start = 14.dp).clickable { moveToWebView("https://velog.io/") }
             )
             Spacer(modifier = Modifier.weight(1f))
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 tint = Gray3,
-                modifier = Modifier.padding(end = 18.dp),
+                modifier = Modifier.padding(end = 18.dp).clickable { moveToWebView("https://velog.io/") },
                 contentDescription = "rightArrow"
             )
         }
@@ -209,5 +213,7 @@ fun AgreementScreen() {
 @Preview
 @Composable
 private fun AgreementScreenPreview() {
-    AgreementScreen()
+    AgreementScreen() {
+
+    }
 }

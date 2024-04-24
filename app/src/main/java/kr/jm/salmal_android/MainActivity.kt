@@ -16,8 +16,12 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import kr.jm.salmal_android.screen.AgreementScreen
 import kr.jm.salmal_android.screen.HomeScreen
+import kr.jm.salmal_android.screen.WebViewScreen
 import kr.jm.salmal_android.screen.login.LoginScreen
 import kr.lifesemantics.salmal_android.R
+import java.net.URLDecoder
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -39,7 +43,7 @@ fun App() {
 
     ) {
         Box(modifier = Modifier.padding(it)) {
-            NavHost(navController = navController, startDestination = "login") {
+            NavHost(navController = navController, startDestination = "agreement") {
                 composable(route = "login") {
                     LoginScreen { result ->
                         if (result) {
@@ -50,10 +54,25 @@ fun App() {
                     }
                 }
                 composable(route = "agreement") {
-                    AgreementScreen()
+                    AgreementScreen { url ->
+                        navController.navigate(
+                            "webview/${
+                                URLEncoder.encode(
+                                    url,
+                                    StandardCharsets.UTF_8.toString()
+                                )
+                            }"
+                        )
+                    }
                 }
                 composable(route = "home") {
                     HomeScreen()
+                }
+                composable(route = "webview/{url}") { backStackExtry ->
+                    val url = backStackExtry.arguments?.getString("url")
+                    if (url != null) {
+                        WebViewScreen(url = URLDecoder.decode(url, StandardCharsets.UTF_8.toString()),)
+                    }
                 }
             }
         }
