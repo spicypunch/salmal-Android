@@ -43,7 +43,7 @@ fun App() {
 
     ) {
         Box(modifier = Modifier.padding(it)) {
-            NavHost(navController = navController, startDestination = "agreement") {
+            NavHost(navController = navController, startDestination = "login") {
                 composable(route = "login") {
                     LoginScreen { result ->
                         if (result) {
