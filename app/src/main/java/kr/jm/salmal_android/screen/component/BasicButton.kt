@@ -23,6 +23,7 @@ fun BasicButton(
     bottom: Int = 0,
     start: Int= 0,
     end: Int = 0,
+    enabled: Boolean,
     onClicked: () -> Unit
 ) {
     Button(
@@ -37,7 +38,8 @@ fun BasicButton(
             .padding(bottom = bottom.dp)
             .height(60.dp),
         shape = RoundedCornerShape(50),
-        colors = ButtonDefaults.buttonColors(containerColor = primaryGreen)
+        colors = ButtonDefaults.buttonColors(containerColor = primaryGreen),
+        enabled = enabled
     ) {
         Text(
             text = text,

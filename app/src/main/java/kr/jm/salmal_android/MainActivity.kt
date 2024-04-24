@@ -3,12 +3,20 @@ package kr.jm.salmal_android
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import kr.jm.salmal_android.screen.LoginScreen
-import kr.jm.salmal_android.screen.SetFirstProfileScreen
+import kr.jm.salmal_android.screen.AgreementScreen
+import kr.jm.salmal_android.screen.HomeScreen
+import kr.jm.salmal_android.screen.login.LoginScreen
 import kr.lifesemantics.salmal_android.R
 
 @AndroidEntryPoint
@@ -18,7 +26,7 @@ class MainActivity : ComponentActivity() {
         window.statusBarColor = ContextCompat.getColor(this, R.color.black)
         setContent {
             MaterialTheme {
-                LoginScreen()
+                App()
             }
         }
     }
@@ -26,5 +34,28 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun App() {
+    val navController = rememberNavController()
+    Scaffold(
 
+    ) {
+        Box(modifier = Modifier.padding(it)) {
+            NavHost(navController = navController, startDestination = "login") {
+                composable(route = "login") {
+                    LoginScreen { result ->
+                        if (result) {
+                            navController.navigate("home")
+                        } else {
+                            navController.navigate("agreement")
+                        }
+                    }
+                }
+                composable(route = "agreement") {
+                    AgreementScreen()
+                }
+                composable(route = "home") {
+                    HomeScreen()
+                }
+            }
+        }
+    }
 }

@@ -1,4 +1,4 @@
-package kr.jm.salmal_android.screen
+package kr.jm.salmal_android.screen.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -20,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import kr.jm.salmal_android.screen.component.CircularProgressBar
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.primaryBlack
@@ -28,11 +32,16 @@ import kr.lifesemantics.salmal_android.R
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel = hiltViewModel()
+    viewModel: LoginViewModel = hiltViewModel(),
+    onLoginResult: (Boolean) -> Unit
 ) {
     val context = LocalContext.current
 
-    val loginResponse = viewModel.loginResponse
+    LaunchedEffect(Unit) {
+        viewModel.isMember.collectLatest {
+            onLoginResult(it)
+        }
+    }
 
     if (viewModel.isLoading.value) {
         CircularProgressBar()
@@ -82,14 +91,8 @@ fun LoginScreen(
             Image(
                 painter = rememberAsyncImagePainter(model = R.drawable.login_reccomend_image),
                 modifier = Modifier.padding(top = 21.dp),
-                contentDescription = "login_reccomend_image"
+                contentDescription = "login_recommend_image"
             )
         }
     }
-}
-
-@Preview
-@Composable
-private fun LoginScreenPreview() {
-    LoginScreen()
 }

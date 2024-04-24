@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,13 +29,21 @@ import kr.jm.salmal_android.screen.component.BasicButton
 import kr.jm.salmal_android.ui.theme.Gray2
 import kr.jm.salmal_android.ui.theme.Gray3
 import kr.jm.salmal_android.ui.theme.Pretendard
-import kr.jm.salmal_android.ui.theme.primaryBlack
 import kr.jm.salmal_android.ui.theme.primaryWhite
 import kr.lifesemantics.salmal_android.R
 
 @Composable
 fun AgreementScreen() {
-    var isChecked = rememberSaveable {
+    val selectAll = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val isCheckedFirst = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val isCheckedSecond = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val isCheckedThird = rememberSaveable {
         mutableStateOf(false)
     }
     Column(
@@ -43,18 +51,13 @@ fun AgreementScreen() {
         verticalArrangement = Arrangement.Bottom,
         modifier = Modifier
             .fillMaxSize()
-            .background(color = primaryBlack)
+            .background(color = primaryWhite)
             .padding(start = 18.dp)
     ) {
         Image(
-            painter = rememberAsyncImagePainter(model = R.drawable.salmal_icon_transparen),
+            painter = rememberAsyncImagePainter(model = R.drawable.salmal_icon_transparent),
             modifier = Modifier
-                .size(size = 94.dp)
-                .clickable {
-                    /**
-                     * 이미지 추가 기능 구현
-                     */
-                },
+                .size(size = 94.dp),
             contentDescription = "salmalIconBlack"
         )
         Text(
@@ -77,8 +80,21 @@ fun AgreementScreen() {
             modifier = Modifier.padding(top = 180.dp)
         ) {
             Image(
-                painter = rememberAsyncImagePainter(model = R.drawable.checkbox_false),
-                modifier = Modifier.size(24.dp),
+                painter = if (!selectAll.value) rememberAsyncImagePainter(model = R.drawable.checkbox_false) else rememberAsyncImagePainter(model = R.drawable.checkbox_true),
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable {
+                        selectAll.value = !selectAll.value
+                        if (selectAll.value) {
+                            isCheckedFirst.value = true
+                            isCheckedSecond.value = true
+                            isCheckedThird.value = true
+                        } else {
+                            isCheckedFirst.value = false
+                            isCheckedSecond.value = false
+                            isCheckedThird.value = false
+                        }
+                    },
                 contentDescription = "checkBox"
             )
             Text(
@@ -95,8 +111,12 @@ fun AgreementScreen() {
             modifier = Modifier.padding(top = 41.dp)
         ) {
             Image(
-                painter = rememberAsyncImagePainter(model = R.drawable.checkbox_false),
-                modifier = Modifier.size(24.dp),
+                painter = if (!isCheckedFirst.value) rememberAsyncImagePainter(model = R.drawable.checkbox_false) else rememberAsyncImagePainter(model = R.drawable.checkbox_true),
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable {
+                        isCheckedFirst.value = !isCheckedFirst.value
+                    },
                 contentDescription = "checkBox"
             )
             Text(
@@ -109,7 +129,7 @@ fun AgreementScreen() {
             )
             Spacer(modifier = Modifier.weight(1f))
             Icon(
-                imageVector = Icons.Default.KeyboardArrowRight,
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 tint = Gray3,
                 modifier = Modifier.padding(end = 18.dp),
                 contentDescription = "rightArrow"
@@ -120,8 +140,12 @@ fun AgreementScreen() {
             modifier = Modifier.padding(top = 41.dp)
         ) {
             Image(
-                painter = rememberAsyncImagePainter(model = R.drawable.checkbox_false),
-                modifier = Modifier.size(24.dp),
+                painter = if (!isCheckedSecond.value) rememberAsyncImagePainter(model = R.drawable.checkbox_false) else rememberAsyncImagePainter(model = R.drawable.checkbox_true),
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable {
+                        isCheckedSecond.value = !isCheckedSecond.value
+                    },
                 contentDescription = "checkBox"
             )
             Text(
@@ -134,7 +158,7 @@ fun AgreementScreen() {
             )
             Spacer(modifier = Modifier.weight(1f))
             Icon(
-                imageVector = Icons.Default.KeyboardArrowRight,
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 tint = Gray3,
                 modifier = Modifier.padding(end = 18.dp),
                 contentDescription = "rightArrow"
@@ -145,8 +169,12 @@ fun AgreementScreen() {
             modifier = Modifier.padding(top = 41.dp)
         ) {
             Image(
-                painter = rememberAsyncImagePainter(model = R.drawable.checkbox_false),
-                modifier = Modifier.size(24.dp),
+                painter = if (!isCheckedThird.value) rememberAsyncImagePainter(model = R.drawable.checkbox_false) else rememberAsyncImagePainter(model = R.drawable.checkbox_true),
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable {
+                        isCheckedThird.value = !isCheckedThird.value
+                    },
                 contentDescription = "checkBox"
             )
             Text(
@@ -160,13 +188,19 @@ fun AgreementScreen() {
             )
             Spacer(modifier = Modifier.weight(1f))
             Icon(
-                imageVector = Icons.Default.KeyboardArrowRight,
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 tint = Gray3,
                 modifier = Modifier.padding(end = 18.dp),
                 contentDescription = "rightArrow"
             )
         }
-        BasicButton(text = "다음", end = 18, top = 44, bottom = 32) {
+        BasicButton(
+            text = "다음",
+            end = 18,
+            top = 44,
+            bottom = 32,
+            enabled = isCheckedFirst.value && isCheckedSecond.value
+        ) {
 
         }
     }

@@ -13,11 +13,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen() {
-    val list = arrayListOf(Manifest.permission.POST_NOTIFICATIONS)
+
+    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU) {
+        val list = arrayListOf(Manifest.permission.POST_NOTIFICATIONS)
+    }
 
     Scaffold(
         topBar = {

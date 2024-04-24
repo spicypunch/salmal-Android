@@ -225,7 +225,7 @@ fun SetFirstProfileScreen() {
                     .padding(top = 259.dp)
                     .alpha(if (showText) 1f else 0f)
             )
-            BasicButton(text = "확인", start = 18, end = 18, top = 18, bottom = 32) {
+            BasicButton(text = "확인", start = 18, end = 18, top = 18, bottom = 32, enabled = true) {
 
             }
 
