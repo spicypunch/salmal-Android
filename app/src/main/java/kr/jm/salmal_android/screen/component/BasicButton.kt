@@ -13,6 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kr.jm.salmal_android.ui.theme.Gray4
 import kr.jm.salmal_android.ui.theme.primaryBlack
 import kr.jm.salmal_android.ui.theme.primaryGreen
 
@@ -21,7 +22,7 @@ fun BasicButton(
     text: String,
     top: Int = 0,
     bottom: Int = 0,
-    start: Int= 0,
+    start: Int = 0,
     end: Int = 0,
     enabled: Boolean,
     onClicked: () -> Unit
@@ -38,7 +39,10 @@ fun BasicButton(
             .padding(bottom = bottom.dp)
             .height(60.dp),
         shape = RoundedCornerShape(50),
-        colors = ButtonDefaults.buttonColors(containerColor = primaryGreen),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = primaryGreen,
+            disabledContainerColor = Gray4
+        ),
         enabled = enabled
     ) {
         Text(
