@@ -114,6 +114,9 @@ dependencies {
     // Kakao
     implementation("com.kakao.sdk:v2-user:2.20.1")
 
+    // Logger
+    implementation("com.orhanobut:logger:2.2.0")
+
     // Firebase
 //    implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
 //    implementation("com.google.firebase:firebase-analytics")

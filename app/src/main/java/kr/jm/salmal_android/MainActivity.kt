@@ -43,7 +43,7 @@ fun App() {
 
     ) {
         Box(modifier = Modifier.padding(it)) {
-            NavHost(navController = navController, startDestination = "login") {
+            NavHost(navController = navController, startDestination = "agreement") {
                 composable(route = "login") {
                     LoginScreen { result ->
                         if (result) {
@@ -71,7 +71,9 @@ fun App() {
                 composable(route = "webview/{url}") { backStackExtry ->
                     val url = backStackExtry.arguments?.getString("url")
                     if (url != null) {
-                        WebViewScreen(url = URLDecoder.decode(url, StandardCharsets.UTF_8.toString()),)
+                        WebViewScreen(url = URLDecoder.decode(url, StandardCharsets.UTF_8.toString())) {
+                            navController.popBackStack()
+                        }
                     }
                 }
             }

@@ -129,13 +129,13 @@ fun AgreementScreen(
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
                 color = primaryWhite,
-                modifier = Modifier.padding(start = 14.dp).clickable { moveToWebView("https://velog.io/") }
+                modifier = Modifier.padding(start = 14.dp).clickable { moveToWebView("https://honorable-overcoat-a54.notion.site/1b14e3eedc6a4bf3ac8d4a7aad484328?pvs=4") }
             )
             Spacer(modifier = Modifier.weight(1f))
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 tint = Gray3,
-                modifier = Modifier.padding(end = 18.dp).clickable { moveToWebView("https://velog.io/") },
+                modifier = Modifier.padding(end = 18.dp).clickable { moveToWebView("https://honorable-overcoat-a54.notion.site/1b14e3eedc6a4bf3ac8d4a7aad484328?pvs=4") },
                 contentDescription = "rightArrow"
             )
         }
@@ -158,13 +158,13 @@ fun AgreementScreen(
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
                 color = primaryWhite,
-                modifier = Modifier.padding(start = 14.dp).clickable { moveToWebView("https://velog.io/") }
+                modifier = Modifier.padding(start = 14.dp).clickable { moveToWebView("https://honorable-overcoat-a54.notion.site/ff45b483da3942558a17c20dca1c4538") }
             )
             Spacer(modifier = Modifier.weight(1f))
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 tint = Gray3,
-                modifier = Modifier.padding(end = 18.dp).clickable { moveToWebView("https://velog.io/") },
+                modifier = Modifier.padding(end = 18.dp).clickable { moveToWebView("https://honorable-overcoat-a54.notion.site/ff45b483da3942558a17c20dca1c4538") },
                 contentDescription = "rightArrow"
             )
         }
@@ -188,13 +188,13 @@ fun AgreementScreen(
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
                 color = primaryWhite,
-                modifier = Modifier.padding(start = 14.dp).clickable { moveToWebView("https://velog.io/") }
+                modifier = Modifier.padding(start = 14.dp).clickable { moveToWebView("http://honorable-overcoat-a54.notion.site/8f5c915278a14733b90ef93a7e4af8ec?pvs=4") }
             )
             Spacer(modifier = Modifier.weight(1f))
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 tint = Gray3,
-                modifier = Modifier.padding(end = 18.dp).clickable { moveToWebView("https://velog.io/") },
+                modifier = Modifier.padding(end = 18.dp).clickable { moveToWebView("http://honorable-overcoat-a54.notion.site/8f5c915278a14733b90ef93a7e4af8ec?pvs=4") },
                 contentDescription = "rightArrow"
             )
         }
