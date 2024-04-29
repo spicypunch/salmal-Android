@@ -1,8 +1,6 @@
-package kr.jm.salmal_android.screen
+package kr.jm.salmal_android.screen.webview
 
-import android.annotation.SuppressLint
 import android.net.http.SslError
-import android.os.Build
 import android.os.Message
 import android.view.View
 import android.webkit.SslErrorHandler
@@ -12,7 +10,6 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -25,10 +22,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -132,6 +126,33 @@ fun rememberWebView(url: String): WebView {
                         errorResponse?.statusCode,
                         errorResponse?.reasonPhrase
                     )
+                }
+            }
+
+            webChromeClient = object : WebChromeClient() {
+                override fun onCreateWindow(
+                    view: WebView?, isDialog: Boolean, isUserGesture: Boolean, resultMsg: Message?
+                ): Boolean {
+                    // Implement popup handling
+                    val newWebView = WebView(context).apply {
+                        webViewClient = WebViewClient()
+                        settings.javaScriptEnabled = true
+                    }
+                    val transport = resultMsg?.obj as WebView.WebViewTransport
+                    transport.webView = newWebView
+                    resultMsg.sendToTarget()
+
+//                    // Example: Add the new WebView to a dialog or to the screen directly
+//                    MaterialAlertDialogBuilder(context)
+//                        .setView(newWebView)
+//                        .show()
+
+                    return true
+                }
+
+                override fun onCloseWindow(window: WebView?) {
+                    super.onCloseWindow(window)
+                    // Handle closing the popup window
                 }
             }
             loadUrl(url)

@@ -1,4 +1,4 @@
-package kr.jm.salmal_android.screen
+package kr.jm.salmal_android.screen.profile
 
 import android.Manifest
 import android.net.Uri

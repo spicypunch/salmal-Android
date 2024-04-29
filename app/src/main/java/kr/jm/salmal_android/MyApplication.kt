@@ -10,7 +10,5 @@ import dagger.hilt.android.HiltAndroidApp
 class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        KakaoSdk.init(this, "5d5170916ea2715b891b88b5dc7cba0f")
-        Log.e(" ",Utility.getKeyHash(this))
     }
 }

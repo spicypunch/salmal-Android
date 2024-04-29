@@ -1,4 +1,4 @@
-package kr.jm.salmal_android.screen
+package kr.jm.salmal_android.screen.agreement
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

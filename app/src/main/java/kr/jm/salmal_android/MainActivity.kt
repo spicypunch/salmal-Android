@@ -9,15 +9,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import kr.jm.salmal_android.screen.AgreementScreen
-import kr.jm.salmal_android.screen.HomeScreen
-import kr.jm.salmal_android.screen.WebViewScreen
+import kr.jm.salmal_android.screen.agreement.AgreementScreen
+import kr.jm.salmal_android.screen.home.HomeScreen
 import kr.jm.salmal_android.screen.login.LoginScreen
+import kr.jm.salmal_android.screen.webview.WebViewScreen
 import kr.lifesemantics.salmal_android.R
 import java.net.URLDecoder
 import java.net.URLEncoder
@@ -39,6 +40,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun App() {
     val navController = rememberNavController()
+    val context = LocalContext.current
     Scaffold(
 
     ) {
