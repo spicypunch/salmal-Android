@@ -13,7 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kr.jm.salmal_android.ui.theme.Gray4
+import kr.jm.salmal_android.ui.theme.Gray3
 import kr.jm.salmal_android.ui.theme.primaryBlack
 import kr.jm.salmal_android.ui.theme.primaryGreen
 
@@ -41,7 +41,7 @@ fun BasicButton(
         shape = RoundedCornerShape(50),
         colors = ButtonDefaults.buttonColors(
             containerColor = primaryGreen,
-            disabledContainerColor = Gray4
+            disabledContainerColor = Gray3
         ),
         enabled = enabled
     ) {

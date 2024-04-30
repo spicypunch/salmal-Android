@@ -19,7 +19,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,7 +35,8 @@ import kr.lifesemantics.salmal_android.R
 
 @Composable
 fun AgreementScreen(
-    moveToWebView: (String) -> Unit
+    moveToWebView: (String) -> Unit,
+    moveToSetProfile: () -> Unit
 ) {
     val selectAll = rememberSaveable {
         mutableStateOf(false)
@@ -235,7 +235,7 @@ fun AgreementScreen(
             bottom = 32,
             enabled = isCheckedFirst.value && isCheckedSecond.value
         ) {
-
+            moveToSetProfile()
         }
     }
 }
@@ -243,7 +243,9 @@ fun AgreementScreen(
 @Preview
 @Composable
 private fun AgreementScreenPreview() {
-    AgreementScreen() {
+    AgreementScreen({
 
-    }
+    }, {
+
+    })
 }
