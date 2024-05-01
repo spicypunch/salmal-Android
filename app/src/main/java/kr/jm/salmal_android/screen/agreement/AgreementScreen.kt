@@ -15,8 +15,10 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
@@ -39,16 +41,16 @@ fun AgreementScreen(
     moveToWebView: (String) -> Unit,
     moveToSetProfile: () -> Unit
 ) {
-    val selectAll = rememberSaveable {
+    var selectAll by rememberSaveable {
         mutableStateOf(false)
     }
-    val isCheckedTrems = rememberSaveable {
+    var isCheckedTerms by rememberSaveable {
         mutableStateOf(false)
     }
-    val isCheckedCollectInfo = rememberSaveable {
+    var isCheckedCollectInfo by rememberSaveable {
         mutableStateOf(false)
     }
-    val isCheckedMarketing = rememberSaveable {
+    var isCheckedMarketing by rememberSaveable {
         mutableStateOf(false)
     }
     Column(
@@ -85,21 +87,21 @@ fun AgreementScreen(
             modifier = Modifier.padding(top = 180.dp)
         ) {
             Image(
-                painter = if (!selectAll.value) rememberAsyncImagePainter(model = R.drawable.checkbox_false) else rememberAsyncImagePainter(
+                painter = if (!selectAll) rememberAsyncImagePainter(model = R.drawable.checkbox_false) else rememberAsyncImagePainter(
                     model = R.drawable.checkbox_true
                 ),
                 modifier = Modifier
                     .size(24.dp)
                     .clickable {
-                        selectAll.value = !selectAll.value
-                        if (selectAll.value) {
-                            isCheckedTrems.value = true
-                            isCheckedCollectInfo.value = true
-                            isCheckedMarketing.value = true
+                        selectAll = !selectAll
+                        if (selectAll) {
+                            isCheckedTerms = true
+                            isCheckedCollectInfo = true
+                            isCheckedMarketing = true
                         } else {
-                            isCheckedTrems.value = false
-                            isCheckedCollectInfo.value = false
-                            isCheckedMarketing.value = false
+                            isCheckedTerms = false
+                            isCheckedCollectInfo = false
+                            isCheckedMarketing = false
                         }
                     },
                 contentDescription = "checkBox"
@@ -113,7 +115,7 @@ fun AgreementScreen(
                 modifier = Modifier
                     .padding(start = 14.dp)
                     .clickable {
-                        selectAll.value = !selectAll.value
+                        selectAll = !selectAll
                     }
             )
         }
@@ -122,13 +124,13 @@ fun AgreementScreen(
             modifier = Modifier.padding(top = 41.dp)
         ) {
             Image(
-                painter = if (!isCheckedTrems.value) rememberAsyncImagePainter(model = R.drawable.checkbox_false) else rememberAsyncImagePainter(
+                painter = if (!isCheckedTerms) rememberAsyncImagePainter(model = R.drawable.checkbox_false) else rememberAsyncImagePainter(
                     model = R.drawable.checkbox_true
                 ),
                 modifier = Modifier
                     .size(24.dp)
                     .clickable {
-                        isCheckedTrems.value = !isCheckedTrems.value
+                        isCheckedTerms = !isCheckedTerms
                     },
                 contentDescription = "checkBox"
             )
@@ -141,7 +143,7 @@ fun AgreementScreen(
                 modifier = Modifier
                     .padding(start = 14.dp)
                     .clickable {
-                        isCheckedTrems.value = !isCheckedTrems.value
+                        isCheckedTerms = !isCheckedTerms
                     },
             )
             Spacer(modifier = Modifier.weight(1f))
@@ -159,13 +161,13 @@ fun AgreementScreen(
             modifier = Modifier.padding(top = 41.dp)
         ) {
             Image(
-                painter = if (!isCheckedCollectInfo.value) rememberAsyncImagePainter(model = R.drawable.checkbox_false) else rememberAsyncImagePainter(
+                painter = if (!isCheckedCollectInfo) rememberAsyncImagePainter(model = R.drawable.checkbox_false) else rememberAsyncImagePainter(
                     model = R.drawable.checkbox_true
                 ),
                 modifier = Modifier
                     .size(24.dp)
                     .clickable {
-                        isCheckedCollectInfo.value = !isCheckedCollectInfo.value
+                        isCheckedCollectInfo = !isCheckedCollectInfo
                     },
                 contentDescription = "checkBox"
             )
@@ -178,7 +180,7 @@ fun AgreementScreen(
                 modifier = Modifier
                     .padding(start = 14.dp)
                     .clickable {
-                        isCheckedCollectInfo.value = !isCheckedCollectInfo.value
+                        isCheckedCollectInfo = !isCheckedCollectInfo
                     },
             )
             Spacer(modifier = Modifier.weight(1f))
@@ -196,13 +198,13 @@ fun AgreementScreen(
             modifier = Modifier.padding(top = 41.dp)
         ) {
             Image(
-                painter = if (!isCheckedMarketing.value) rememberAsyncImagePainter(model = R.drawable.checkbox_false) else rememberAsyncImagePainter(
+                painter = if (!isCheckedMarketing) rememberAsyncImagePainter(model = R.drawable.checkbox_false) else rememberAsyncImagePainter(
                     model = R.drawable.checkbox_true
                 ),
                 modifier = Modifier
                     .size(24.dp)
                     .clickable {
-                        isCheckedMarketing.value = !isCheckedMarketing.value
+                        isCheckedMarketing = !isCheckedMarketing
                     },
                 contentDescription = "checkBox"
             )
@@ -216,7 +218,7 @@ fun AgreementScreen(
                 modifier = Modifier
                     .padding(start = 14.dp)
                     .clickable {
-                        isCheckedMarketing.value = !isCheckedMarketing.value
+                        isCheckedMarketing = !isCheckedMarketing
                     },
             )
             Spacer(modifier = Modifier.weight(1f))
@@ -234,9 +236,9 @@ fun AgreementScreen(
             end = 18,
             top = 44,
             bottom = 32,
-            enabled = isCheckedTrems.value && isCheckedCollectInfo.value
+            enabled = isCheckedTerms && isCheckedCollectInfo
         ) {
-            viewModel.saveMarketingInformationConsent(isCheckedMarketing.value)
+            viewModel.saveMarketingInformationConsent(isCheckedMarketing)
             moveToSetProfile()
         }
     }

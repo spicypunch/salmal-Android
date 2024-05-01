@@ -47,7 +47,7 @@ fun App() {
 
     ) {
         Box(modifier = Modifier.padding(it)) {
-            NavHost(navController = navController, startDestination = "setprofile") {
+            NavHost(navController = navController, startDestination = "login") {
                 composable(route = "login") {
                     AnimatedVisibility(
                         visible = navController.currentDestination?.route == "login",
@@ -88,7 +88,9 @@ fun App() {
                         visible = navController.currentDestination?.route == "setprofile",
                         enter = slideInHorizontally { fullWidth -> -fullWidth },
                     ) {
-                        SetFirstProfileScreen()
+                        SetFirstProfileScreen() {
+                            navController.navigate("home")
+                        }
                     }
                 }
                 composable(route = "home") {

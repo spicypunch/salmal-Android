@@ -2,6 +2,7 @@ package kr.jm.salmal_android.screen.login
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -30,13 +31,14 @@ class LoginViewModel @Inject constructor(
     private val repository: RepositoryImpl,
     private val dataStore: DataStore<Preferences>
 ) : ViewModel() {
-    val isLoading = mutableStateOf(false)
+    private val _isLoading = mutableStateOf(false)
+    val isLoading: State<Boolean> = _isLoading
 
     private var _isMember = MutableSharedFlow<Boolean>()
     val isMember = _isMember.asSharedFlow()
 
     fun requestKakaoToken(context: Context) {
-        isLoading.value = true
+        _isLoading.value = true
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             if (error != null) {
                 Log.e("Kakao", "카카오 웹 로그인 실패", error)
@@ -101,7 +103,7 @@ class LoginViewModel @Inject constructor(
                     }
                 }
             } finally {
-                isLoading.value = false
+                _isLoading.value = false
             }
         }
     }
