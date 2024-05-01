@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -48,7 +47,7 @@ fun App() {
 
     ) {
         Box(modifier = Modifier.padding(it)) {
-            NavHost(navController = navController, startDestination = "agreement") {
+            NavHost(navController = navController, startDestination = "setprofile") {
                 composable(route = "login") {
                     AnimatedVisibility(
                         visible = navController.currentDestination?.route == "login",
@@ -68,18 +67,20 @@ fun App() {
                         visible = navController.currentDestination?.route == "agreement",
                         enter = slideInHorizontally { fullWidth -> -fullWidth },
                     ) {
-                        AgreementScreen({ url ->
-                            navController.navigate(
-                                "webview/${
-                                    URLEncoder.encode(
-                                        url,
-                                        StandardCharsets.UTF_8.toString()
-                                    )
-                                }"
-                            )
-                        }, {
-                            navController.navigate("setprofile")
-                        })
+                        AgreementScreen(
+                            moveToWebView = { url ->
+                                navController.navigate(
+                                    "webview/${
+                                        URLEncoder.encode(
+                                            url,
+                                            StandardCharsets.UTF_8.toString()
+                                        )
+                                    }"
+                                )
+                            },
+                            moveToSetProfile = {
+                                navController.navigate("setprofile")
+                            })
                     }
                 }
                 composable(route = "setprofile") {

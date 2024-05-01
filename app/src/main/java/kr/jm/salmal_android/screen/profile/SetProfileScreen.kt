@@ -37,7 +37,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -47,9 +46,10 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import kr.jm.salmal_android.screen.component.BasicButton
@@ -63,16 +63,18 @@ import kr.jm.salmal_android.ui.theme.white36
 import kr.jm.salmal_android.utils.Utils
 import kr.lifesemantics.salmal_android.R
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SetFirstProfileScreen() {
+fun SetFirstProfileScreen(
+    viewModel: SetProfileViewModel = hiltViewModel(),
+) {
     val (nickName, setNickName) = rememberSaveable {
         mutableStateOf("")
     }
     var isEditing by rememberSaveable {
         mutableStateOf(false)
     }
-    var showText by rememberSaveable {
+    val showText by rememberSaveable {
         mutableStateOf(false)
     }
     var imageUri: Uri? by rememberSaveable {
@@ -148,9 +150,8 @@ fun SetFirstProfileScreen() {
             Image(
                 painter = if (imageUri == null) rememberAsyncImagePainter(
                     model = R.drawable.salmal_icon_circle
-                )
-                else rememberAsyncImagePainter(
-                    model = ImageRequest.Builder(LocalContext.current).data(imageUri).build()
+                ) else rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(context).data(imageUri).build()
                 ),
                 modifier = Modifier
                     .size(89.dp)
@@ -178,15 +179,15 @@ fun SetFirstProfileScreen() {
                 modifier = Modifier.padding(top = 82.dp)
             )
             if (isEditing) {
+                keyboardController?.show()
                 TextField(
                     value = nickName,
                     onValueChange = setNickName,
-                    textStyle = TextStyle(color = primaryGreen, fontSize = 20.sp),
+                    textStyle = TextStyle(color = primaryGreen, fontSize = 20.sp, textAlign = TextAlign.Center),
                     singleLine = true,
                     modifier = Modifier
                         .padding(top = 18.dp)
-                        .width(180.dp)
-                        .clickable { keyboardController?.show() },
+                        .width(180.dp),
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(
                         onDone = {
@@ -225,8 +226,8 @@ fun SetFirstProfileScreen() {
                     .padding(top = 259.dp)
                     .alpha(if (showText) 1f else 0f)
             )
-            BasicButton(text = "확인", start = 18, end = 18, top = 18, bottom = 32, enabled = true) {
-
+            BasicButton(text = "확인", start = 18, end = 18, top = 18, bottom = 32, enabled = nickName.isNotBlank()) {
+                viewModel.signUp(nickName)
             }
 
             if (showBottomSheet) {
@@ -290,10 +291,4 @@ fun SetFirstProfileScreen() {
             }
         }
     }
-}
-
-@Preview
-@Composable
-private fun SetFirstProfileScreenPreview() {
-    SetFirstProfileScreen()
 }

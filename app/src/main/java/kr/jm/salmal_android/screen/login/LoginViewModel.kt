@@ -2,7 +2,6 @@ package kr.jm.salmal_android.screen.login
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -21,7 +20,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kr.jm.salmal_android.data.LoginRequest
+import kr.jm.salmal_android.data.request.LoginRequest
 import kr.jm.salmal_android.repository.RepositoryImpl
 import retrofit2.HttpException
 import javax.inject.Inject
@@ -77,6 +76,7 @@ class LoginViewModel @Inject constructor(
             if (error != null) {
                 Log.e("Kakao", "사용자 정보 요청 실패", error)
             } else if (user != null) {
+                saveProviderId(user.id!!.toString())
                 login(user.id!!.toString())
             }
         }
@@ -106,20 +106,29 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun saveAccessToken(text: String) {
+    private fun saveProviderId(providerId: String) {
         viewModelScope.launch {
-            val accessTokenKey = stringPreferencesKey("accessToken")
+            val providerIdKey = stringPreferencesKey("providerId")
             dataStore.edit { settings ->
-                settings[accessTokenKey] = text
+                settings[providerIdKey] = providerId
             }
         }
     }
 
-    private fun saveRefreshToken(text: String) {
+    private fun saveAccessToken(accessToken: String) {
+        viewModelScope.launch {
+            val accessTokenKey = stringPreferencesKey("accessToken")
+            dataStore.edit { settings ->
+                settings[accessTokenKey] = accessToken
+            }
+        }
+    }
+
+    private fun saveRefreshToken(refreshToken: String) {
         viewModelScope.launch {
             val refreshTokenKey = stringPreferencesKey("refreshToken")
             dataStore.edit { settings ->
-                settings[refreshTokenKey] = text
+                settings[refreshTokenKey] = refreshToken
             }
         }
     }
