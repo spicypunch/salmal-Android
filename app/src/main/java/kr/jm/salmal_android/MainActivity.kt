@@ -18,6 +18,7 @@ import kr.jm.salmal_android.screen.agreement.AgreementScreen
 import kr.jm.salmal_android.screen.home.HomeScreen
 import kr.jm.salmal_android.screen.login.LoginScreen
 import kr.jm.salmal_android.screen.profile.SetFirstProfileScreen
+import kr.jm.salmal_android.screen.splash.SplashScreen
 import kr.jm.salmal_android.screen.webview.WebViewScreen
 import kr.jm.salmal_android.utils.Utils
 import kr.lifesemantics.salmal_android.R
@@ -45,7 +46,18 @@ fun App() {
 
     ) {
         Box(modifier = Modifier.padding(it)) {
-            NavHost(navController = navController, startDestination = "login") {
+            NavHost(navController = navController, startDestination = "splash") {
+                composable(route = "splash") {
+                    Utils.ScreenTransition(navController = navController, route = "splash") {
+                        SplashScreen { result ->
+                            if (result) {
+                                navController.navigate("home")
+                            } else {
+                                navController.navigate("login")
+                            }
+                        }
+                    }
+                }
                 composable(route = "login") {
                     Utils.ScreenTransition(navController = navController, route = "login") {
                         LoginScreen { result ->

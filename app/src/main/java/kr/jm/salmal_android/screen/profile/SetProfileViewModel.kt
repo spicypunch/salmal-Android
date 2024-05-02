@@ -100,12 +100,12 @@ class SetProfileViewModel @Inject constructor(
         }
     }
 
-    fun saveProfileImage(imageUri: Uri) {
-        viewModelScope.launch {
-            val imageUriKey = stringPreferencesKey("imageUri")
-            dataStore.edit { settings ->
-                settings[imageUriKey] = imageUri.toString()
-            }
-        }
-    }
+//    fun saveProfileImage(imageUri: Uri) {
+//        viewModelScope.launch {
+//            val imageUriKey = stringPreferencesKey("imageUri")
+//            dataStore.edit { settings ->
+//                settings[imageUriKey] = imageUri.toString()
+//            }
+//        }
+//    }
 }
