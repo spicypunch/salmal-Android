@@ -4,6 +4,11 @@ import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.runtime.Composable
+import androidx.navigation.NavController
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
 import com.kakao.sdk.auth.model.OAuthToken
@@ -46,5 +51,17 @@ object Utils {
             put(MediaStore.Images.Media.MIME_TYPE, "image/jpg")
         }
         return context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, content)
+    }
+
+    @Composable
+    fun ScreenTransition(navController: NavController, route: String, content: @Composable () -> Unit) {
+        val currentRoute = navController.currentDestination?.route == route
+        AnimatedVisibility(
+            visible = currentRoute,
+            enter = slideInHorizontally { fullWidth -> fullWidth },
+            exit = slideOutHorizontally { fullWidth -> -fullWidth }
+        ) {
+            content()
+        }
     }
 }

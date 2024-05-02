@@ -3,15 +3,12 @@ package kr.jm.salmal_android
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -22,6 +19,7 @@ import kr.jm.salmal_android.screen.home.HomeScreen
 import kr.jm.salmal_android.screen.login.LoginScreen
 import kr.jm.salmal_android.screen.profile.SetFirstProfileScreen
 import kr.jm.salmal_android.screen.webview.WebViewScreen
+import kr.jm.salmal_android.utils.Utils
 import kr.lifesemantics.salmal_android.R
 import java.net.URLDecoder
 import java.net.URLEncoder
@@ -49,10 +47,7 @@ fun App() {
         Box(modifier = Modifier.padding(it)) {
             NavHost(navController = navController, startDestination = "login") {
                 composable(route = "login") {
-                    AnimatedVisibility(
-                        visible = navController.currentDestination?.route == "login",
-                        enter = slideInHorizontally { fullWidth -> -fullWidth },
-                    ) {
+                    Utils.ScreenTransition(navController = navController, route = "login") {
                         LoginScreen { result ->
                             if (result) {
                                 navController.navigate("home")
@@ -63,10 +58,7 @@ fun App() {
                     }
                 }
                 composable(route = "agreement") {
-                    AnimatedVisibility(
-                        visible = navController.currentDestination?.route == "agreement",
-                        enter = slideInHorizontally { fullWidth -> -fullWidth },
-                    ) {
+                    Utils.ScreenTransition(navController = navController, route = "agreement") {
                         AgreementScreen(
                             moveToWebView = { url ->
                                 navController.navigate(
@@ -84,24 +76,20 @@ fun App() {
                     }
                 }
                 composable(route = "setprofile") {
-                    AnimatedVisibility(
-                        visible = navController.currentDestination?.route == "setprofile",
-                        enter = slideInHorizontally { fullWidth -> -fullWidth },
-                    ) {
+                    Utils.ScreenTransition(navController = navController, route = "setprofile") {
                         SetFirstProfileScreen() {
                             navController.navigate("home")
                         }
                     }
                 }
                 composable(route = "home") {
-                    HomeScreen()
+                    Utils.ScreenTransition(navController = navController, route = "home") {
+                        HomeScreen()
+                    }
                 }
-                composable(route = "webview/{url}") { backStackExtry ->
-                    AnimatedVisibility(
-                        visible = navController.currentDestination?.route == "webview/{url}",
-                        enter = slideInHorizontally { fullWidth -> -fullWidth },
-                    ) {
-                        val url = backStackExtry.arguments?.getString("url")
+                composable(route = "webview/{url}") { backStackEntry ->
+                    Utils.ScreenTransition(navController = navController, route = "webview/{url}") {
+                        val url = backStackEntry.arguments?.getString("url")
                         if (url != null) {
                             WebViewScreen(
                                 url = URLDecoder.decode(

@@ -35,7 +35,7 @@ fun HomeScreen(
         Column(
             modifier = Modifier.padding(it)
         ) {
-            Text(text = "종마루", modifier = Modifier.clickable { viewModel.test() })
+            Text(text = "종마루")
         }
     }
 }

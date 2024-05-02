@@ -54,7 +54,6 @@ class SetProfileViewModel @Inject constructor(
                         val errorCode = jsonObject.get("code").asInt
                         when(errorCode) {
                             1005 -> {
-                                // TODO
                                 _isLoading.value = false
                                 _signUpSuccess.emit(false)
                             }
