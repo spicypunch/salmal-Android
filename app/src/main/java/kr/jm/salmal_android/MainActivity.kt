@@ -51,9 +51,13 @@ fun App() {
                     Utils.ScreenTransition(navController = navController, route = "splash") {
                         SplashScreen { result ->
                             if (result) {
-                                navController.navigate("home")
+                                navController.navigate("home") {
+                                    popUpTo("splash") { inclusive = true }
+                                }
                             } else {
-                                navController.navigate("login")
+                                navController.navigate("login") {
+                                    popUpTo("splash") { inclusive = true }
+                                }
                             }
                         }
                     }

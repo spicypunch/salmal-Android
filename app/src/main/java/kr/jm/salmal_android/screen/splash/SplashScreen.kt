@@ -24,7 +24,7 @@ fun SplashScreen(
     viewModel.attemptLogin()
     LaunchedEffect(Unit) {
         viewModel.loginResult.collectLatest {
-            delay(3000)
+            delay(2000)
             loginResult(it)
         }
     }
