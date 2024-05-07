@@ -1,4 +1,4 @@
-package kr.jm.salmal_android.screen.home
+package kr.jm.salmal_android.ui.screen.home
 
 import android.net.Uri
 import android.util.Log

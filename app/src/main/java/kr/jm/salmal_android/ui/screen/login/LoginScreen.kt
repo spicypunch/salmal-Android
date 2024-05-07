@@ -1,4 +1,4 @@
-package kr.jm.salmal_android.screen.login
+package kr.jm.salmal_android.ui.screen.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,7 +24,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kr.jm.salmal_android.screen.component.CircularProgressBar
+import kr.jm.salmal_android.ui.screen.component.CircularProgressBar
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.primaryBlack
 import kr.jm.salmal_android.ui.theme.primaryWhite

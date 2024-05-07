@@ -1,4 +1,4 @@
-package kr.jm.salmal_android.screen.component
+package kr.jm.salmal_android.ui.screen.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

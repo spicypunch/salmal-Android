@@ -1,4 +1,4 @@
-package kr.jm.salmal_android.screen.profile
+package kr.jm.salmal_android.ui.screen.profile
 
 import android.net.Uri
 import androidx.compose.runtime.State

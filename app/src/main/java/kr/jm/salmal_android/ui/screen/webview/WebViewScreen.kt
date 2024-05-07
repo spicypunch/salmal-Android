@@ -1,4 +1,4 @@
-package kr.jm.salmal_android.screen.webview
+package kr.jm.salmal_android.ui.screen.webview
 
 import android.net.http.SslError
 import android.os.Message

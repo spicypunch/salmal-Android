@@ -1,4 +1,4 @@
-package kr.jm.salmal_android.screen.agreement
+package kr.jm.salmal_android.ui.screen.agreement
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,11 +27,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
-import kr.jm.salmal_android.screen.component.BasicButton
+import kr.jm.salmal_android.ui.screen.component.BasicButton
 import kr.jm.salmal_android.ui.theme.Gray2
 import kr.jm.salmal_android.ui.theme.Gray3
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.primaryBlack
+import kr.jm.salmal_android.ui.theme.primaryGreen
 import kr.jm.salmal_android.ui.theme.primaryWhite
 import kr.lifesemantics.salmal_android.R
 
@@ -236,7 +237,7 @@ fun AgreementScreen(
             end = 18,
             top = 44,
             bottom = 32,
-            enabled = isCheckedTerms && isCheckedCollectInfo
+            enabled = isCheckedTerms && isCheckedCollectInfo,
         ) {
             viewModel.saveMarketingInformationConsent(isCheckedMarketing)
             moveToSetProfile()

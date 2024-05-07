@@ -1,4 +1,4 @@
-package kr.jm.salmal_android.screen.login
+package kr.jm.salmal_android.ui.screen.login
 
 import android.content.Context
 import android.util.Log

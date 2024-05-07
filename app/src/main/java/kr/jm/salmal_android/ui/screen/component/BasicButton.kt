@@ -1,4 +1,4 @@
-package kr.jm.salmal_android.screen.component
+package kr.jm.salmal_android.ui.screen.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -9,6 +9,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -25,6 +26,8 @@ fun BasicButton(
     start: Int = 0,
     end: Int = 0,
     enabled: Boolean,
+    color: Color = primaryGreen,
+    textColor: Color = primaryBlack,
     onClicked: () -> Unit
 ) {
     Button(
@@ -40,7 +43,7 @@ fun BasicButton(
             .height(60.dp),
         shape = RoundedCornerShape(50),
         colors = ButtonDefaults.buttonColors(
-            containerColor = primaryGreen,
+            containerColor = color,
             disabledContainerColor = Gray3
         ),
         enabled = enabled
@@ -49,7 +52,7 @@ fun BasicButton(
             text = text,
             fontSize = 24.sp,
             fontWeight = FontWeight.SemiBold,
-            color = primaryBlack,
+            color = textColor,
             modifier = Modifier.weight(3f),
             textAlign = TextAlign.Center
         )

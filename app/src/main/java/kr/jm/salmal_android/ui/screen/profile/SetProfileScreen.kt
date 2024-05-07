@@ -1,4 +1,4 @@
-package kr.jm.salmal_android.screen.profile
+package kr.jm.salmal_android.ui.screen.profile
 
 import android.Manifest
 import android.net.Uri
@@ -51,8 +51,8 @@ import androidx.lifecycle.viewModelScope
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import kotlinx.coroutines.flow.collectLatest
-import kr.jm.salmal_android.screen.component.BasicButton
-import kr.jm.salmal_android.screen.component.CircularProgressBar
+import kr.jm.salmal_android.ui.screen.component.BasicButton
+import kr.jm.salmal_android.ui.screen.component.CircularProgressBar
 import kr.jm.salmal_android.ui.theme.Gray4
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.black1b
@@ -272,7 +272,8 @@ fun SetFirstProfileScreen(
                     end = 18,
                     top = 18,
                     bottom = 32,
-                    enabled = nickName.isNotBlank()
+                    enabled = nickName.isNotBlank(),
+                    color = primaryGreen
                 ) {
                     viewModel.signUp(nickName)
                 }

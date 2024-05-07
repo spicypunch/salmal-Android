@@ -1,4 +1,4 @@
-package kr.jm.salmal_android.screen.splash
+package kr.jm.salmal_android.ui.screen.splash
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences

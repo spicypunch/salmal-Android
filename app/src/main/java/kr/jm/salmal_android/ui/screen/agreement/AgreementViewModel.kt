@@ -1,4 +1,4 @@
-package kr.jm.salmal_android.screen.agreement
+package kr.jm.salmal_android.ui.screen.agreement
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
