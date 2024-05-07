@@ -5,15 +5,24 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import kr.jm.salmal_android.data.domain.BottomNavItem
 import kr.jm.salmal_android.screen.agreement.AgreementScreen
 import kr.jm.salmal_android.screen.home.HomeScreen
 import kr.jm.salmal_android.screen.login.LoginScreen
@@ -42,8 +51,38 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun App() {
     val navController = rememberNavController()
+    val navItems = listOf(
+        BottomNavItem.Home,
+        BottomNavItem.Add,
+        BottomNavItem.MyPage
+    )
     Scaffold(
-
+        bottomBar = {
+            NavigationBar {
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = navBackStackEntry?.destination?.route
+                navItems.forEach { screen ->
+                    NavigationBarItem(
+                        selected = currentRoute == screen.route,
+                        onClick = {
+                            navController.navigate(screen.route) {
+                                navController.graph.startDestinationRoute?.let {
+                                    popUpTo(it) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            }
+                        },
+                        alwaysShowLabel = false,
+                        icon = {
+                            Icon(painter = painterResource(id = screen.icon), contentDescription = screen.title)
+                        }
+                    )
+                }
+            }
+        }
     ) {
         Box(modifier = Modifier.padding(it)) {
             NavHost(navController = navController, startDestination = "splash") {
