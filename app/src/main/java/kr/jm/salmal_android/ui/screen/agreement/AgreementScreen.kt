@@ -28,11 +28,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import kr.jm.salmal_android.ui.screen.component.BasicButton
-import kr.jm.salmal_android.ui.theme.Gray2
-import kr.jm.salmal_android.ui.theme.Gray3
+import kr.jm.salmal_android.ui.theme.gray2
+import kr.jm.salmal_android.ui.theme.gray3
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.primaryBlack
-import kr.jm.salmal_android.ui.theme.primaryGreen
 import kr.jm.salmal_android.ui.theme.primaryWhite
 import kr.lifesemantics.salmal_android.R
 
@@ -80,7 +79,7 @@ fun AgreementScreen(
             fontFamily = Pretendard,
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
-            color = Gray2,
+            color = gray2,
             modifier = Modifier.padding(top = 12.dp)
         )
         Row(
@@ -150,7 +149,7 @@ fun AgreementScreen(
             Spacer(modifier = Modifier.weight(1f))
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                tint = Gray3,
+                tint = gray3,
                 modifier = Modifier
                     .padding(end = 18.dp)
                     .clickable { moveToWebView("https://sites.google.com/view/salmalterms/%ED%99%88") },
@@ -187,7 +186,7 @@ fun AgreementScreen(
             Spacer(modifier = Modifier.weight(1f))
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                tint = Gray3,
+                tint = gray3,
                 modifier = Modifier
                     .padding(end = 18.dp)
                     .clickable { moveToWebView("https://sites.google.com/view/salmalterms2/%ED%99%88") },
@@ -225,7 +224,7 @@ fun AgreementScreen(
             Spacer(modifier = Modifier.weight(1f))
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                tint = Gray3,
+                tint = gray3,
                 modifier = Modifier
                     .padding(end = 18.dp)
                     .clickable { moveToWebView("https://sites.google.com/view/salmalterms3/%ED%99%88") },

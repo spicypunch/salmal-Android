@@ -17,10 +17,12 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -29,14 +31,19 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import kotlinx.coroutines.launch
 import kr.jm.salmal_android.ui.screen.component.BasicButton
+import kr.jm.salmal_android.ui.theme.gray3
+import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.primaryBlack
 import kr.jm.salmal_android.ui.theme.primaryWhite
 import kr.jm.salmal_android.ui.theme.white20
@@ -142,26 +149,45 @@ fun Home() {
                 Box(
                     modifier = Modifier
                         .height(50.dp)
-                        .width(110.dp)
+                        .width(94.dp)
                         .offset(x = 16.dp, y = 16.dp)
                         .background(
                             color = primaryBlack,
-                            shape = RoundedCornerShape(
-                                topStartPercent = 50,
-                                topEndPercent = 50,
-                                bottomStartPercent = 50,
-                                bottomEndPercent = 50
-                            )
+                            shape = RoundedCornerShape(50)
                         ),
                     contentAlignment = Alignment.TopStart
                 ) {
-                    Image(
-                        painter = rememberAsyncImagePainter(model = R.drawable.mypage_filled_icon),
+                    Box(
                         modifier = Modifier
-                            .size(32.dp)
-                            .align(Alignment.CenterVertically),
-                        contentDescription = "profile"
-                    )
+                            .align(Alignment.CenterStart)
+                            .offset(x = 6.dp)
+                        ) {
+                        Image(
+                            painter = rememberAsyncImagePainter(
+                                model = R.drawable.mypage_filled_icon
+                            ),
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .size(36.dp),
+                            contentScale = ContentScale.Crop,
+                            contentDescription = "profile"
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .width(46.dp)
+                            .align(Alignment.CenterEnd)
+                            .offset(x = (-8).dp),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        Text(
+                            text = "김종민",
+                            fontFamily = Pretendard,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = primaryWhite,
+                        )
+                    }
                 }
             }
         }
