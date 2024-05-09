@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonParser
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -29,7 +30,7 @@ class SplashViewModel @Inject constructor(
     private val _loginResult = MutableSharedFlow<Boolean>()
     val loginResult = _loginResult.asSharedFlow()
     fun attemptLogin() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val providerId = readProviderId().firstOrNull()
             if (providerId != null) {
                 try {
@@ -63,7 +64,7 @@ class SplashViewModel @Inject constructor(
     }
 
     private fun saveAccessToken(accessToken: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val accessTokenKey = stringPreferencesKey("accessToken")
             dataStore.edit { settings ->
                 settings[accessTokenKey] = accessToken
@@ -72,7 +73,7 @@ class SplashViewModel @Inject constructor(
     }
 
     private fun saveRefreshToken(refreshToken: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val refreshTokenKey = stringPreferencesKey("refreshToken")
             dataStore.edit { settings ->
                 settings[refreshTokenKey] = refreshToken

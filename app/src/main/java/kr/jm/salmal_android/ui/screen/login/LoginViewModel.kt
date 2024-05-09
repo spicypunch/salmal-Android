@@ -16,6 +16,7 @@ import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -85,7 +86,7 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun login(providerId: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 val tokenInfo = repository.login(LoginRequest(providerId = providerId))
                 saveAccessToken(tokenInfo.accessToken)
@@ -109,7 +110,7 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun saveProviderId(providerId: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val providerIdKey = stringPreferencesKey("providerId")
             dataStore.edit { settings ->
                 settings[providerIdKey] = providerId
@@ -118,7 +119,7 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun saveAccessToken(accessToken: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val accessTokenKey = stringPreferencesKey("accessToken")
             dataStore.edit { settings ->
                 settings[accessTokenKey] = accessToken
@@ -127,7 +128,7 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun saveRefreshToken(refreshToken: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val refreshTokenKey = stringPreferencesKey("refreshToken")
             dataStore.edit { settings ->
                 settings[refreshTokenKey] = refreshToken

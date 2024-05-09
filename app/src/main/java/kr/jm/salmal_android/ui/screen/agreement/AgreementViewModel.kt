@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,7 +17,7 @@ class AgreementViewModel @Inject constructor(
 ) : ViewModel() {
 
     fun saveMarketingInformationConsent(marketingInfo: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val marketingInfoKey = booleanPreferencesKey("marketingInfo")
             dataStore.edit { settings ->
                 settings[marketingInfoKey] = marketingInfo

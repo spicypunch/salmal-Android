@@ -24,55 +24,5 @@ class HomeViewModel @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) : ViewModel() {
 
-    fun test() {
-        viewModelScope.launch {
-            val proviederid: String? = readProviderId().firstOrNull()
-            val marketingInformationConsent: Boolean? =
-                readMarketingInformationConsent().firstOrNull()
-            val accessToken: String? = readAccessToken().firstOrNull()
-            val refreshToken: String? = readRefreshToken().firstOrNull()
-            val image: Uri? = readProfileImage().firstOrNull()?.toUri()
-            Log.e("proviederid", "$proviederid")
-            Log.e("marketingInformationConsent", "$marketingInformationConsent")
-            Log.e("accessToken", "$accessToken")
-            Log.e("refreshToken", "$refreshToken")
-            Log.e("image", "$image")
-
-        }
-    }
-
-    private fun readProviderId(): Flow<String?> {
-        val providerIdKey = stringPreferencesKey("providerId")
-        return dataStore.data
-            .map { preferences ->
-                preferences[providerIdKey]
-            }
-    }
-
-    private fun readMarketingInformationConsent(): Flow<Boolean?> {
-        val marketingInfoKey = booleanPreferencesKey("marketingInfo")
-        return dataStore.data
-            .map { preferences ->
-                preferences[marketingInfoKey]
-            }
-    }
-
-    private fun readAccessToken(): Flow<String?> {
-        val accessTokenKey = stringPreferencesKey("accessToken")
-        return dataStore.data
-            .map { preferences ->
-                preferences[accessTokenKey]
-            }
-    }
-
-    private fun readRefreshToken() = dataStore.data
-        .map { preferences ->
-            preferences[stringPreferencesKey("refreshToken")]
-        }
-
-    private fun readProfileImage() = dataStore.data
-        .map { preferences ->
-            preferences[stringPreferencesKey("imageUri")]
-        }
 
 }

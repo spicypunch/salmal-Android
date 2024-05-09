@@ -133,7 +133,6 @@ fun rememberWebView(url: String): WebView {
                 override fun onCreateWindow(
                     view: WebView?, isDialog: Boolean, isUserGesture: Boolean, resultMsg: Message?
                 ): Boolean {
-                    // Implement popup handling
                     val newWebView = WebView(context).apply {
                         webViewClient = WebViewClient()
                         settings.javaScriptEnabled = true
@@ -142,17 +141,11 @@ fun rememberWebView(url: String): WebView {
                     transport.webView = newWebView
                     resultMsg.sendToTarget()
 
-//                    // Example: Add the new WebView to a dialog or to the screen directly
-//                    MaterialAlertDialogBuilder(context)
-//                        .setView(newWebView)
-//                        .show()
-
                     return true
                 }
 
                 override fun onCloseWindow(window: WebView?) {
                     super.onCloseWindow(window)
-                    // Handle closing the popup window
                 }
             }
             loadUrl(url)
