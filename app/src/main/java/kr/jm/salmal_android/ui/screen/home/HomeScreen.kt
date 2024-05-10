@@ -4,6 +4,7 @@ import android.Manifest
 import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -35,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -42,9 +45,11 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import kotlinx.coroutines.launch
 import kr.jm.salmal_android.ui.screen.component.BasicButton
-import kr.jm.salmal_android.ui.theme.gray3
 import kr.jm.salmal_android.ui.theme.Pretendard
+import kr.jm.salmal_android.ui.theme.gray1
+import kr.jm.salmal_android.ui.theme.gray2
 import kr.jm.salmal_android.ui.theme.primaryBlack
+import kr.jm.salmal_android.ui.theme.primaryGreen
 import kr.jm.salmal_android.ui.theme.primaryWhite
 import kr.jm.salmal_android.ui.theme.white20
 import kr.jm.salmal_android.utils.Utils
@@ -161,7 +166,7 @@ fun Home() {
                         modifier = Modifier
                             .align(Alignment.CenterStart)
                             .offset(x = 6.dp)
-                        ) {
+                    ) {
                         Image(
                             painter = rememberAsyncImagePainter(
                                 model = R.drawable.mypage_filled_icon
@@ -189,17 +194,110 @@ fun Home() {
                         )
                     }
                 }
+
+                Icon(
+                    painter = rememberAsyncImagePainter(model = R.drawable.meetball_icon),
+                    modifier = Modifier
+                        .padding(top = 18.dp, end = 18.dp)
+                        .align(Alignment.TopEnd),
+                    tint = primaryWhite,
+                    contentDescription = "meetball_icon"
+                )
+
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(end = 16.dp, bottom = 22.dp)
+
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(42.dp)
+                            .background(
+                                color = gray1,
+                                shape = RoundedCornerShape(50)
+                            )
+                    ) {
+                        Icon(
+                            painter = rememberAsyncImagePainter(model = R.drawable.bookmark_icon),
+                            modifier = Modifier.align(Alignment.Center),
+                            tint = primaryWhite,
+                            contentDescription = "bookmark"
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Box {
+                        Box(
+                            modifier = Modifier
+                                .size(42.dp)
+                                .background(
+                                    color = gray1,
+                                    shape = RoundedCornerShape(50)
+                                )
+                        ) {
+                            Icon(
+                                painter = rememberAsyncImagePainter(model = R.drawable.reply_icon),
+                                modifier = Modifier.align(Alignment.Center),
+                                tint = primaryWhite,
+                                contentDescription = "bookmark"
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .width(23.dp)
+                                    .height(16.dp)
+                                    .align(Alignment.TopEnd)
+                                    .offset(x = 8.dp, y = (-4).dp)
+                                    .background(
+                                        color = primaryWhite,
+                                        shape = RoundedCornerShape(50)
+                                    )
+                            ) {
+                                Text(
+                                    text = "42",
+                                    fontFamily = Pretendard,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    color = gray2,
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                        .offset(y = (-4).dp)
+                                )
+                            }
+                        }
+                    }
+                }
             }
+        }
+
+        Box(
+            modifier = Modifier
+                .offset(y = (-32).dp)
+                .border(width = 3.dp, color = primaryGreen, shape = RoundedCornerShape(50))
+                .background(color = primaryBlack, shape = RoundedCornerShape(50))
+                .align(Alignment.CenterHorizontally)
+
+        ) {
+            Text(
+                text = "🔥 현재 3,200명 참여중!",
+                fontFamily = Pretendard,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Normal,
+                color = primaryWhite,
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+                    .padding(horizontal = 12.dp)
+                    .align(Alignment.Center)
+            )
         }
 
         BasicButton(
             text = "👍🏻살",
             start = 18,
             end = 18,
-            top = 13,
             enabled = true,
             color = white20,
-            textColor = primaryWhite
+            textColor = primaryWhite,
+            modifier = Modifier.offset(y = (-28).dp)
         ) {
 
         }
@@ -211,7 +309,8 @@ fun Home() {
             top = 9,
             enabled = true,
             color = white20,
-            textColor = primaryWhite
+            textColor = primaryWhite,
+            modifier = Modifier.offset(y = (-28).dp)
         ) {
 
         }
@@ -221,4 +320,10 @@ fun Home() {
 @Composable
 fun Best() {
 
+}
+
+@Preview
+@Composable
+private fun HomePreview() {
+    HomeScreen()
 }

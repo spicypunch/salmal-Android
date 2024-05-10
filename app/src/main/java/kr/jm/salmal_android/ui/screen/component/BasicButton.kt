@@ -20,6 +20,7 @@ import kr.jm.salmal_android.ui.theme.primaryGreen
 
 @Composable
 fun BasicButton(
+    modifier: Modifier = Modifier,
     text: String,
     top: Int = 0,
     bottom: Int = 0,
@@ -34,7 +35,7 @@ fun BasicButton(
         onClick = {
             onClicked()
         },
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(start = start.dp)
             .padding(end = end.dp)
