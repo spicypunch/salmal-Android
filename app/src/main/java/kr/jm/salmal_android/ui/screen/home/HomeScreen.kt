@@ -130,7 +130,9 @@ fun HomeScreen(
 }
 
 @Composable
-fun Home() {
+fun Home(
+    viewModel: HomeViewModel = hiltViewModel()
+) {
     Column {
         Card(
             modifier = Modifier
@@ -287,6 +289,9 @@ fun Home() {
                     .padding(vertical = 8.dp)
                     .padding(horizontal = 12.dp)
                     .align(Alignment.Center)
+                    .clickable {
+                        viewModel.getVotesList(size = 1, searchType = "HOME")
+                    }
             )
         }
 
