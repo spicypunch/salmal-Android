@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kr.jm.salmal_android.BaseViewModel
 import kr.jm.salmal_android.data.request.SignUpRequest
 import kr.jm.salmal_android.data.response.SignUpResponse
 import kr.jm.salmal_android.repository.RepositoryImpl
@@ -28,18 +29,15 @@ import javax.inject.Inject
 @HiltViewModel
 class SetProfileViewModel @Inject constructor(
     private val repository: RepositoryImpl,
-    private val dataStore: DataStore<Preferences>
-) : ViewModel() {
-    private val _isLoading = mutableStateOf(false)
-    val isLoading: State<Boolean> = _isLoading
-
+    dataStore: DataStore<Preferences>
+) : BaseViewModel(dataStore) {
 
     private val _signUpSuccess = MutableSharedFlow<Boolean>()
     val signUpSuccess = _signUpSuccess.asSharedFlow()
 
     fun signUp(nickName:String) {
         viewModelScope.launch(Dispatchers.IO) {
-            _isLoading.value = true
+            showIndicator()
             val providerId: String? = readProviderId().firstOrNull()
             val marketingInformationConsent: Boolean? = readMarketingInformationConsent().firstOrNull()
             if (providerId != null && marketingInformationConsent != null) {
@@ -55,7 +53,7 @@ class SetProfileViewModel @Inject constructor(
                         val errorCode = jsonObject.get("code").asInt
                         when(errorCode) {
                             1005 -> {
-                                _isLoading.value = false
+                                hideIndicator()
                                 _signUpSuccess.emit(false)
                             }
                         }
@@ -66,47 +64,4 @@ class SetProfileViewModel @Inject constructor(
 
         }
     }
-
-    private fun readProviderId(): Flow<String?> {
-        val providerIdKey = stringPreferencesKey("providerId")
-        return dataStore.data
-            .map { preferences ->
-                preferences[providerIdKey]
-            }
-    }
-
-    private fun readMarketingInformationConsent(): Flow<Boolean?> {
-        val marketingInfoKey = booleanPreferencesKey("marketingInfo")
-        return dataStore.data
-            .map { preferences ->
-                preferences[marketingInfoKey]
-            }
-    }
-
-    private fun saveAccessToken(accessToken: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val accessTokenKey = stringPreferencesKey("accessToken")
-            dataStore.edit { settings ->
-                settings[accessTokenKey] = accessToken
-            }
-        }
-    }
-
-    private fun saveRefreshToken(refreshToken: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val refreshTokenKey = stringPreferencesKey("refreshToken")
-            dataStore.edit { settings ->
-                settings[refreshTokenKey] = refreshToken
-            }
-        }
-    }
-
-//    fun saveProfileImage(imageUri: Uri) {
-//        viewModelScope.launch {
-//            val imageUriKey = stringPreferencesKey("imageUri")
-//            dataStore.edit { settings ->
-//                settings[imageUriKey] = imageUri.toString()
-//            }
-//        }
-//    }
 }

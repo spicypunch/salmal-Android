@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kr.jm.salmal_android.BaseViewModel
 import kr.jm.salmal_android.data.request.LoginRequest
 import kr.jm.salmal_android.repository.RepositoryImpl
 import retrofit2.HttpException
@@ -25,7 +26,7 @@ import javax.inject.Inject
 class SplashViewModel @Inject constructor(
     private val repository: RepositoryImpl,
     private val dataStore: DataStore<Preferences>
-) : ViewModel() {
+) : BaseViewModel(dataStore) {
 
     private val _loginResult = MutableSharedFlow<Boolean>()
     val loginResult = _loginResult.asSharedFlow()
@@ -52,31 +53,6 @@ class SplashViewModel @Inject constructor(
                 }
             } else {
                 _loginResult.emit(false)
-            }
-        }
-    }
-    private fun readProviderId(): Flow<String?> {
-        val providerIdKey = stringPreferencesKey("providerId")
-        return dataStore.data
-            .map { preferences ->
-                preferences[providerIdKey]
-            }
-    }
-
-    private fun saveAccessToken(accessToken: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val accessTokenKey = stringPreferencesKey("accessToken")
-            dataStore.edit { settings ->
-                settings[accessTokenKey] = accessToken
-            }
-        }
-    }
-
-    private fun saveRefreshToken(refreshToken: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val refreshTokenKey = stringPreferencesKey("refreshToken")
-            dataStore.edit { settings ->
-                settings[refreshTokenKey] = refreshToken
             }
         }
     }

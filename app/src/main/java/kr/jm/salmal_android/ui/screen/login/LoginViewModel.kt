@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kr.jm.salmal_android.BaseViewModel
 import kr.jm.salmal_android.data.request.LoginRequest
 import kr.jm.salmal_android.repository.RepositoryImpl
 import retrofit2.HttpException
@@ -30,16 +31,15 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val repository: RepositoryImpl,
-    private val dataStore: DataStore<Preferences>
-) : ViewModel() {
-    private val _isLoading = mutableStateOf(false)
-    val isLoading: State<Boolean> = _isLoading
+    dataStore: DataStore<Preferences>
+) : BaseViewModel(dataStore) {
+
 
     private var _isMember = MutableSharedFlow<Boolean>()
     val isMember = _isMember.asSharedFlow()
 
     fun requestKakaoToken(context: Context) {
-        _isLoading.value = true
+        showIndicator()
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             if (error != null) {
                 Log.e("Kakao", "카카오 웹 로그인 실패", error)
@@ -104,42 +104,10 @@ class LoginViewModel @Inject constructor(
                     }
                 }
             } finally {
-                _isLoading.value = false
+                hideIndicator()
             }
         }
     }
-
-    private fun saveProviderId(providerId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val providerIdKey = stringPreferencesKey("providerId")
-            dataStore.edit { settings ->
-                settings[providerIdKey] = providerId
-            }
-        }
-    }
-
-    private fun saveAccessToken(accessToken: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val accessTokenKey = stringPreferencesKey("accessToken")
-            dataStore.edit { settings ->
-                settings[accessTokenKey] = accessToken
-            }
-        }
-    }
-
-    private fun saveRefreshToken(refreshToken: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val refreshTokenKey = stringPreferencesKey("refreshToken")
-            dataStore.edit { settings ->
-                settings[refreshTokenKey] = refreshToken
-            }
-        }
-    }
-
-    private val getAccessToken: Flow<String?> = dataStore.data
-        .map { preferences ->
-            preferences[stringPreferencesKey("accessToken")]
-        }
 
 
 }
