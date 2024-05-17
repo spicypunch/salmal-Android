@@ -29,8 +29,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SetProfileViewModel @Inject constructor(
     private val repository: RepositoryImpl,
-    dataStore: DataStore<Preferences>
-) : BaseViewModel(dataStore) {
+    override var dataStore: DataStore<Preferences>
+) : BaseViewModel() {
 
     private val _signUpSuccess = MutableSharedFlow<Boolean>()
     val signUpSuccess = _signUpSuccess.asSharedFlow()

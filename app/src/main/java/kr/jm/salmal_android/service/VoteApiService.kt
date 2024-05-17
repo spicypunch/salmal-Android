@@ -10,8 +10,8 @@ interface VoteApiService {
     @GET("/api/votes")
     suspend fun votesList(
         @Header("Authorization") accessToken: String,
-        @Query("cursorId") cursorId: String = "",
-        @Query("cursorLikes") cursorLikes: String = "",
+        @Query("cursorId") cursorId: String,
+        @Query("cursorLikes") cursorLikes: String,
         @Query("size") size: Int,
         @Query("searchType") searchType: String,
     ) : VotesListResponse

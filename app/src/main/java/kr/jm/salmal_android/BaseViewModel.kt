@@ -17,10 +17,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@HiltViewModel
-open class BaseViewModel @Inject constructor(
-    private val dataStore: DataStore<Preferences>
-) : ViewModel() {
+open class BaseViewModel() : ViewModel() {
+
+    open lateinit var dataStore: DataStore<Preferences>
 
     val isLoading = mutableStateOf(false)
     fun saveProviderId(providerId: String) {

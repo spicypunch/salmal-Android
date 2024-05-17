@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AgreementViewModel @Inject constructor(
-    dataStore: DataStore<Preferences>
-) : BaseViewModel(dataStore) {
+    override var dataStore: DataStore<Preferences>
+) : BaseViewModel() {
 
 }

@@ -31,8 +31,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val repository: RepositoryImpl,
-    dataStore: DataStore<Preferences>
-) : BaseViewModel(dataStore) {
+    override var dataStore: DataStore<Preferences>
+) : BaseViewModel() {
 
 
     private var _isMember = MutableSharedFlow<Boolean>()

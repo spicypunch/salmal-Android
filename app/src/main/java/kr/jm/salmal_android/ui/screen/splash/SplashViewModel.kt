@@ -25,8 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SplashViewModel @Inject constructor(
     private val repository: RepositoryImpl,
-    private val dataStore: DataStore<Preferences>
-) : BaseViewModel(dataStore) {
+    override var dataStore: DataStore<Preferences>
+) : BaseViewModel() {
 
     private val _loginResult = MutableSharedFlow<Boolean>()
     val loginResult = _loginResult.asSharedFlow()
