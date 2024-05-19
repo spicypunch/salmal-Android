@@ -2,6 +2,7 @@ package kr.jm.salmal_android.ui.screen.home
 
 import android.Manifest
 import android.os.Build
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,8 +19,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.VerticalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -38,11 +39,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import kotlinx.coroutines.launch
 import kr.jm.salmal_android.ui.screen.component.BasicButton
 import kr.jm.salmal_android.ui.theme.Pretendard
@@ -127,71 +130,78 @@ fun HomeScreen() {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun VotesScreen(
     type: String,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     viewModel.getVotesList(size = 3, searchType = type)
+
     val voteList by viewModel.votesList.collectAsState()
 
-    LazyColumn {
-        voteList?.let { voteList ->
-            items(items = voteList.votes) { item ->
-                Card(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .padding(top = 8.dp)
-                        .height(400.dp)
-                        //                        .weight(1f)
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(18.dp)
-                ) {
-                    Box {
-                        Image(
-                            painter = rememberAsyncImagePainter(
-                                model = item.imageUrl
+    val pagerState = rememberPagerState(pageCount = {
+        voteList?.votes?.size ?: 0
+    })
+
+
+
+    Column {
+        VerticalPager(state = pagerState, modifier = Modifier) { page ->
+            Card(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 8.dp)
+                    .weight(1f)
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(18.dp)
+            ) {
+                Box {
+                    Image(
+                        painter = rememberAsyncImagePainter(
+                            model = voteList?.votes?.get(0)?.imageUrl
+                        ),
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                        contentDescription = "imageLoad",
+                    )
+                    Box(
+                        modifier = Modifier
+                            .height(50.dp)
+                            .width(94.dp)
+                            .offset(x = 16.dp, y = 16.dp)
+                            .background(
+                                color = primaryBlack,
+                                shape = RoundedCornerShape(50)
                             ),
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop,
-                            contentDescription = "imageLoad",
-                        )
+                        contentAlignment = Alignment.TopStart
+                    ) {
                         Box(
                             modifier = Modifier
-                                .height(50.dp)
-                                .width(94.dp)
-                                .offset(x = 16.dp, y = 16.dp)
-                                .background(
-                                    color = primaryBlack,
-                                    shape = RoundedCornerShape(50)
-                                ),
-                            contentAlignment = Alignment.TopStart
+                                .align(Alignment.CenterStart)
+                                .offset(x = 6.dp)
                         ) {
-                            Box(
+                            Image(
+                                painter = rememberAsyncImagePainter(
+                                    model = voteList?.votes?.get(0)?.memberImageUrl
+                                ),
                                 modifier = Modifier
-                                    .align(Alignment.CenterStart)
-                                    .offset(x = 6.dp)
-                            ) {
-                                Image(
-                                    painter = rememberAsyncImagePainter(
-                                        model = item.memberImageUrl
-                                    ),
-                                    modifier = Modifier
-                                        .clip(CircleShape)
-                                        .size(36.dp),
-                                    contentScale = ContentScale.Crop,
-                                    contentDescription = "profile"
-                                )
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .width(40.dp)
-                                    .align(Alignment.CenterEnd)
-                                    .offset(x = (-8).dp),
-                                contentAlignment = Alignment.Center
-                            ) {
+                                    .clip(CircleShape)
+                                    .size(36.dp),
+                                contentScale = ContentScale.Crop,
+                                contentDescription = "profile"
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .width(40.dp)
+                                .align(Alignment.CenterEnd)
+                                .offset(x = (-8).dp),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
+                            voteList?.votes?.get(0)?.nickName?.let {
                                 Text(
-                                    text = item.nickName,
+                                    text = it,
                                     fontFamily = Pretendard,
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Bold,
@@ -199,22 +209,44 @@ fun VotesScreen(
                                 )
                             }
                         }
+                    }
 
-                        Icon(
-                            painter = rememberAsyncImagePainter(model = R.drawable.meetball_icon),
+                    Icon(
+                        painter = rememberAsyncImagePainter(model = R.drawable.meetball_icon),
+                        modifier = Modifier
+                            .padding(top = 18.dp, end = 18.dp)
+                            .align(Alignment.TopEnd),
+                        tint = primaryWhite,
+                        contentDescription = "meetball_icon"
+                    )
+
+                    Row(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(end = 16.dp, bottom = 22.dp)
+
+                    ) {
+                        Box(
                             modifier = Modifier
-                                .padding(top = 18.dp, end = 18.dp)
-                                .align(Alignment.TopEnd),
-                            tint = primaryWhite,
-                            contentDescription = "meetball_icon"
-                        )
-
-                        Row(
-                            modifier = Modifier
-                                .align(Alignment.BottomEnd)
-                                .padding(end = 16.dp, bottom = 22.dp)
-
+                                .size(42.dp)
+                                .background(
+                                    color = gray1,
+                                    shape = RoundedCornerShape(50)
+                                )
                         ) {
+                            Icon(
+                                painter = if (voteList?.votes?.get(0)?.bookmarked == true) rememberAsyncImagePainter(
+                                    model = R.drawable.bookmark_icon_filled
+                                ) else rememberAsyncImagePainter(
+                                    model = R.drawable.bookmark_icon
+                                ),
+                                modifier = Modifier.align(Alignment.Center),
+                                tint = if (voteList?.votes?.get(0)?.bookmarked == true) primaryGreen else primaryWhite,
+                                contentDescription = "bookmark"
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Box {
                             Box(
                                 modifier = Modifier
                                     .size(42.dp)
@@ -224,55 +256,33 @@ fun VotesScreen(
                                     )
                             ) {
                                 Icon(
-                                    painter = if (item.bookmarked) rememberAsyncImagePainter(
-                                        model = R.drawable.bookmark_icon_filled
-                                    ) else rememberAsyncImagePainter(
-                                        model = R.drawable.bookmark_icon
-                                    ),
+                                    painter = rememberAsyncImagePainter(model = R.drawable.reply_icon),
                                     modifier = Modifier.align(Alignment.Center),
-                                    tint = if (item.bookmarked) primaryGreen else primaryWhite,
+                                    tint = primaryWhite,
                                     contentDescription = "bookmark"
                                 )
-                            }
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Box {
-                                Box(
-                                    modifier = Modifier
-                                        .size(42.dp)
-                                        .background(
-                                            color = gray1,
-                                            shape = RoundedCornerShape(50)
-                                        )
-                                ) {
-                                    Icon(
-                                        painter = rememberAsyncImagePainter(model = R.drawable.reply_icon),
-                                        modifier = Modifier.align(Alignment.Center),
-                                        tint = primaryWhite,
-                                        contentDescription = "bookmark"
-                                    )
-                                    if (item.commentCount != 0) {
-                                        Box(
-                                            modifier = Modifier
-                                                .width(23.dp)
-                                                .height(16.dp)
-                                                .align(Alignment.TopEnd)
-                                                .offset(x = 8.dp, y = (-4).dp)
-                                                .background(
-                                                    color = primaryWhite,
-                                                    shape = RoundedCornerShape(50)
-                                                )
-                                        ) {
-                                            Text(
-                                                text = "${item.commentCount}",
-                                                fontFamily = Pretendard,
-                                                fontSize = 10.sp,
-                                                fontWeight = FontWeight.Normal,
-                                                color = gray2,
-                                                modifier = Modifier
-                                                    .align(Alignment.Center)
-                                                    .offset(y = (-4).dp)
+                                if (voteList?.votes?.get(0)?.commentCount != 0) {
+                                    Box(
+                                        modifier = Modifier
+                                            .width(23.dp)
+                                            .height(16.dp)
+                                            .align(Alignment.TopEnd)
+                                            .offset(x = 8.dp, y = (-4).dp)
+                                            .background(
+                                                color = primaryWhite,
+                                                shape = RoundedCornerShape(50)
                                             )
-                                        }
+                                    ) {
+                                        Text(
+                                            text = voteList?.votes?.get(0)?.commentCount.toString(),
+                                            fontFamily = Pretendard,
+                                            fontSize = 10.sp,
+                                            fontWeight = FontWeight.Normal,
+                                            color = gray2,
+                                            modifier = Modifier
+                                                .align(Alignment.Center)
+                                                .offset(y = (-4).dp)
+                                        )
                                     }
                                 }
                             }
@@ -280,19 +290,20 @@ fun VotesScreen(
                     }
                 }
             }
+
         }
-    }
-    Column {
+
+
         Box(
             modifier = Modifier
                 .offset(y = (-32).dp)
                 .border(width = 3.dp, color = primaryGreen, shape = RoundedCornerShape(50))
                 .background(color = primaryBlack, shape = RoundedCornerShape(50))
-//                        .align(Alignment.CenterHorizontally)
+                .align(Alignment.CenterHorizontally)
 
         ) {
             Text(
-                text = "🔥 현재 {item.totalEvaluationCnt}명 참여중!",
+                text = "🔥 현재 ${voteList?.votes?.get(0)?.totalEvaluationCnt}명 참여중!",
                 fontFamily = Pretendard,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Normal,
@@ -302,7 +313,7 @@ fun VotesScreen(
                     .padding(horizontal = 12.dp)
                     .align(Alignment.Center)
                     .clickable {
-
+                        viewModel.getVotesList(size = 1, searchType = "HOME")
                     }
             )
         }
@@ -314,7 +325,7 @@ fun VotesScreen(
             enabled = true,
             color = white20,
             textColor = primaryWhite,
-//            modifier = Modifier.offset(y = (-28).dp)
+            modifier = Modifier.offset(y = (-28).dp)
         ) {
 
         }
@@ -327,10 +338,9 @@ fun VotesScreen(
             enabled = true,
             color = white20,
             textColor = primaryWhite,
-//            modifier = Modifier.offset(y = (-28).dp)
+            modifier = Modifier.offset(y = (-28).dp)
         ) {
 
         }
     }
-
 }
