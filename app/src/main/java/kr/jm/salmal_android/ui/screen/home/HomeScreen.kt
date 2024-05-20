@@ -48,6 +48,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import kotlinx.coroutines.launch
 import kr.jm.salmal_android.ui.screen.component.BasicButton
+import kr.jm.salmal_android.ui.theme.Gray4
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.gray1
 import kr.jm.salmal_android.ui.theme.gray2
@@ -92,7 +93,7 @@ fun HomeScreen() {
             modifier = Modifier
                 .padding(it)
                 .fillMaxSize()
-                .background(color = primaryBlack)
+                .background(color = Gray4)
         ) {
             Row {
                 Image(
@@ -144,15 +145,12 @@ fun VotesScreen(
         voteList?.votes?.size ?: 0
     })
 
-
-
     Column {
-        VerticalPager(state = pagerState, modifier = Modifier) { page ->
+        VerticalPager(state = pagerState, modifier = Modifier.weight(1f)) { page ->
             Card(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .padding(top = 8.dp)
-                    .weight(1f)
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(18.dp)
             ) {
@@ -197,7 +195,7 @@ fun VotesScreen(
                                 .width(40.dp)
                                 .align(Alignment.CenterEnd)
                                 .offset(x = (-8).dp),
-                            contentAlignment = Alignment.CenterEnd
+                            contentAlignment = Alignment.Center
                         ) {
                             voteList?.votes?.get(0)?.nickName?.let {
                                 Text(
