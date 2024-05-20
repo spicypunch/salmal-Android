@@ -1,7 +1,9 @@
 package kr.jm.salmal_android.ui.screen.home
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -13,7 +15,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -29,23 +30,25 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kr.jm.salmal_android.ui.screen.component.BasicButton
 import kr.jm.salmal_android.ui.theme.Gray4
@@ -93,9 +96,9 @@ fun HomeScreen() {
             modifier = Modifier
                 .padding(it)
                 .fillMaxSize()
-                .background(color = Gray4)
+                .background(color = primaryBlack)
         ) {
-            Row {
+            Row(modifier = Modifier.padding(top = 8.dp)) {
                 Image(
                     painter = rememberAsyncImagePainter(model = if (tabIndex == 0) R.drawable.home_color else R.drawable.home_basic),
                     modifier = Modifier
@@ -131,33 +134,57 @@ fun HomeScreen() {
     }
 }
 
+@SuppressLint("RememberReturnType")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun VotesScreen(
     type: String,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    viewModel.getVotesList(size = 3, searchType = type)
+    LaunchedEffect(type) {
+        viewModel.getVotesList(size = 5, searchType = type)
+    }
 
     val voteList by viewModel.votesList.collectAsState()
 
-    val pagerState = rememberPagerState(pageCount = {
-        voteList?.votes?.size ?: 0
-    })
+    val currentPage = rememberSaveable {
+        mutableIntStateOf(0)
+    }
 
-    Column {
+    val pagerState = rememberPagerState(
+        initialPage = 0,
+        pageCount = { voteList?.votes?.size ?: 0 }
+    )
+
+    LaunchedEffect(voteList) {
+        voteList?.let {
+            if (it.votes.isNotEmpty()) {
+                pagerState.scrollToPage(0)
+            }
+        }
+    }
+
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }
+            .collectLatest { page ->
+                currentPage.intValue = page
+            }
+    }
+
+    Column(modifier = Modifier.background(color = Gray4)) {
         VerticalPager(state = pagerState, modifier = Modifier.weight(1f)) { page ->
+            val vote = voteList?.votes?.getOrNull(page)
             Card(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .padding(top = 8.dp)
-                    .fillMaxWidth(),
+                    .fillMaxSize(),
                 shape = RoundedCornerShape(18.dp)
             ) {
                 Box {
                     Image(
                         painter = rememberAsyncImagePainter(
-                            model = voteList?.votes?.get(0)?.imageUrl
+                            model = vote?.imageUrl,
                         ),
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop,
@@ -181,7 +208,7 @@ fun VotesScreen(
                         ) {
                             Image(
                                 painter = rememberAsyncImagePainter(
-                                    model = voteList?.votes?.get(0)?.memberImageUrl
+                                    model = vote?.memberImageUrl
                                 ),
                                 modifier = Modifier
                                     .clip(CircleShape)
@@ -197,7 +224,7 @@ fun VotesScreen(
                                 .offset(x = (-8).dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            voteList?.votes?.get(0)?.nickName?.let {
+                            vote?.nickName?.let {
                                 Text(
                                     text = it,
                                     fontFamily = Pretendard,
@@ -233,13 +260,13 @@ fun VotesScreen(
                                 )
                         ) {
                             Icon(
-                                painter = if (voteList?.votes?.get(0)?.bookmarked == true) rememberAsyncImagePainter(
+                                painter = if (vote?.bookmarked == true) rememberAsyncImagePainter(
                                     model = R.drawable.bookmark_icon_filled
                                 ) else rememberAsyncImagePainter(
                                     model = R.drawable.bookmark_icon
                                 ),
                                 modifier = Modifier.align(Alignment.Center),
-                                tint = if (voteList?.votes?.get(0)?.bookmarked == true) primaryGreen else primaryWhite,
+                                tint = if (vote?.bookmarked == true) primaryGreen else primaryWhite,
                                 contentDescription = "bookmark"
                             )
                         }
@@ -259,7 +286,7 @@ fun VotesScreen(
                                     tint = primaryWhite,
                                     contentDescription = "bookmark"
                                 )
-                                if (voteList?.votes?.get(0)?.commentCount != 0) {
+                                if (vote?.commentCount != 0) {
                                     Box(
                                         modifier = Modifier
                                             .width(23.dp)
@@ -272,7 +299,7 @@ fun VotesScreen(
                                             )
                                     ) {
                                         Text(
-                                            text = voteList?.votes?.get(0)?.commentCount.toString(),
+                                            text = vote?.commentCount.toString(),
                                             fontFamily = Pretendard,
                                             fontSize = 10.sp,
                                             fontWeight = FontWeight.Normal,
@@ -288,7 +315,6 @@ fun VotesScreen(
                     }
                 }
             }
-
         }
 
 
@@ -301,7 +327,7 @@ fun VotesScreen(
 
         ) {
             Text(
-                text = "🔥 현재 ${voteList?.votes?.get(0)?.totalEvaluationCnt}명 참여중!",
+                text = "🔥 현재 ${voteList?.votes?.get(currentPage.intValue)?.totalEvaluationCnt}명 참여중!",
                 fontFamily = Pretendard,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Normal,
