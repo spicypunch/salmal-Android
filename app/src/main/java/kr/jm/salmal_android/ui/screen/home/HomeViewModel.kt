@@ -2,6 +2,9 @@ package kr.jm.salmal_android.ui.screen.home
 
 import android.net.Uri
 import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -31,8 +34,8 @@ class HomeViewModel @Inject constructor(
     override var dataStore: DataStore<Preferences>
 ) : BaseViewModel() {
 
-    private val _votesList = MutableStateFlow<VotesListResponse?>(null)
-    val votesList: StateFlow<VotesListResponse?> = _votesList.asStateFlow()
+    private val _votesList = mutableStateOf<VotesListResponse?>(null)
+    val votesList: State<VotesListResponse?> = _votesList
 
     fun getVotesList(
         cursorId: String = "",
@@ -42,7 +45,7 @@ class HomeViewModel @Inject constructor(
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
-            _votesList.emit(repository.votesList(accessToken, cursorId, cursorLikes, size, searchType))
+            _votesList.value = repository.votesList(accessToken, cursorId, cursorLikes, size, searchType)
         }
     }
 }

@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kr.jm.salmal_android.ui.screen.component.BasicButton
@@ -145,24 +146,23 @@ fun VotesScreen(
         viewModel.getVotesList(size = 5, searchType = type)
     }
 
-    val voteList by viewModel.votesList.collectAsState()
+    val voteList = viewModel.votesList.value
 
     val currentPage = rememberSaveable {
         mutableIntStateOf(0)
     }
 
     val pagerState = rememberPagerState(
-        initialPage = 0,
         pageCount = { voteList?.votes?.size ?: 0 }
     )
 
-    LaunchedEffect(voteList) {
-        voteList?.let {
-            if (it.votes.isNotEmpty()) {
-                pagerState.scrollToPage(0)
-            }
-        }
-    }
+//    LaunchedEffect(voteList) {
+//        voteList?.let {
+//            if (it.votes.isNotEmpty()) {
+//                pagerState.scrollToPage(0)
+//            }
+//        }
+//    }
 
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }
