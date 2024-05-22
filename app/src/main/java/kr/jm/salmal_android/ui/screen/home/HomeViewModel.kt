@@ -44,8 +44,12 @@ class HomeViewModel @Inject constructor(
         searchType: String
     ) {
         viewModelScope.launch(Dispatchers.IO) {
-            val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
-            _votesList.value = repository.votesList(accessToken, cursorId, cursorLikes, size, searchType)
+            try {
+                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                _votesList.value = repository.votesList(accessToken, cursorId, cursorLikes, size, searchType)
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "getVotesList: ${e.message}")
+            }
         }
     }
 }

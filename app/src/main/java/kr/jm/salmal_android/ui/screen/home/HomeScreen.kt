@@ -152,6 +152,8 @@ fun VotesScreen(
         mutableIntStateOf(0)
     }
 
+    val scope = rememberCoroutineScope()
+
     val pagerState = rememberPagerState(
         pageCount = { voteList?.votes?.size ?: 0 }
     )
