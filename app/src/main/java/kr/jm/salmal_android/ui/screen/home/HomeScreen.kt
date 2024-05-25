@@ -180,6 +180,7 @@ fun VotesScreen(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .padding(top = 8.dp)
+                    .padding()
                     .fillMaxSize(),
                 shape = RoundedCornerShape(18.dp)
             ) {
