@@ -2,6 +2,7 @@ package kr.jm.salmal_android.repository
 
 import kr.jm.salmal_android.data.request.LoginRequest
 import kr.jm.salmal_android.data.request.SignUpRequest
+import kr.jm.salmal_android.data.request.VoteEvaluationRequest
 import kr.jm.salmal_android.data.response.LoginResponse
 import kr.jm.salmal_android.data.response.SignUpResponse
 import kr.jm.salmal_android.data.response.VotesListResponse
@@ -29,5 +30,13 @@ class RepositoryImpl @Inject constructor(
         searchType: String
     ): VotesListResponse {
         return voteApiService.votesList(accessToken, cursorId, cursorLikes, size, searchType)
+    }
+
+    override suspend fun voteEvaluation(accessToken: String, voteId: String, voteEvaluationType: String) {
+        return voteApiService.voteEvaluation(accessToken, voteId, VoteEvaluationRequest(voteEvaluationType))
+    }
+
+    override suspend fun voteEvaluationDelete(accessToken: String, voteId: String) {
+        return voteApiService.voteEvaluationDelete(accessToken, voteId)
     }
 }

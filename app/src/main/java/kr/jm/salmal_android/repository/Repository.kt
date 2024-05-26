@@ -19,4 +19,15 @@ interface Repository {
         size: Int,
         searchType: String
     ): VotesListResponse
+
+    suspend fun voteEvaluation(
+        accessToken: String,
+        voteId: String,
+        voteEvaluationType: String
+    )
+
+    suspend fun voteEvaluationDelete(
+        accessToken: String,
+        voteId: String,
+    )
 }

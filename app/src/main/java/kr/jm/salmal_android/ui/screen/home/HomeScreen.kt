@@ -1,9 +1,9 @@
 package kr.jm.salmal_android.ui.screen.home
 
+import AnimatedProgressButton
 import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -31,7 +31,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -48,7 +47,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kr.jm.salmal_android.ui.screen.component.BasicButton
@@ -180,7 +178,6 @@ fun VotesScreen(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .padding(top = 8.dp)
-                    .padding()
                     .fillMaxSize(),
                 shape = RoundedCornerShape(18.dp)
             ) {
@@ -247,7 +244,6 @@ fun VotesScreen(
                         tint = primaryWhite,
                         contentDescription = "meetball_icon"
                     )
-
                     Row(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
@@ -320,54 +316,58 @@ fun VotesScreen(
             }
         }
 
-
-        Box(
-            modifier = Modifier
-                .offset(y = (-32).dp)
-                .border(width = 3.dp, color = primaryGreen, shape = RoundedCornerShape(50))
-                .background(color = primaryBlack, shape = RoundedCornerShape(50))
-                .align(Alignment.CenterHorizontally)
-
-        ) {
-            Text(
-                text = "🔥 현재 ${voteList?.votes?.get(currentPage.intValue)?.totalEvaluationCnt}명 참여중!",
-                fontFamily = Pretendard,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Normal,
-                color = primaryWhite,
+        voteList?.let {
+            val totalEvaluationCount = voteList.votes.get(currentPage.intValue).totalEvaluationCnt ?: 0
+            val likeCount = voteList.votes.get(currentPage.intValue).likeCount ?: 0
+            val disLikeCount = voteList.votes.get(currentPage.intValue).disLikeCount ?: 0
+            val myVoteStatus = voteList.votes.get(currentPage.intValue).status
+            val voteId = voteList.votes.get(currentPage.intValue).id
+            Box(
                 modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .padding(horizontal = 12.dp)
-                    .align(Alignment.Center)
-                    .clickable {
-                        viewModel.getVotesList(size = 1, searchType = "HOME")
-                    }
-            )
-        }
+                    .offset(y = (-32).dp)
+                    .border(width = 3.dp, color = primaryGreen, shape = RoundedCornerShape(50))
+                    .background(color = primaryBlack, shape = RoundedCornerShape(50))
+                    .align(Alignment.CenterHorizontally)
 
-        BasicButton(
-            text = "👍🏻살",
-            start = 18,
-            end = 18,
-            enabled = true,
-            color = white20,
-            textColor = primaryWhite,
-            modifier = Modifier.offset(y = (-28).dp)
-        ) {
+            ) {
+                Text(
+                    text = "🔥 현재 ${voteList.votes?.get(currentPage.intValue)?.totalEvaluationCnt}명 참여중!",
+                    fontFamily = Pretendard,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = primaryWhite,
+                    modifier = Modifier
+                        .padding(vertical = 8.dp)
+                        .padding(horizontal = 12.dp)
+                        .align(Alignment.Center)
+                        .clickable {
+                            viewModel.getVotesList(size = 1, searchType = "HOME")
+                        }
+                )
+            }
 
-        }
+            AnimatedProgressButton(
+                progress = likeCount.toFloat() / totalEvaluationCount.toFloat(),
+                buttonText = "👍🏻살",
+                start = 18,
+                end = 18,
+                status = myVoteStatus,
+                modifier = Modifier.offset(y = (-28).dp)
+            ) {
+                viewModel.voteEvaluationDelete(voteId.toString())
+            }
 
-        BasicButton(
-            text = "👎🏻말",
-            start = 18,
-            end = 18,
-            top = 9,
-            enabled = true,
-            color = white20,
-            textColor = primaryWhite,
-            modifier = Modifier.offset(y = (-28).dp)
-        ) {
-
+            AnimatedProgressButton(
+                progress = disLikeCount.toFloat() / totalEvaluationCount.toFloat(),
+                buttonText = "👎🏻말",
+                start = 18,
+                end = 18,
+                top = 9,
+                status = myVoteStatus,
+                modifier = Modifier.offset(y = (-28).dp)
+            ) {
+                viewModel.voteEvaluation(voteId.toString(), "DISLIKE")
+            }
         }
     }
 }

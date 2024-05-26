@@ -18,6 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kr.jm.salmal_android.data.domain.BottomNavItem
 import kr.jm.salmal_android.ui.screen.add.AddScreen
 import kr.jm.salmal_android.ui.screen.agreement.AgreementScreen
+import kr.jm.salmal_android.ui.screen.component.MyBottomNavigation
 import kr.jm.salmal_android.ui.screen.home.HomeScreen
 import kr.jm.salmal_android.ui.screen.login.LoginScreen
 import kr.jm.salmal_android.ui.screen.mypage.MyPageScreen
@@ -25,7 +26,6 @@ import kr.jm.salmal_android.ui.screen.profile.SetFirstProfileScreen
 import kr.jm.salmal_android.ui.screen.splash.SplashScreen
 import kr.jm.salmal_android.ui.screen.webview.WebViewScreen
 import kr.jm.salmal_android.utils.Utils
-import kr.jm.salmal_android.utils.Utils.MyBottomNavigation
 import kr.lifesemantics.salmal_android.R
 import java.net.URLDecoder
 import java.net.URLEncoder

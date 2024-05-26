@@ -46,7 +46,35 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
-                _votesList.value = repository.votesList(accessToken, cursorId, cursorLikes, size, searchType)
+                _votesList.value =
+                    repository.votesList(accessToken, cursorId, cursorLikes, size, searchType)
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "getVotesList: ${e.message}")
+            }
+        }
+    }
+
+    fun voteEvaluation(
+        voteId: String,
+        voteEvaluationType: String
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                repository.voteEvaluation(accessToken, voteId, voteEvaluationType)
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "getVotesList: ${e.message}")
+            }
+        }
+    }
+
+    fun voteEvaluationDelete(
+        voteId: String,
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                repository.voteEvaluationDelete(accessToken, voteId)
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "getVotesList: ${e.message}")
             }

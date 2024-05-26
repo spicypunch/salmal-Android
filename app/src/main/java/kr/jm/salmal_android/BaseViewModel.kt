@@ -1,7 +1,6 @@
 package kr.jm.salmal_android
 
 import android.net.Uri
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -10,18 +9,17 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 open class BaseViewModel() : ViewModel() {
 
     open lateinit var dataStore: DataStore<Preferences>
 
     val isLoading = mutableStateOf(false)
+
     fun saveProviderId(providerId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val providerIdKey = stringPreferencesKey("providerId")
