@@ -4,6 +4,7 @@ import AnimatedProgressButton
 import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,6 +28,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,7 +51,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kr.jm.salmal_android.ui.screen.component.BasicButton
 import kr.jm.salmal_android.ui.theme.Gray4
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.gray1
@@ -57,8 +58,7 @@ import kr.jm.salmal_android.ui.theme.gray2
 import kr.jm.salmal_android.ui.theme.primaryBlack
 import kr.jm.salmal_android.ui.theme.primaryGreen
 import kr.jm.salmal_android.ui.theme.primaryWhite
-import kr.jm.salmal_android.ui.theme.white20
-import kr.jm.salmal_android.utils.Utils
+import kr.jm.salmal_android.utils.Utils.requestPermissions
 import kr.lifesemantics.salmal_android.R
 
 @Composable
@@ -72,7 +72,7 @@ fun HomeScreen() {
         mutableIntStateOf(0)
     }
 
-    Utils.requestPermissions(
+    requestPermissions(
         list = permissionList,
         useDeniedMessage = false,
         onGranted = {
@@ -88,7 +88,9 @@ fun HomeScreen() {
 
 
 
-    Scaffold {
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top,
@@ -122,11 +124,11 @@ fun HomeScreen() {
 
             when (tabIndex) {
                 0 -> {
-                    VotesScreen("HOME")
+                    VotesScreen("HOME", snackbarHostState)
                 }
 
                 1 -> {
-                    VotesScreen("BEST")
+                    VotesScreen("BEST", snackbarHostState)
                 }
             }
         }
@@ -138,6 +140,7 @@ fun HomeScreen() {
 @Composable
 fun VotesScreen(
     type: String,
+    snackbarHostState: SnackbarHostState,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     LaunchedEffect(type) {
@@ -156,14 +159,6 @@ fun VotesScreen(
         pageCount = { voteList?.votes?.size ?: 0 }
     )
 
-//    LaunchedEffect(voteList) {
-//        voteList?.let {
-//            if (it.votes.isNotEmpty()) {
-//                pagerState.scrollToPage(0)
-//            }
-//        }
-//    }
-
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }
             .collectLatest { page ->
@@ -173,7 +168,7 @@ fun VotesScreen(
 
     Column(modifier = Modifier.background(color = Gray4)) {
         VerticalPager(state = pagerState, modifier = Modifier.weight(1f)) { page ->
-            val vote = voteList?.votes?.getOrNull(page)
+            val voteItem = voteList?.votes?.getOrNull(page)
             Card(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
@@ -184,7 +179,7 @@ fun VotesScreen(
                 Box {
                     Image(
                         painter = rememberAsyncImagePainter(
-                            model = vote?.imageUrl,
+                            model = voteItem?.imageUrl,
                         ),
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop,
@@ -208,7 +203,7 @@ fun VotesScreen(
                         ) {
                             Image(
                                 painter = rememberAsyncImagePainter(
-                                    model = vote?.memberImageUrl
+                                    model = voteItem?.memberImageUrl
                                 ),
                                 modifier = Modifier
                                     .clip(CircleShape)
@@ -224,7 +219,7 @@ fun VotesScreen(
                                 .offset(x = (-8).dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            vote?.nickName?.let {
+                            voteItem?.nickName?.let {
                                 Text(
                                     text = it,
                                     fontFamily = Pretendard,
@@ -259,13 +254,13 @@ fun VotesScreen(
                                 )
                         ) {
                             Icon(
-                                painter = if (vote?.bookmarked == true) rememberAsyncImagePainter(
+                                painter = if (voteItem?.bookmarked == true) rememberAsyncImagePainter(
                                     model = R.drawable.bookmark_icon_filled
                                 ) else rememberAsyncImagePainter(
                                     model = R.drawable.bookmark_icon
                                 ),
                                 modifier = Modifier.align(Alignment.Center),
-                                tint = if (vote?.bookmarked == true) primaryGreen else primaryWhite,
+                                tint = if (voteItem?.bookmarked == true) primaryGreen else primaryWhite,
                                 contentDescription = "bookmark"
                             )
                         }
@@ -285,7 +280,7 @@ fun VotesScreen(
                                     tint = primaryWhite,
                                     contentDescription = "bookmark"
                                 )
-                                if (vote?.commentCount != 0) {
+                                if (voteItem?.commentCount != 0) {
                                     Box(
                                         modifier = Modifier
                                             .width(23.dp)
@@ -298,7 +293,7 @@ fun VotesScreen(
                                             )
                                     ) {
                                         Text(
-                                            text = vote?.commentCount.toString(),
+                                            text = voteItem?.commentCount.toString(),
                                             fontFamily = Pretendard,
                                             fontSize = 10.sp,
                                             fontWeight = FontWeight.Normal,
@@ -317,11 +312,12 @@ fun VotesScreen(
         }
 
         voteList?.let {
-            val totalEvaluationCount = voteList.votes.get(currentPage.intValue).totalEvaluationCnt ?: 0
+            val totalEvaluationCount =
+                voteList.votes.get(currentPage.intValue).totalEvaluationCnt ?: 0
             val likeCount = voteList.votes.get(currentPage.intValue).likeCount ?: 0
             val disLikeCount = voteList.votes.get(currentPage.intValue).disLikeCount ?: 0
             val myVoteStatus = voteList.votes.get(currentPage.intValue).status
-            val voteId = voteList.votes.get(currentPage.intValue).id
+            val voteId = voteList.votes.get(currentPage.intValue).id.toString()
             Box(
                 modifier = Modifier
                     .offset(y = (-32).dp)
@@ -331,7 +327,7 @@ fun VotesScreen(
 
             ) {
                 Text(
-                    text = "🔥 현재 ${voteList.votes?.get(currentPage.intValue)?.totalEvaluationCnt}명 참여중!",
+                    text = "🔥 현재 ${voteList.votes.get(currentPage.intValue).totalEvaluationCnt}명 참여중!",
                     fontFamily = Pretendard,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Normal,
@@ -354,7 +350,23 @@ fun VotesScreen(
                 status = myVoteStatus,
                 modifier = Modifier.offset(y = (-28).dp)
             ) {
-                viewModel.voteEvaluationDelete(voteId.toString())
+                when (myVoteStatus) {
+                    "NONE" -> {
+                        viewModel.voteEvaluation(voteId, "LIKE")
+                        viewModel.getVote(voteId, currentPage.intValue)
+                    }
+
+                    "LIKE" -> {
+                        viewModel.voteEvaluationDelete(voteId)
+                        viewModel.getVote(voteId, currentPage.intValue)
+                    }
+
+                    "DISLIKE" -> {
+                        scope.launch {
+                            snackbarHostState.showSnackbar("❌ 이미 반대편에 투표했어요")
+                        }
+                    }
+                }
             }
 
             AnimatedProgressButton(
@@ -366,7 +378,24 @@ fun VotesScreen(
                 status = myVoteStatus,
                 modifier = Modifier.offset(y = (-28).dp)
             ) {
-                viewModel.voteEvaluation(voteId.toString(), "DISLIKE")
+                when (myVoteStatus) {
+                    "NONE" -> {
+                        viewModel.voteEvaluation(voteId, "DISLIKE")
+                        viewModel.getVote(voteId, currentPage.intValue)
+                    }
+
+                    "LIKE" -> {
+                        scope.launch {
+                            snackbarHostState.showSnackbar("❌ 이미 반대편에 투표했어요")
+                        }
+                    }
+
+                    "DISLIKE" -> {
+                        viewModel.voteEvaluationDelete(voteId)
+                        viewModel.getVote(voteId, currentPage.intValue)
+                    }
+                }
+
             }
         }
     }

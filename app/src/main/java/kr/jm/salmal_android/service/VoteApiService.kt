@@ -2,7 +2,6 @@ package kr.jm.salmal_android.service
 
 import kr.jm.salmal_android.data.request.VoteEvaluationRequest
 import kr.jm.salmal_android.data.response.VotesListResponse
-import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -13,6 +12,12 @@ import retrofit2.http.Query
 
 interface VoteApiService {
 
+    @GET("votes/{voteId}")
+    suspend fun vote(
+        @Header("Authorization") accessToken: String,
+        @Path("voteId") voteId: String,
+    ): VotesListResponse.Vote
+
     @GET("votes")
     suspend fun votesList(
         @Header("Authorization") accessToken: String,
@@ -20,7 +25,7 @@ interface VoteApiService {
         @Query("cursorLikes") cursorLikes: String,
         @Query("size") size: Int,
         @Query("searchType") searchType: String,
-    ) : VotesListResponse
+    ): VotesListResponse
 
     @POST("votes/{voteId}/evaluations")
     suspend fun voteEvaluation(

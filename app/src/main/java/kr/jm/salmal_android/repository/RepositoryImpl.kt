@@ -22,7 +22,12 @@ class RepositoryImpl @Inject constructor(
         return certifiedApiService.signUp(signUpRequest)
     }
 
-    override suspend fun votesList(
+    override suspend fun getVote(accessToken: String, voteId: String): VotesListResponse.Vote {
+        return voteApiService.vote(accessToken, voteId)
+    }
+
+
+    override suspend fun getVotesList(
         accessToken: String,
         cursorId: String,
         cursorLikes: String,

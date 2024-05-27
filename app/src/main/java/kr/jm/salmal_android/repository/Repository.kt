@@ -12,7 +12,12 @@ interface Repository {
 
     suspend fun signUp(signUpRequest: SignUpRequest): SignUpResponse
 
-    suspend fun votesList(
+    suspend fun getVote(
+        accessToken: String,
+        voteId: String,
+    ): VotesListResponse.Vote
+
+    suspend fun getVotesList(
         accessToken: String,
         cursorId: String,
         cursorLikes: String,
