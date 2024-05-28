@@ -46,4 +46,15 @@ interface Repository {
         accessToken: String,
         voteId: String,
     ): Response<Unit>
+
+    suspend fun userReport(
+        accessToken: String,
+        voteId: String,
+        reason: String
+    ): Response<Unit>
+
+    suspend fun userBan(
+        accessToken: String,
+        memberId: String
+    ): Response<Unit>
 }

@@ -53,6 +53,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kr.jm.salmal_android.ui.screen.component.BottomSheet
 import kr.jm.salmal_android.ui.screen.component.CircularProgressBar
 import kr.jm.salmal_android.ui.theme.Gray4
 import kr.jm.salmal_android.ui.theme.Pretendard
@@ -162,6 +163,8 @@ fun VotesScreen(
         pageCount = { voteList?.votes?.size ?: 0 }
     )
 
+    val showBottomSheet = remember { mutableStateOf(false) }
+
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }
             .collectLatest { page ->
@@ -212,7 +215,7 @@ fun VotesScreen(
                             modifier = Modifier
                                 .align(Alignment.CenterStart)
                                 .offset(x = 6.dp)
-                                .clickable {  }
+                                .clickable { }
                         ) {
                             Image(
                                 painter = rememberAsyncImagePainter(
@@ -248,7 +251,8 @@ fun VotesScreen(
                         painter = rememberAsyncImagePainter(model = R.drawable.meetball_icon),
                         modifier = Modifier
                             .padding(top = 18.dp, end = 18.dp)
-                            .align(Alignment.TopEnd),
+                            .align(Alignment.TopEnd)
+                            .clickable { showBottomSheet.value = true },
                         tint = primaryWhite,
                         contentDescription = "meetball_icon"
                     )
@@ -267,9 +271,15 @@ fun VotesScreen(
                                 )
                                 .clickable {
                                     if (voteItem?.bookmarked == false) {
-                                        viewModel.addBookmark(voteItem.id.toString(), currentPage.intValue)
+                                        viewModel.addBookmark(
+                                            voteItem.id.toString(),
+                                            currentPage.intValue
+                                        )
                                     } else {
-                                        viewModel.deleteBookmark(voteItem?.id.toString(), currentPage.intValue)
+                                        viewModel.deleteBookmark(
+                                            voteItem?.id.toString(),
+                                            currentPage.intValue
+                                        )
                                     }
                                 }
                         ) {
@@ -413,5 +423,19 @@ fun VotesScreen(
                 }
             }
         }
+        if (showBottomSheet.value) {
+            BottomSheet(
+                showBottomSheet = {
+                    showBottomSheet.value = it
+                },
+                userReport = {
+                    viewModel.userReport(voteList?.votes?.get(currentPage.intValue)?.id.toString(), "")
+                },
+                userBan = {
+                    viewModel.userBan(voteList?.votes?.get(currentPage.intValue)?.memberId.toString())
+                }
+            )
+        }
     }
 }
+

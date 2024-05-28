@@ -7,13 +7,15 @@ import kr.jm.salmal_android.data.response.LoginResponse
 import kr.jm.salmal_android.data.response.SignUpResponse
 import kr.jm.salmal_android.data.response.VotesListResponse
 import kr.jm.salmal_android.service.CertifiedApiService
+import kr.jm.salmal_android.service.MemberApiService
 import kr.jm.salmal_android.service.VoteApiService
 import retrofit2.Response
 import javax.inject.Inject
 
 class RepositoryImpl @Inject constructor(
     private val certifiedApiService: CertifiedApiService,
-    private val voteApiService: VoteApiService
+    private val voteApiService: VoteApiService,
+    private val memberApiService: MemberApiService
 ) : Repository {
     override suspend fun login(loginRequest: LoginRequest): LoginResponse {
         return certifiedApiService.login(loginRequest)
@@ -55,5 +57,17 @@ class RepositoryImpl @Inject constructor(
 
     override suspend fun deleteBookmark(accessToken: String, voteId: String): Response<Unit> {
         return voteApiService.deleteBookmark(accessToken, voteId)
+    }
+
+    override suspend fun userReport(
+        accessToken: String,
+        voteId: String,
+        reason: String
+    ): Response<Unit> {
+        return voteApiService.userReport(accessToken, voteId, reason)
+    }
+
+    override suspend fun userBan(accessToken: String, memberId: String): Response<Unit> {
+        return  memberApiService.userBan(accessToken, memberId)
     }
 }

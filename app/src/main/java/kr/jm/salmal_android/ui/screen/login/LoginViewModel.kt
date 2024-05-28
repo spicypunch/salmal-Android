@@ -34,7 +34,6 @@ class LoginViewModel @Inject constructor(
     override var dataStore: DataStore<Preferences>
 ) : BaseViewModel() {
 
-
     private var _isMember = MutableSharedFlow<Boolean>()
     val isMember = _isMember.asSharedFlow()
 

@@ -53,4 +53,11 @@ interface VoteApiService {
         @Path("voteId") voteId: String,
     ): Response<Unit>
 
+    @POST("v2/votes/{voteId}/reports")
+    suspend fun userReport(
+        @Header("Authorization") accessToken: String,
+        @Path("voteId") voteId: String,
+        @Body reason: String
+    ): Response<Unit>
+
 }

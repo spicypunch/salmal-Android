@@ -8,8 +8,10 @@ import com.google.gson.JsonParser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kr.jm.salmal_android.BaseViewModel
@@ -27,6 +29,12 @@ class HomeViewModel @Inject constructor(
 
     private val _votesList = MutableStateFlow<VotesListResponse?>(null)
     val votesList: StateFlow<VotesListResponse?> = _votesList
+
+    private var _userBanSuccess = MutableSharedFlow<Boolean>()
+    val userBanSuccess = _userBanSuccess.asSharedFlow()
+
+    private var _userReportSuccess = MutableSharedFlow<Boolean>()
+    val userReportSuccess = _userReportSuccess.asSharedFlow()
 
     fun getVotesList(
         cursorId: String = "",
@@ -174,6 +182,46 @@ class HomeViewModel @Inject constructor(
                 Log.e("HomeViewModel", "deleteBookmark: ${e.message}")
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "deleteBookmark: ${e.message}")
+            }
+        }
+    }
+
+    fun userReport(voteId: String, reason: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                val response = repository.userReport(accessToken, voteId, reason)
+                if (response.isSuccessful) {
+                    if (response.code() == 201) {
+                        _userBanSuccess.emit(true)
+                    }
+                } else {
+                    Log.e("HomeViewModel", "userReport: Response was not successful")
+                }
+            } catch (e: HttpException) {
+                Log.e("HomeViewModel", "userReport: ${e.message}")
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "userReport: ${e.message}")
+            }
+        }
+    }
+
+    fun userBan(memberId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                val response = repository.userBan(accessToken, memberId)
+                if (response.isSuccessful) {
+                    if (response.code() == 201) {
+                        _userBanSuccess.emit(true)
+                    }
+                } else {
+                    Log.e("HomeViewModel", "userBan: Response was not successful")
+                }
+            } catch (e: HttpException) {
+                Log.e("HomeViewModel", "userBan: ${e.message}")
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "userBan: ${e.message}")
             }
         }
     }
