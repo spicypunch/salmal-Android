@@ -2,6 +2,7 @@ package kr.jm.salmal_android.service
 
 import kr.jm.salmal_android.data.request.VoteEvaluationRequest
 import kr.jm.salmal_android.data.response.VotesListResponse
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -32,11 +33,24 @@ interface VoteApiService {
         @Header("Authorization") accessToken: String,
         @Path("voteId") voteId: String,
         @Body voteEvaluationRequest: VoteEvaluationRequest
-    )
+    ): Response<Unit>
 
     @DELETE("votes/{voteId}/evaluations")
     suspend fun voteEvaluationDelete(
         @Header("Authorization") accessToken: String,
         @Path("voteId") voteId: String,
-    )
+    ): Response<Unit>
+
+    @POST("votes/{voteId}/bookmarks")
+    suspend fun addBookmark(
+        @Header("Authorization") accessToken: String,
+        @Path("voteId") voteId: String,
+    ): Response<Unit>
+
+    @DELETE("votes/{voteId}/bookmarks")
+    suspend fun deleteBookmark(
+        @Header("Authorization") accessToken: String,
+        @Path("voteId") voteId: String,
+    ): Response<Unit>
+
 }

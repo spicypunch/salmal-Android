@@ -53,7 +53,9 @@ fun AnimatedProgressButton(
         modifier = modifier
             .fillMaxWidth()
             .padding(start = start.dp, end = end.dp, top = top.dp, bottom = bottom.dp)
-            .clickable { onClicked() }
+            .clickable {
+                onClicked()
+            }
     ) {
         Box(
             modifier = Modifier

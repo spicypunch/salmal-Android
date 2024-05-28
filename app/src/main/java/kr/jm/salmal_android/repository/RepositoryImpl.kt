@@ -8,6 +8,7 @@ import kr.jm.salmal_android.data.response.SignUpResponse
 import kr.jm.salmal_android.data.response.VotesListResponse
 import kr.jm.salmal_android.service.CertifiedApiService
 import kr.jm.salmal_android.service.VoteApiService
+import retrofit2.Response
 import javax.inject.Inject
 
 class RepositoryImpl @Inject constructor(
@@ -37,11 +38,22 @@ class RepositoryImpl @Inject constructor(
         return voteApiService.votesList(accessToken, cursorId, cursorLikes, size, searchType)
     }
 
-    override suspend fun voteEvaluation(accessToken: String, voteId: String, voteEvaluationType: String) {
+    override suspend fun voteEvaluation(accessToken: String, voteId: String, voteEvaluationType: String): Response<Unit> {
         return voteApiService.voteEvaluation(accessToken, voteId, VoteEvaluationRequest(voteEvaluationType))
     }
 
-    override suspend fun voteEvaluationDelete(accessToken: String, voteId: String) {
+    override suspend fun voteEvaluationDelete(accessToken: String, voteId: String): Response<Unit> {
         return voteApiService.voteEvaluationDelete(accessToken, voteId)
+    }
+
+    override suspend fun addBookmark(
+        accessToken: String,
+        voteId: String,
+    ): Response<Unit> {
+        return voteApiService.addBookmark(accessToken, voteId)
+    }
+
+    override suspend fun deleteBookmark(accessToken: String, voteId: String): Response<Unit> {
+        return voteApiService.deleteBookmark(accessToken, voteId)
     }
 }

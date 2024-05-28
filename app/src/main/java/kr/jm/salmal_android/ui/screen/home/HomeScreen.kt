@@ -33,8 +33,10 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -51,6 +53,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kr.jm.salmal_android.ui.screen.component.CircularProgressBar
 import kr.jm.salmal_android.ui.theme.Gray4
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.gray1
@@ -74,16 +77,16 @@ fun HomeScreen() {
 
     requestPermissions(
         list = permissionList,
-        useDeniedMessage = false,
+        useDeniedMessage = true,
         onGranted = {
-            scope.launch {
-                snackbarHostState.showSnackbar("알림이 거부되었습니다.")
-            }
+//            scope.launch {
+//                snackbarHostState.showSnackbar("알림이 허용되었습니다.")
+//            }
         },
         onDenied = {
-            scope.launch {
-                snackbarHostState.showSnackbar("알림이 허용되었습니다.")
-            }
+//            scope.launch {
+//                snackbarHostState.showSnackbar("알림이 거부되었습니다.")
+//            }
         })
 
 
@@ -144,18 +147,18 @@ fun VotesScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     LaunchedEffect(type) {
-        viewModel.getVotesList(size = 5, searchType = type)
+        viewModel.getVotesList(size = 3, searchType = type)
     }
 
-    val voteList = viewModel.votesList.value
-
-    val currentPage = rememberSaveable {
+    val voteList by viewModel.votesList.collectAsState()
+    val currentPage = remember {
         mutableIntStateOf(0)
     }
 
     val scope = rememberCoroutineScope()
 
     val pagerState = rememberPagerState(
+        initialPage = 0,
         pageCount = { voteList?.votes?.size ?: 0 }
     )
 
@@ -163,6 +166,15 @@ fun VotesScreen(
         snapshotFlow { pagerState.currentPage }
             .collectLatest { page ->
                 currentPage.intValue = page
+                val lastPageIndex = voteList?.votes?.size?.minus(1) ?: 0
+                if (page == lastPageIndex) {
+                    viewModel.getVotesList(
+                        cursorId = voteList?.votes?.get(page)?.id.toString(),
+                        cursorLikes = voteList?.votes?.get(page)?.likeCount.toString(),
+                        size = 3,
+                        searchType = type
+                    )
+                }
             }
     }
 
@@ -200,6 +212,7 @@ fun VotesScreen(
                             modifier = Modifier
                                 .align(Alignment.CenterStart)
                                 .offset(x = 6.dp)
+                                .clickable {  }
                         ) {
                             Image(
                                 painter = rememberAsyncImagePainter(
@@ -252,6 +265,13 @@ fun VotesScreen(
                                     color = gray1,
                                     shape = RoundedCornerShape(50)
                                 )
+                                .clickable {
+                                    if (voteItem?.bookmarked == false) {
+                                        viewModel.addBookmark(voteItem.id.toString(), currentPage.intValue)
+                                    } else {
+                                        viewModel.deleteBookmark(voteItem?.id.toString(), currentPage.intValue)
+                                    }
+                                }
                         ) {
                             Icon(
                                 painter = if (voteItem?.bookmarked == true) rememberAsyncImagePainter(
@@ -313,11 +333,11 @@ fun VotesScreen(
 
         voteList?.let {
             val totalEvaluationCount =
-                voteList.votes.get(currentPage.intValue).totalEvaluationCnt ?: 0
-            val likeCount = voteList.votes.get(currentPage.intValue).likeCount ?: 0
-            val disLikeCount = voteList.votes.get(currentPage.intValue).disLikeCount ?: 0
-            val myVoteStatus = voteList.votes.get(currentPage.intValue).status
-            val voteId = voteList.votes.get(currentPage.intValue).id.toString()
+                voteList!!.votes.get(currentPage.intValue).totalEvaluationCnt ?: 0
+            val likeCount = voteList!!.votes.get(currentPage.intValue).likeCount ?: 0
+            val disLikeCount = voteList!!.votes.get(currentPage.intValue).disLikeCount ?: 0
+            val myVoteStatus = voteList!!.votes.get(currentPage.intValue).status
+            val voteId = voteList!!.votes.get(currentPage.intValue).id.toString()
             Box(
                 modifier = Modifier
                     .offset(y = (-32).dp)
@@ -327,7 +347,7 @@ fun VotesScreen(
 
             ) {
                 Text(
-                    text = "🔥 현재 ${voteList.votes.get(currentPage.intValue).totalEvaluationCnt}명 참여중!",
+                    text = "🔥 현재 ${voteList!!.votes.get(currentPage.intValue).totalEvaluationCnt}명 참여중!",
                     fontFamily = Pretendard,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Normal,
@@ -352,13 +372,11 @@ fun VotesScreen(
             ) {
                 when (myVoteStatus) {
                     "NONE" -> {
-                        viewModel.voteEvaluation(voteId, "LIKE")
-                        viewModel.getVote(voteId, currentPage.intValue)
+                        viewModel.voteEvaluation(voteId, currentPage.intValue, "LIKE")
                     }
 
                     "LIKE" -> {
-                        viewModel.voteEvaluationDelete(voteId)
-                        viewModel.getVote(voteId, currentPage.intValue)
+                        viewModel.voteEvaluationDelete(voteId, currentPage.intValue)
                     }
 
                     "DISLIKE" -> {
@@ -380,8 +398,7 @@ fun VotesScreen(
             ) {
                 when (myVoteStatus) {
                     "NONE" -> {
-                        viewModel.voteEvaluation(voteId, "DISLIKE")
-                        viewModel.getVote(voteId, currentPage.intValue)
+                        viewModel.voteEvaluation(voteId, currentPage.intValue, "DISLIKE")
                     }
 
                     "LIKE" -> {
@@ -391,11 +408,9 @@ fun VotesScreen(
                     }
 
                     "DISLIKE" -> {
-                        viewModel.voteEvaluationDelete(voteId)
-                        viewModel.getVote(voteId, currentPage.intValue)
+                        viewModel.voteEvaluationDelete(voteId, currentPage.intValue)
                     }
                 }
-
             }
         }
     }
