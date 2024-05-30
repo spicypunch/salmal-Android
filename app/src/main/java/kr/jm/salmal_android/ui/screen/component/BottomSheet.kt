@@ -28,14 +28,14 @@ import kr.lifesemantics.salmal_android.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheet(
-    showBottomSheet: (Boolean) -> Unit,
+    showBottomSheet: () -> Unit,
     voteReport: () -> Unit,
     userBan: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState()
 
     ModalBottomSheet(
-        onDismissRequest = { showBottomSheet(false) },
+        onDismissRequest = { showBottomSheet() },
         sheetState = sheetState,
         containerColor = gray4
     ) {

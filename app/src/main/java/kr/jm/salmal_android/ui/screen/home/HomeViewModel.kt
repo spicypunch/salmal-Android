@@ -31,8 +31,8 @@ class HomeViewModel @Inject constructor(
     private var _userBanSuccess = MutableSharedFlow<Boolean>()
     val userBanSuccess = _userBanSuccess.asSharedFlow()
 
-    private var _userReportSuccess = MutableSharedFlow<Boolean>()
-    val userReportSuccess = _userReportSuccess.asSharedFlow()
+    private var _voteReportSuccess = MutableSharedFlow<Boolean>()
+    val voteReportSuccess = _voteReportSuccess.asSharedFlow()
 
     fun getVotesList(
         cursorId: String = "",
@@ -191,15 +191,15 @@ class HomeViewModel @Inject constructor(
                 val response = repository.voteReport(accessToken, voteId, reason)
                 if (response.isSuccessful) {
                     if (response.code() == 201) {
-                        _userBanSuccess.emit(true)
+                        _voteReportSuccess.emit(true)
                     }
                 } else {
-                    Log.e("HomeViewModel", "userReport: Response was not successful")
+                    Log.e("HomeViewModel", "voteReport: Response was not successful")
                 }
             } catch (e: HttpException) {
-                Log.e("HomeViewModel", "userReport: ${e.message}")
+                Log.e("HomeViewModel", "voteReport: ${e.message}")
             } catch (e: Exception) {
-                Log.e("HomeViewModel", "userReport: ${e.message}")
+                Log.e("HomeViewModel", "voteReport: ${e.message}")
             }
         }
     }

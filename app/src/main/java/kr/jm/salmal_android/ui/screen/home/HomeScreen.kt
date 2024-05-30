@@ -51,6 +51,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kr.jm.salmal_android.ui.screen.component.BasicDialog
 import kr.jm.salmal_android.ui.screen.component.BottomSheet
 import kr.jm.salmal_android.ui.screen.component.VoteReportDialog
 import kr.jm.salmal_android.ui.theme.gray4
@@ -66,7 +67,6 @@ import kr.lifesemantics.salmal_android.R
 @Composable
 fun HomeScreen() {
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
     val permissionList =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) arrayOf(Manifest.permission.POST_NOTIFICATIONS) else arrayOf()
 
@@ -146,7 +146,7 @@ fun VotesScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     LaunchedEffect(type) {
-        viewModel.getVotesList(size = 4, searchType = type)
+        viewModel.getVotesList(size = 5, searchType = type)
     }
 
     val voteList by viewModel.votesList.collectAsState()
@@ -164,6 +164,7 @@ fun VotesScreen(
 
     val showBottomSheet = remember { mutableStateOf(false) }
     val showVoteReport = remember { mutableStateOf(false) }
+    val showVoteReportResult = remember { mutableStateOf(false) }
     val showUserBan = remember { mutableStateOf(false) }
 
     LaunchedEffect(pagerState) {
@@ -180,6 +181,17 @@ fun VotesScreen(
                     )
                 }
             }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.voteReportSuccess.collectLatest {
+            showVoteReportResult.value = it
+        }
+    }
+    LaunchedEffect(Unit) {
+        viewModel.userBanSuccess.collectLatest {
+            showUserBan.value = it
+        }
     }
 
     Column(modifier = Modifier.background(color = gray4)) {
@@ -343,12 +355,11 @@ fun VotesScreen(
         }
 
         voteList?.let {
-            val totalEvaluationCount =
-                voteList!!.votes.get(currentPage.intValue).totalEvaluationCnt ?: 0
             val likeRatio = voteList!!.votes.get(currentPage.intValue).likeRatio ?: 0
             val disLikeRatio = voteList!!.votes.get(currentPage.intValue).disLikeRatio ?: 0
             val myVoteStatus = voteList!!.votes.get(currentPage.intValue).status
             val voteId = voteList!!.votes.get(currentPage.intValue).id.toString()
+            val memberId = voteList!!.votes.get(currentPage.intValue).memberId.toString()
             Box(
                 modifier = Modifier
                     .offset(y = (-32).dp)
@@ -423,31 +434,46 @@ fun VotesScreen(
                     }
                 }
             }
-        }
-        if (showBottomSheet.value) {
-            BottomSheet(
-                showBottomSheet = {
-                    showBottomSheet.value = it
-                },
-                voteReport = {
-//                    viewModel.voteReport(
-//                        voteList?.votes?.get(currentPage.intValue)?.id.toString(),
-//                        ""
-//                    )
-                    showVoteReport.value = true
-                },
-                userBan = {
-                    viewModel.userBan(voteList?.votes?.get(currentPage.intValue)?.memberId.toString())
+
+            if (showBottomSheet.value) {
+                BottomSheet(
+                    showBottomSheet = {
+                        showBottomSheet.value = false
+                    },
+                    voteReport = {
+                        showVoteReport.value = true
+                    },
+                    userBan = {
+                        viewModel.userBan(memberId)
+                    }
+                )
+            }
+
+            if (showVoteReport.value) {
+                VoteReportDialog(
+                    showVoteReport = {
+                        showVoteReport.value = false
+                    },
+                    onClickReason = {
+                        showVoteReport.value = false
+                        viewModel.voteReport(
+                            voteId,
+                            it
+                        )
+                    }
+                )
+            }
+            if (showVoteReportResult.value) {
+                BasicDialog(content = "해당 게시글을 신고했어요.") {
+                    showVoteReportResult.value = false
                 }
-            )
-        }
+            }
 
-        if (showVoteReport.value) {
-            VoteReportDialog(showVoteReport = {
-                showVoteReport.value = false
-
-            })
+            if (showUserBan.value) {
+                BasicDialog(content = "해당 유저를 차단했어요.\n더 이상 해당 유저의 게시글이 피드에\n보이지 않아요.") {
+                    showUserBan.value = false
+                }
+            }
         }
     }
 }
-

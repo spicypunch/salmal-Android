@@ -7,7 +7,7 @@ import retrofit2.http.Path
 
 interface MemberApiService {
 
-    @POST("members/memberId/reports")
+    @POST("members/{memberId}/blocks")
     suspend fun userBan(
         @Header("Authorization") accessToken: String,
         @Path("memberId") memberId: String,
