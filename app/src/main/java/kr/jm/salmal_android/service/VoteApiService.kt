@@ -54,7 +54,7 @@ interface VoteApiService {
     ): Response<Unit>
 
     @POST("v2/votes/{voteId}/reports")
-    suspend fun userReport(
+    suspend fun voteReport(
         @Header("Authorization") accessToken: String,
         @Path("voteId") voteId: String,
         @Body reason: String

@@ -4,10 +4,8 @@ import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.viewModelScope
-import com.google.gson.JsonParser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -186,11 +184,11 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun userReport(voteId: String, reason: String) {
+    fun voteReport(voteId: String, reason: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
-                val response = repository.userReport(accessToken, voteId, reason)
+                val response = repository.voteReport(accessToken, voteId, reason)
                 if (response.isSuccessful) {
                     if (response.code() == 201) {
                         _userBanSuccess.emit(true)

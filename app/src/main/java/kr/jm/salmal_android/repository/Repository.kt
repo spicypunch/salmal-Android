@@ -47,7 +47,7 @@ interface Repository {
         voteId: String,
     ): Response<Unit>
 
-    suspend fun userReport(
+    suspend fun voteReport(
         accessToken: String,
         voteId: String,
         reason: String

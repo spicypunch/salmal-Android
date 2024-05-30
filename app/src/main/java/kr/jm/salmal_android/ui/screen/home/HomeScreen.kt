@@ -4,7 +4,6 @@ import AnimatedProgressButton
 import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -39,7 +38,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -54,8 +52,8 @@ import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kr.jm.salmal_android.ui.screen.component.BottomSheet
-import kr.jm.salmal_android.ui.screen.component.CircularProgressBar
-import kr.jm.salmal_android.ui.theme.Gray4
+import kr.jm.salmal_android.ui.screen.component.VoteReportDialog
+import kr.jm.salmal_android.ui.theme.gray4
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.gray1
 import kr.jm.salmal_android.ui.theme.gray2
@@ -148,10 +146,11 @@ fun VotesScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     LaunchedEffect(type) {
-        viewModel.getVotesList(size = 3, searchType = type)
+        viewModel.getVotesList(size = 4, searchType = type)
     }
 
     val voteList by viewModel.votesList.collectAsState()
+
     val currentPage = remember {
         mutableIntStateOf(0)
     }
@@ -164,6 +163,8 @@ fun VotesScreen(
     )
 
     val showBottomSheet = remember { mutableStateOf(false) }
+    val showVoteReport = remember { mutableStateOf(false) }
+    val showUserBan = remember { mutableStateOf(false) }
 
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }
@@ -181,7 +182,7 @@ fun VotesScreen(
             }
     }
 
-    Column(modifier = Modifier.background(color = Gray4)) {
+    Column(modifier = Modifier.background(color = gray4)) {
         VerticalPager(state = pagerState, modifier = Modifier.weight(1f)) { page ->
             val voteItem = voteList?.votes?.getOrNull(page)
             Card(
@@ -344,8 +345,8 @@ fun VotesScreen(
         voteList?.let {
             val totalEvaluationCount =
                 voteList!!.votes.get(currentPage.intValue).totalEvaluationCnt ?: 0
-            val likeCount = voteList!!.votes.get(currentPage.intValue).likeCount ?: 0
-            val disLikeCount = voteList!!.votes.get(currentPage.intValue).disLikeCount ?: 0
+            val likeRatio = voteList!!.votes.get(currentPage.intValue).likeRatio ?: 0
+            val disLikeRatio = voteList!!.votes.get(currentPage.intValue).disLikeRatio ?: 0
             val myVoteStatus = voteList!!.votes.get(currentPage.intValue).status
             val voteId = voteList!!.votes.get(currentPage.intValue).id.toString()
             Box(
@@ -373,7 +374,7 @@ fun VotesScreen(
             }
 
             AnimatedProgressButton(
-                progress = likeCount.toFloat() / totalEvaluationCount.toFloat(),
+                progress = likeRatio.toFloat(),
                 buttonText = "👍🏻살",
                 start = 18,
                 end = 18,
@@ -398,7 +399,7 @@ fun VotesScreen(
             }
 
             AnimatedProgressButton(
-                progress = disLikeCount.toFloat() / totalEvaluationCount.toFloat(),
+                progress = disLikeRatio.toFloat(),
                 buttonText = "👎🏻말",
                 start = 18,
                 end = 18,
@@ -428,13 +429,24 @@ fun VotesScreen(
                 showBottomSheet = {
                     showBottomSheet.value = it
                 },
-                userReport = {
-                    viewModel.userReport(voteList?.votes?.get(currentPage.intValue)?.id.toString(), "")
+                voteReport = {
+//                    viewModel.voteReport(
+//                        voteList?.votes?.get(currentPage.intValue)?.id.toString(),
+//                        ""
+//                    )
+                    showVoteReport.value = true
                 },
                 userBan = {
                     viewModel.userBan(voteList?.votes?.get(currentPage.intValue)?.memberId.toString())
                 }
             )
+        }
+
+        if (showVoteReport.value) {
+            VoteReportDialog(showVoteReport = {
+                showVoteReport.value = false
+
+            })
         }
     }
 }

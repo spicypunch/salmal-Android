@@ -59,12 +59,12 @@ class RepositoryImpl @Inject constructor(
         return voteApiService.deleteBookmark(accessToken, voteId)
     }
 
-    override suspend fun userReport(
+    override suspend fun voteReport(
         accessToken: String,
         voteId: String,
         reason: String
     ): Response<Unit> {
-        return voteApiService.userReport(accessToken, voteId, reason)
+        return voteApiService.voteReport(accessToken, voteId, reason)
     }
 
     override suspend fun userBan(accessToken: String, memberId: String): Response<Unit> {

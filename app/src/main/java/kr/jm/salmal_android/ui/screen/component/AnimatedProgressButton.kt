@@ -38,8 +38,6 @@ fun AnimatedProgressButton(
     status: String,
     onClicked: () -> Unit
 ) {
-    var isClicked by remember { mutableStateOf(false) }
-
     val animatedProgress by animateFloatAsState(
         targetValue = if (status == "NONE") 0f else progress,
         animationSpec = tween(
