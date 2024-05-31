@@ -1,4 +1,4 @@
-package kr.jm.salmal_android.ui.screen.component
+package kr.jm.salmal_android.ui.screen.home
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,7 +27,7 @@ import kr.lifesemantics.salmal_android.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomSheet(
+fun ReportBottomSheet(
     showBottomSheet: () -> Unit,
     voteReport: () -> Unit,
     userBan: () -> Unit

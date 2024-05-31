@@ -4,7 +4,6 @@ import AnimatedProgressButton
 import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -51,10 +50,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kr.jm.salmal_android.ui.screen.component.BasicDialog
-import kr.jm.salmal_android.ui.screen.component.BottomSheet
-import kr.jm.salmal_android.ui.screen.component.VoteReportDialog
 import kr.jm.salmal_android.ui.theme.gray4
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.gray1
@@ -165,6 +163,7 @@ fun VotesScreen(
     val showVoteReport = remember { mutableStateOf(false) }
     val showVoteReportResult = remember { mutableStateOf(false) }
     val showUserBan = remember { mutableStateOf(false) }
+    val memberId = remember { mutableIntStateOf(0) }
 
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }
@@ -190,6 +189,12 @@ fun VotesScreen(
     LaunchedEffect(Unit) {
         viewModel.userBanSuccess.collectLatest {
             showUserBan.value = it
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.readMemberId().firstOrNull()?.let {
+            memberId.intValue = it
         }
     }
 
@@ -258,16 +263,18 @@ fun VotesScreen(
                             }
                         }
                     }
+                    if (memberId.intValue != voteItem?.memberId) {
+                        Icon(
+                            painter = rememberAsyncImagePainter(model = R.drawable.meetball_icon),
+                            modifier = Modifier
+                                .padding(top = 18.dp, end = 18.dp)
+                                .align(Alignment.TopEnd)
+                                .clickable { showBottomSheet.value = true },
+                            tint = primaryWhite,
+                            contentDescription = "meetball_icon"
+                        )
+                    }
 
-                    Icon(
-                        painter = rememberAsyncImagePainter(model = R.drawable.meetball_icon),
-                        modifier = Modifier
-                            .padding(top = 18.dp, end = 18.dp)
-                            .align(Alignment.TopEnd)
-                            .clickable { showBottomSheet.value = true },
-                        tint = primaryWhite,
-                        contentDescription = "meetball_icon"
-                    )
                     Row(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
@@ -437,7 +444,7 @@ fun VotesScreen(
             }
 
             if (showBottomSheet.value) {
-                BottomSheet(
+                ReportBottomSheet(
                     showBottomSheet = {
                         showBottomSheet.value = false
                     },
