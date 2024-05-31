@@ -4,6 +4,7 @@ import AnimatedProgressButton
 import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -87,8 +88,6 @@ fun HomeScreen() {
 //                snackbarHostState.showSnackbar("알림이 거부되었습니다.")
 //            }
         })
-
-
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -319,7 +318,9 @@ fun VotesScreen(
                             ) {
                                 Icon(
                                     painter = rememberAsyncImagePainter(model = R.drawable.reply_icon),
-                                    modifier = Modifier.align(Alignment.Center),
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                        .clickable { },
                                     tint = primaryWhite,
                                     contentDescription = "bookmark"
                                 )

@@ -35,23 +35,31 @@ class SetProfileViewModel @Inject constructor(
     private val _signUpSuccess = MutableSharedFlow<Boolean>()
     val signUpSuccess = _signUpSuccess.asSharedFlow()
 
-    fun signUp(nickName:String) {
+    fun signUp(nickName: String) {
         viewModelScope.launch(Dispatchers.IO) {
             showIndicator()
             val providerId: String? = readProviderId().firstOrNull()
-            val marketingInformationConsent: Boolean? = readMarketingInformationConsent().firstOrNull()
+            val marketingInformationConsent: Boolean? =
+                readMarketingInformationConsent().firstOrNull()
             if (providerId != null && marketingInformationConsent != null) {
                 try {
-                    val signUpResponse = repository.signUp(SignUpRequest(providerId = providerId, marketingInformationConsent = marketingInformationConsent, nickName = nickName))
+                    val signUpResponse = repository.signUp(
+                        SignUpRequest(
+                            providerId = providerId,
+                            marketingInformationConsent = marketingInformationConsent,
+                            nickName = nickName
+                        )
+                    )
                     saveAccessToken(signUpResponse.accessToken)
                     saveRefreshToken(signUpResponse.refreshToken)
+                    parseID(signUpResponse.accessToken)?.let { saveMemberId(it) }
                     _signUpSuccess.emit(true)
                 } catch (e: HttpException) {
                     val errorBody = e.response()?.errorBody()?.string()
                     if (errorBody != null) {
                         val jsonObject = JsonParser.parseString(errorBody).asJsonObject
                         val errorCode = jsonObject.get("code").asInt
-                        when(errorCode) {
+                        when (errorCode) {
                             1005 -> {
                                 hideIndicator()
                                 _signUpSuccess.emit(false)

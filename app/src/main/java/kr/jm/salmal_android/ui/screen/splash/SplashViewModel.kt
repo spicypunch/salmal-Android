@@ -38,6 +38,7 @@ class SplashViewModel @Inject constructor(
                     val tokenInfo = repository.login(LoginRequest(providerId))
                     saveAccessToken(tokenInfo.accessToken)
                     saveRefreshToken(tokenInfo.refreshToken)
+                    parseID(tokenInfo.accessToken)?.let { saveMemberId(it) }
                     _loginResult.emit(true)
                 } catch (e: HttpException) {
                     val errorBody = e.response()?.errorBody()?.string()

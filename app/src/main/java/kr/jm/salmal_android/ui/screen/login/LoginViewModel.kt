@@ -90,6 +90,7 @@ class LoginViewModel @Inject constructor(
                 val tokenInfo = repository.login(LoginRequest(providerId = providerId))
                 saveAccessToken(tokenInfo.accessToken)
                 saveRefreshToken(tokenInfo.refreshToken)
+                parseID(tokenInfo.accessToken)?.let { saveMemberId(it) }
                 _isMember.emit(true)
             } catch (e: HttpException) {
                 val errorBody = e.response()?.errorBody()?.string()

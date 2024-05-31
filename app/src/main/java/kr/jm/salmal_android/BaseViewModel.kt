@@ -1,18 +1,24 @@
 package kr.jm.salmal_android
 
 import android.net.Uri
+import android.util.Base64
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 open class BaseViewModel() : ViewModel() {
 
@@ -65,6 +71,16 @@ open class BaseViewModel() : ViewModel() {
         }
     }
 
+    fun saveMemberId(memberId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val memberIdKey = intPreferencesKey("memberId")
+            dataStore.edit { settings ->
+                settings[memberIdKey] = memberId
+            }
+        }
+
+    }
+
     fun readProviderId(): Flow<String?> {
         val providerIdKey = stringPreferencesKey("providerId")
         return dataStore.data
@@ -105,12 +121,48 @@ open class BaseViewModel() : ViewModel() {
             }
     }
 
+    fun readMemberId(): Flow<Int?> {
+        val memberIdKey = intPreferencesKey("memberId")
+        return dataStore.data
+            .map { preferences ->
+                preferences[memberIdKey]
+            }
+    }
+
     fun showIndicator() {
         isLoading.value = true
     }
 
     fun hideIndicator() {
         isLoading.value = false
+    }
+
+    /**
+     * accessToken에 담겨져 있는 memberId 값을 가져오는 함수
+     */
+    fun parseID(jwtToken: String): Int? {
+
+        val value = jwtToken.split(".")[1]
+
+        val replacedValue = value
+            .replace("-", "+")
+            .replace("_", "/")
+
+        val finalValue = replacedValue.padEnd((replacedValue.length + 3) / 4 * 4, '=')
+
+        val data = try {
+            Base64.decode(finalValue, Base64.DEFAULT)
+        } catch (e: IllegalArgumentException) {
+            return null
+        }
+
+        val payload = try {
+            JSONObject(String(data))
+        } catch (e: Exception) {
+            return null
+        }
+
+        return payload.optInt("id", -1).takeIf { it != -1 }
     }
 
 }
