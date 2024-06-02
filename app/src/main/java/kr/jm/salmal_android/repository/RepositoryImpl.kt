@@ -3,6 +3,7 @@ package kr.jm.salmal_android.repository
 import kr.jm.salmal_android.data.request.LoginRequest
 import kr.jm.salmal_android.data.request.SignUpRequest
 import kr.jm.salmal_android.data.request.VoteEvaluationRequest
+import kr.jm.salmal_android.data.response.CommentsResponse
 import kr.jm.salmal_android.data.response.LoginResponse
 import kr.jm.salmal_android.data.response.SignUpResponse
 import kr.jm.salmal_android.data.response.VotesListResponse
@@ -40,8 +41,16 @@ class RepositoryImpl @Inject constructor(
         return voteApiService.votesList(accessToken, cursorId, cursorLikes, size, searchType)
     }
 
-    override suspend fun voteEvaluation(accessToken: String, voteId: String, voteEvaluationType: String): Response<Unit> {
-        return voteApiService.voteEvaluation(accessToken, voteId, VoteEvaluationRequest(voteEvaluationType))
+    override suspend fun voteEvaluation(
+        accessToken: String,
+        voteId: String,
+        voteEvaluationType: String
+    ): Response<Unit> {
+        return voteApiService.voteEvaluation(
+            accessToken,
+            voteId,
+            VoteEvaluationRequest(voteEvaluationType)
+        )
     }
 
     override suspend fun voteEvaluationDelete(accessToken: String, voteId: String): Response<Unit> {
@@ -68,6 +77,13 @@ class RepositoryImpl @Inject constructor(
     }
 
     override suspend fun userBan(accessToken: String, memberId: String): Response<Unit> {
-        return  memberApiService.userBan(accessToken, memberId)
+        return memberApiService.userBan(accessToken, memberId)
+    }
+
+    override suspend fun getCommentsList(
+        accessToken: String,
+        voteId: String,
+    ): List<CommentsResponse> {
+        return voteApiService.getCommentsList(accessToken, voteId)
     }
 }

@@ -1,42 +1,99 @@
 package kr.jm.salmal_android.ui.screen.home
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.rememberAsyncImagePainter
 import kr.jm.salmal_android.ui.theme.Pretendard
+import kr.jm.salmal_android.ui.theme.gray2
 import kr.jm.salmal_android.ui.theme.gray4
 import kr.jm.salmal_android.ui.theme.primaryWhite
+import kr.jm.salmal_android.ui.theme.white36
+import kr.lifesemantics.salmal_android.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommentsBottomSheet() {
+fun CommentsBottomSheet(
+    voteId: String,
+    commentsCount: Int,
+    viewModel: VoteViewModel = hiltViewModel(),
+    showCommentsBottomSheet: () -> Unit
+) {
     val sheetState = rememberModalBottomSheetState()
 
+    viewModel.getCommentsList(voteId)
+
+    val commentsList = viewModel.commentsList.collectAsState()
+
     ModalBottomSheet(
-        onDismissRequest = { /*TODO*/ },
+        onDismissRequest = { showCommentsBottomSheet() },
         sheetState = sheetState,
-        contentColor = gray4
+        containerColor = gray4
     ) {
-        Column {
-            Row {
+        Column(
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Top
+        ) {
+            Row(
+            ) {
                 Text(
                     text = "댓글",
                     fontFamily = Pretendard,
-                    fontSize = 24.sp,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = primaryWhite,
-                    modifier = Modifier.padding(start = 16.dp)
+                    modifier = Modifier
+                        .padding(start = 20.dp)
+                        .align(Alignment.Bottom)
+                )
+                Text(
+                    text = "$commentsCount",
+                    fontFamily = Pretendard,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = gray2,
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .align(Alignment.Bottom)
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Image(
+                    painter = rememberAsyncImagePainter(model = R.drawable.cancel_icon),
+                    modifier = Modifier
+                        .align(Alignment.Bottom)
+                        .padding(end = 8.dp)
+                        .clickable { showCommentsBottomSheet() },
+                    contentDescription = "cancel_icon"
                 )
             }
+            HorizontalDivider(
+                modifier = Modifier
+                    .height(1.dp)
+                    .padding(top = 12.dp)
+                    .fillMaxWidth(),
+                color = white36
+            )
+
+            Spacer(modifier = Modifier.height(300.dp))
         }
     }
 }

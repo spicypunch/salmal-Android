@@ -3,6 +3,7 @@ package kr.jm.salmal_android.repository
 import kr.jm.salmal_android.data.request.LoginRequest
 import kr.jm.salmal_android.data.response.LoginResponse
 import kr.jm.salmal_android.data.request.SignUpRequest
+import kr.jm.salmal_android.data.response.CommentsResponse
 import kr.jm.salmal_android.data.response.SignUpResponse
 import kr.jm.salmal_android.data.response.VotesListResponse
 import retrofit2.Response
@@ -57,4 +58,9 @@ interface Repository {
         accessToken: String,
         memberId: String
     ): Response<Unit>
+
+    suspend fun getCommentsList(
+        accessToken: String,
+        voteId: String,
+    ): List<CommentsResponse>
 }

@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kr.jm.salmal_android.BaseViewModel
+import kr.jm.salmal_android.data.response.CommentsResponse
 import kr.jm.salmal_android.data.response.VotesListResponse
 import kr.jm.salmal_android.repository.RepositoryImpl
 import retrofit2.HttpException
@@ -20,13 +21,16 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+class VoteViewModel @Inject constructor(
     private val repository: RepositoryImpl,
     override var dataStore: DataStore<Preferences>
 ) : BaseViewModel() {
 
     private val _votesList = MutableStateFlow<VotesListResponse?>(null)
     val votesList: StateFlow<VotesListResponse?> = _votesList
+
+    private val _commentsList = MutableStateFlow<List<CommentsResponse>>(emptyList())
+    val commentsList: StateFlow<List<CommentsResponse>> = _commentsList
 
     private var _userBanSuccess = MutableSharedFlow<Boolean>()
     val userBanSuccess = _userBanSuccess.asSharedFlow()
@@ -65,7 +69,7 @@ class HomeViewModel @Inject constructor(
                     _votesList.emit(response.copy(votes = updateList, hasNext = response.hasNext))
                 }
             } catch (e: HttpException) {
-                Log.e("HomeViewModel", "getVotesList: ${e.message}")
+                Log.e("VoteViewModel", "getVotesList: ${e.message}")
             }
         }
     }
@@ -85,7 +89,7 @@ class HomeViewModel @Inject constructor(
                     _votesList.value = currentVoteList.copy(votes = updateVote)
                 }
             } catch (e: HttpException) {
-                Log.e("HomeViewModel", "getVote: ${e.message}")
+                Log.e("VoteViewModel", "getVote: ${e.message}")
             }
         }
     }
@@ -104,12 +108,12 @@ class HomeViewModel @Inject constructor(
                         getVote(voteId, currentPage)
                     }
                 } else {
-                    Log.e("HomeViewModel", "voteEvaluation: Response was not successful")
+                    Log.e("VoteViewModel", "voteEvaluation: Response was not successful")
                 }
             } catch (e: HttpException) {
-                Log.e("HomeViewModel", "voteEvaluation: ${e.message}")
+                Log.e("VoteViewModel", "voteEvaluation: ${e.message}")
             } catch (e: Exception) {
-                Log.e("HomeViewModel", "voteEvaluation: ${e.message}")
+                Log.e("VoteViewModel", "voteEvaluation: ${e.message}")
             }
         }
     }
@@ -127,13 +131,13 @@ class HomeViewModel @Inject constructor(
                         getVote(voteId, currentPage)
                     }
                 } else {
-                    Log.e("HomeViewModel", "voteEvaluationDelete: Response was not successful")
+                    Log.e("VoteViewModel", "voteEvaluationDelete: Response was not successful")
                 }
 
             } catch (e: HttpException) {
-                Log.e("HomeViewModel", "voteEvaluationDelete: ${e.message}")
+                Log.e("VoteViewModel", "voteEvaluationDelete: ${e.message}")
             } catch (e: Exception) {
-                Log.e("HomeViewModel", "voteEvaluationDelete: ${e.message}")
+                Log.e("VoteViewModel", "voteEvaluationDelete: ${e.message}")
             }
         }
     }
@@ -151,12 +155,12 @@ class HomeViewModel @Inject constructor(
                         getVote(voteId, currentPage)
                     }
                 } else {
-                    Log.e("HomeViewModel", "addBookmark: Response was not successful")
+                    Log.e("VoteViewModel", "addBookmark: Response was not successful")
                 }
             } catch (e: HttpException) {
-                Log.e("HomeViewModel", "addBookmark: ${e.message}")
+                Log.e("VoteViewModel", "addBookmark: ${e.message}")
             } catch (e: Exception) {
-                Log.e("HomeViewModel", "addBookmark: ${e.message}")
+                Log.e("VoteViewModel", "addBookmark: ${e.message}")
             }
         }
     }
@@ -174,12 +178,12 @@ class HomeViewModel @Inject constructor(
                         getVote(voteId, currentPage)
                     }
                 } else {
-                    Log.e("HomeViewModel", "deleteBookmark: Response was not successful")
+                    Log.e("VoteViewModel", "deleteBookmark: Response was not successful")
                 }
             } catch (e: HttpException) {
-                Log.e("HomeViewModel", "deleteBookmark: ${e.message}")
+                Log.e("VoteViewModel", "deleteBookmark: ${e.message}")
             } catch (e: Exception) {
-                Log.e("HomeViewModel", "deleteBookmark: ${e.message}")
+                Log.e("VoteViewModel", "deleteBookmark: ${e.message}")
             }
         }
     }
@@ -194,12 +198,12 @@ class HomeViewModel @Inject constructor(
                         _voteReportSuccess.emit(true)
                     }
                 } else {
-                    Log.e("HomeViewModel", "voteReport: Response was not successful")
+                    Log.e("VoteViewModel", "voteReport: Response was not successful")
                 }
             } catch (e: HttpException) {
-                Log.e("HomeViewModel", "voteReport: ${e.message}")
+                Log.e("VoteViewModel", "voteReport: ${e.message}")
             } catch (e: Exception) {
-                Log.e("HomeViewModel", "voteReport: ${e.message}")
+                Log.e("VoteViewModel", "voteReport: ${e.message}")
             }
         }
     }
@@ -214,12 +218,25 @@ class HomeViewModel @Inject constructor(
                         _userBanSuccess.emit(true)
                     }
                 } else {
-                    Log.e("HomeViewModel", "userBan: Response was not successful")
+                    Log.e("VoteViewModel", "userBan: Response was not successful")
                 }
             } catch (e: HttpException) {
-                Log.e("HomeViewModel", "userBan: ${e.message}")
+                Log.e("VoteViewModel", "userBan: ${e.message}")
             } catch (e: Exception) {
-                Log.e("HomeViewModel", "userBan: ${e.message}")
+                Log.e("VoteViewModel", "userBan: ${e.message}")
+            }
+        }
+    }
+
+    fun getCommentsList(
+        voteId: String,
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                _commentsList.value = repository.getCommentsList(accessToken, voteId)
+            } catch (e: HttpException) {
+                Log.e("VoteViewModel", "getCommentsList: ${e.message}")
             }
         }
     }
