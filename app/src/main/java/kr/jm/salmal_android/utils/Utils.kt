@@ -3,7 +3,9 @@ package kr.jm.salmal_android.utils
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -49,6 +51,9 @@ import kr.jm.salmal_android.ui.theme.primaryRed
 import kr.jm.salmal_android.ui.theme.primaryWhite
 import kr.jm.salmal_android.ui.theme.transparent
 import java.text.SimpleDateFormat
+import java.time.Duration
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
@@ -109,5 +114,25 @@ object Utils {
 
     fun showBottomBar(currentRoute: String?): Boolean {
         return currentRoute in listOf("home", "add", "myPage")
+    }
+
+    fun calculateRelativeTime(updateAt: String): String {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val formatter = DateTimeFormatter.ISO_DATE_TIME
+            val updateTime = LocalDateTime.parse(updateAt, formatter)
+
+            val currentTime = LocalDateTime.now()
+
+            val duration = Duration.between(updateTime, currentTime)
+
+            return when {
+                duration.toMinutes() < 1 -> "방금 전"
+                duration.toHours() < 1 -> "${duration.toMinutes()} 분 전"
+                duration.toDays() < 1 -> "${duration.toHours()} 시간 전"
+                duration.toDays() < 7 -> "${duration.toDays()} 일 전"
+                else -> "${duration.toDays() / 7} 주 전"
+            }
+        }
+        return updateAt
     }
 }
