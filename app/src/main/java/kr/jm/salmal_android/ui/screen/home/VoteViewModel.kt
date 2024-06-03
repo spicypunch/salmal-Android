@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kr.jm.salmal_android.BaseViewModel
 import kr.jm.salmal_android.data.response.CommentsResponse
+import kr.jm.salmal_android.data.response.SubCommentsResponse
 import kr.jm.salmal_android.data.response.VotesListResponse
 import kr.jm.salmal_android.repository.RepositoryImpl
 import retrofit2.HttpException
@@ -31,6 +32,9 @@ class VoteViewModel @Inject constructor(
 
     private val _commentsList = MutableStateFlow<List<CommentsResponse>>(emptyList())
     val commentsList: StateFlow<List<CommentsResponse>> = _commentsList
+
+    private val _subCommentsList = MutableStateFlow<SubCommentsResponse?>(null)
+    val subCommentsList: StateFlow<SubCommentsResponse?> = _subCommentsList
 
     private var _userBanSuccess = MutableSharedFlow<Boolean>()
     val userBanSuccess = _userBanSuccess.asSharedFlow()
@@ -237,6 +241,24 @@ class VoteViewModel @Inject constructor(
                 _commentsList.value = repository.getCommentsList(accessToken, voteId)
             } catch (e: HttpException) {
                 Log.e("VoteViewModel", "getCommentsList: ${e.message}")
+            }
+        }
+    }
+
+    fun getSubCommentsList(
+        commentId: Int
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                _subCommentsList.value = repository.getSubCommentsList(
+                    accessToken = accessToken,
+                    commentId = commentId,
+                    cursorId = null,
+                    size = 200
+                )
+            } catch (e: HttpException) {
+                Log.e("VoteViewModel", "getSubCommentsList: ${e.message}")
             }
         }
     }

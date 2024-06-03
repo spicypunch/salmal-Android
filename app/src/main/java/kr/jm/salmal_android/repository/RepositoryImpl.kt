@@ -6,17 +6,22 @@ import kr.jm.salmal_android.data.request.VoteEvaluationRequest
 import kr.jm.salmal_android.data.response.CommentsResponse
 import kr.jm.salmal_android.data.response.LoginResponse
 import kr.jm.salmal_android.data.response.SignUpResponse
+import kr.jm.salmal_android.data.response.SubCommentsResponse
 import kr.jm.salmal_android.data.response.VotesListResponse
 import kr.jm.salmal_android.service.CertifiedApiService
+import kr.jm.salmal_android.service.CommentsApiService
 import kr.jm.salmal_android.service.MemberApiService
+import kr.jm.salmal_android.service.NotificationApiService
 import kr.jm.salmal_android.service.VoteApiService
 import retrofit2.Response
 import javax.inject.Inject
 
 class RepositoryImpl @Inject constructor(
     private val certifiedApiService: CertifiedApiService,
-    private val voteApiService: VoteApiService,
-    private val memberApiService: MemberApiService
+    private val commentsApiService: CommentsApiService,
+    private val memberApiService: MemberApiService,
+    private val notificationApiService: NotificationApiService,
+    private val voteApiService: VoteApiService
 ) : Repository {
     override suspend fun login(loginRequest: LoginRequest): LoginResponse {
         return certifiedApiService.login(loginRequest)
@@ -86,4 +91,15 @@ class RepositoryImpl @Inject constructor(
     ): List<CommentsResponse> {
         return voteApiService.getCommentsList(accessToken, voteId)
     }
+
+    override suspend fun getSubCommentsList(
+        accessToken: String,
+        commentId: Int,
+        cursorId: Int?,
+        size: Int
+    ): SubCommentsResponse {
+        return commentsApiService.getSubCommentsList(accessToken, commentId, cursorId, size)
+    }
+
+
 }

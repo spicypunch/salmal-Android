@@ -1,6 +1,7 @@
 package kr.jm.salmal_android.ui.screen.home
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,7 +24,9 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import kr.jm.salmal_android.data.response.CommentsResponse
+import kr.jm.salmal_android.data.response.SubCommentsResponse
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.gray2
 import kr.jm.salmal_android.ui.theme.gray4
@@ -55,12 +60,14 @@ fun CommentsBottomSheet(
 
     viewModel.getCommentsList(voteId)
 
-    val commentsList = viewModel.commentsList.collectAsState()
+    val commentsList by viewModel.commentsList.collectAsState()
+    val subCommentsList by viewModel.subCommentsList.collectAsState()
 
     ModalBottomSheet(
         onDismissRequest = { showCommentsBottomSheet() },
         sheetState = sheetState,
         containerColor = gray4,
+        modifier = Modifier.fillMaxHeight(0.9f)
     ) {
         Column(
             horizontalAlignment = Alignment.Start,
@@ -107,8 +114,10 @@ fun CommentsBottomSheet(
             )
 
             LazyColumn {
-                items(commentsList.value) { item ->
-                    CommentsList(item)
+                items(commentsList) { item ->
+                    CommentsList(item) {
+                        viewModel.getSubCommentsList(it)
+                    }
                 }
             }
         }
@@ -116,16 +125,26 @@ fun CommentsBottomSheet(
 }
 
 @Composable
-fun CommentsList(item: CommentsResponse) {
+fun CommentsList(
+    item: CommentsResponse,
+    onExpanded: (Int) -> Unit
+) {
     val duration = Utils.calculateRelativeTime(item.updatedAt)
-    Row {
+
+    Row(
+        modifier = Modifier.padding(top = 24.dp, start = 15.dp, end = 15.dp),
+    ) {
         Image(
             painter = rememberAsyncImagePainter(model = item.memberImageUrl),
-            modifier = Modifier.size(36.dp).clip(CircleShape),
+            modifier = Modifier
+                .size(36.dp)
+                .clip(CircleShape),
             contentScale = ContentScale.Crop,
             contentDescription = "member_image_url"
         )
-        Column {
+        Column(
+            modifier = Modifier.padding(start = 15.dp)
+        ) {
             Row {
                 Text(
                     text = item.nickName,
@@ -138,8 +157,9 @@ fun CommentsList(item: CommentsResponse) {
                     text = duration,
                     fontFamily = Pretendard,
                     fontSize = 13.sp,
-                    fontWeight = FontWeight.Normal,
-                    color = primaryWhite
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(start = 8.dp),
+                    color = gray2
                 )
             }
             Text(
@@ -147,9 +167,12 @@ fun CommentsList(item: CommentsResponse) {
                 fontFamily = Pretendard,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(top = 8.dp),
                 color = primaryWhite
             )
-            Row {
+            Row(
+                modifier = Modifier.padding(top = 9.dp)
+            ) {
                 Icon(
                     painter = rememberAsyncImagePainter(model = R.drawable.like_icon),
                     contentDescription = "like_icon",
@@ -159,8 +182,16 @@ fun CommentsList(item: CommentsResponse) {
                     text = item.likeCount.toString(),
                     fontFamily = Pretendard,
                     fontSize = 13.sp,
-                    fontWeight = FontWeight.Normal,
+                    fontWeight = FontWeight.Medium,
                     color = primaryWhite
+                )
+                Text(
+                    text = "댓글 달기",
+                    fontFamily = Pretendard,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(start = 16.dp),
+                    color = gray2
                 )
             }
             if (item.replyCount != 0) {
@@ -169,10 +200,16 @@ fun CommentsList(item: CommentsResponse) {
                     fontFamily = Pretendard,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Normal,
+                    modifier = Modifier
+                        .padding(top = 14.dp)
+                        .clickable {
+                            onExpanded(item.id)
+                        },
                     color = primaryGreen
                 )
             }
         }
+        Spacer(modifier = Modifier.weight(1f))
         Icon(
             painter = rememberAsyncImagePainter(model = R.drawable.meetball_icon),
             modifier = Modifier,
@@ -180,4 +217,9 @@ fun CommentsList(item: CommentsResponse) {
             contentDescription = "meetball_icon"
         )
     }
+}
+
+@Composable
+fun SubCommentsList(item: SubCommentsResponse.Comment) {
+
 }

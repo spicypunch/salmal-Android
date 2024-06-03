@@ -5,6 +5,7 @@ import kr.jm.salmal_android.data.response.LoginResponse
 import kr.jm.salmal_android.data.request.SignUpRequest
 import kr.jm.salmal_android.data.response.CommentsResponse
 import kr.jm.salmal_android.data.response.SignUpResponse
+import kr.jm.salmal_android.data.response.SubCommentsResponse
 import kr.jm.salmal_android.data.response.VotesListResponse
 import retrofit2.Response
 
@@ -63,4 +64,11 @@ interface Repository {
         accessToken: String,
         voteId: String,
     ): List<CommentsResponse>
+
+    suspend fun getSubCommentsList(
+        accessToken: String,
+        commentId: Int,
+        cursorId: Int?,
+        size: Int
+    ): SubCommentsResponse
 }
