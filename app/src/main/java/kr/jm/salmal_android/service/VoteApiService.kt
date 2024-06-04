@@ -1,7 +1,7 @@
 package kr.jm.salmal_android.service
 
 import kr.jm.salmal_android.data.request.VoteEvaluationRequest
-import kr.jm.salmal_android.data.response.CommentsResponse
+import kr.jm.salmal_android.data.response.CommentsItem
 import kr.jm.salmal_android.data.response.VotesListResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -65,6 +65,6 @@ interface VoteApiService {
     suspend fun getCommentsList(
         @Header("Authorization") accessToken: String,
         @Path("voteId") voteId: String,
-    ): List<CommentsResponse>
+    ): List<CommentsItem.CommentsResponse>
 
 }

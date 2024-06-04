@@ -1,6 +1,6 @@
 package kr.jm.salmal_android.service
 
-import kr.jm.salmal_android.data.response.SubCommentsResponse
+import kr.jm.salmal_android.data.response.CommentsItem
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Path
@@ -14,5 +14,5 @@ interface CommentsApiService {
         @Path("commentId") commentId: Int,
         @Query("cursorId") cursorId: Int?,
         @Query("size") size: Int?
-    ): SubCommentsResponse
+    ): CommentsItem.SubCommentsResponse
 }

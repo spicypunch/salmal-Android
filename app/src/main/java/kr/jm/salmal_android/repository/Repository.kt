@@ -3,9 +3,8 @@ package kr.jm.salmal_android.repository
 import kr.jm.salmal_android.data.request.LoginRequest
 import kr.jm.salmal_android.data.response.LoginResponse
 import kr.jm.salmal_android.data.request.SignUpRequest
-import kr.jm.salmal_android.data.response.CommentsResponse
+import kr.jm.salmal_android.data.response.CommentsItem
 import kr.jm.salmal_android.data.response.SignUpResponse
-import kr.jm.salmal_android.data.response.SubCommentsResponse
 import kr.jm.salmal_android.data.response.VotesListResponse
 import retrofit2.Response
 
@@ -63,12 +62,12 @@ interface Repository {
     suspend fun getCommentsList(
         accessToken: String,
         voteId: String,
-    ): List<CommentsResponse>
+    ): List<CommentsItem.CommentsResponse>
 
     suspend fun getSubCommentsList(
         accessToken: String,
         commentId: Int,
         cursorId: Int?,
         size: Int
-    ): SubCommentsResponse
+    ): CommentsItem.SubCommentsResponse
 }

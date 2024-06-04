@@ -3,10 +3,9 @@ package kr.jm.salmal_android.repository
 import kr.jm.salmal_android.data.request.LoginRequest
 import kr.jm.salmal_android.data.request.SignUpRequest
 import kr.jm.salmal_android.data.request.VoteEvaluationRequest
-import kr.jm.salmal_android.data.response.CommentsResponse
+import kr.jm.salmal_android.data.response.CommentsItem
 import kr.jm.salmal_android.data.response.LoginResponse
 import kr.jm.salmal_android.data.response.SignUpResponse
-import kr.jm.salmal_android.data.response.SubCommentsResponse
 import kr.jm.salmal_android.data.response.VotesListResponse
 import kr.jm.salmal_android.service.CertifiedApiService
 import kr.jm.salmal_android.service.CommentsApiService
@@ -88,7 +87,7 @@ class RepositoryImpl @Inject constructor(
     override suspend fun getCommentsList(
         accessToken: String,
         voteId: String,
-    ): List<CommentsResponse> {
+    ): List<CommentsItem.CommentsResponse> {
         return voteApiService.getCommentsList(accessToken, voteId)
     }
 
@@ -97,7 +96,7 @@ class RepositoryImpl @Inject constructor(
         commentId: Int,
         cursorId: Int?,
         size: Int
-    ): SubCommentsResponse {
+    ): CommentsItem.SubCommentsResponse {
         return commentsApiService.getSubCommentsList(accessToken, commentId, cursorId, size)
     }
 

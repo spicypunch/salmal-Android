@@ -1,8 +1,6 @@
 package kr.jm.salmal_android.ui.screen.home
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,7 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -36,8 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
-import kr.jm.salmal_android.data.response.CommentsResponse
-import kr.jm.salmal_android.data.response.SubCommentsResponse
+import kr.jm.salmal_android.data.response.CommentsItem
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.gray2
 import kr.jm.salmal_android.ui.theme.gray4
@@ -61,7 +58,6 @@ fun CommentsBottomSheet(
     viewModel.getCommentsList(voteId)
 
     val commentsList by viewModel.commentsList.collectAsState()
-    val subCommentsList by viewModel.subCommentsList.collectAsState()
 
     ModalBottomSheet(
         onDismissRequest = { showCommentsBottomSheet() },
@@ -114,10 +110,8 @@ fun CommentsBottomSheet(
             )
 
             LazyColumn {
-                items(commentsList) { item ->
-                    CommentsList(item) {
-                        viewModel.getSubCommentsList(it)
-                    }
+                itemsIndexed(commentsList) { index, item ->
+                    CommentsList(item, index)
                 }
             }
         }
@@ -126,11 +120,109 @@ fun CommentsBottomSheet(
 
 @Composable
 fun CommentsList(
-    item: CommentsResponse,
-    onExpanded: (Int) -> Unit
+    item: CommentsItem.CommentsResponse,
+    index: Int,
+    viewModel: VoteViewModel = hiltViewModel()
 ) {
     val duration = Utils.calculateRelativeTime(item.updatedAt)
+    val commentsList by viewModel.commentsList.collectAsState()
 
+    Row(
+        modifier = Modifier.padding(top = 24.dp, start = 15.dp, end = 15.dp),
+    ) {
+        Image(
+            painter = rememberAsyncImagePainter(model = item.memberImageUrl),
+            modifier = Modifier
+                .size(36.dp)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop,
+            contentDescription = "member_image_url"
+        )
+        Column(
+            modifier = Modifier.padding(start = 15.dp)
+        ) {
+            Row {
+                Text(
+                    text = item.nickName,
+                    fontFamily = Pretendard,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = primaryWhite
+                )
+                Text(
+                    text = duration,
+                    fontFamily = Pretendard,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(start = 8.dp),
+                    color = gray2
+                )
+            }
+            Text(
+                text = item.content,
+                fontFamily = Pretendard,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(top = 6.dp),
+                color = primaryWhite
+            )
+            Row(
+                modifier = Modifier.padding(top = 6.dp)
+            ) {
+                Icon(
+                    painter = rememberAsyncImagePainter(model = R.drawable.like_icon),
+                    contentDescription = "like_icon",
+                    tint = if (item.liked) primaryRed else primaryWhite
+                )
+                Text(
+                    text = item.likeCount.toString(),
+                    fontFamily = Pretendard,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = primaryWhite
+                )
+                Text(
+                    text = "답글 달기",
+                    fontFamily = Pretendard,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(start = 16.dp),
+                    color = gray2
+                )
+            }
+            if (item.replyCount != 0) {
+                Text(
+                    text = "답글 ${item.replyCount}개 보기",
+                    fontFamily = Pretendard,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Normal,
+                    modifier = Modifier
+                        .padding(top = 14.dp)
+                        .clickable {
+                            viewModel.getSubCommentsList(item.id, index)
+                        },
+                    color = primaryGreen
+                )
+                commentsList.get(index).subComments?.let {
+                    it.forEach { subItem ->
+                        SubCommentsList(subItem)
+                    }
+                }
+            }
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        Icon(
+            painter = rememberAsyncImagePainter(model = R.drawable.meetball_icon),
+            modifier = Modifier,
+            tint = primaryWhite,
+            contentDescription = "meetball_icon"
+        )
+    }
+}
+
+@Composable
+fun SubCommentsList(item: CommentsItem.SubCommentsResponse.Comment) {
+    val duration = Utils.calculateRelativeTime(item.updatedAt)
     Row(
         modifier = Modifier.padding(top = 24.dp, start = 15.dp, end = 15.dp),
     ) {
@@ -185,28 +277,6 @@ fun CommentsList(
                     fontWeight = FontWeight.Medium,
                     color = primaryWhite
                 )
-                Text(
-                    text = "댓글 달기",
-                    fontFamily = Pretendard,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(start = 16.dp),
-                    color = gray2
-                )
-            }
-            if (item.replyCount != 0) {
-                Text(
-                    text = "답글 ${item.replyCount}개 보기",
-                    fontFamily = Pretendard,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier
-                        .padding(top = 14.dp)
-                        .clickable {
-                            onExpanded(item.id)
-                        },
-                    color = primaryGreen
-                )
             }
         }
         Spacer(modifier = Modifier.weight(1f))
@@ -220,6 +290,16 @@ fun CommentsList(
 }
 
 @Composable
-fun SubCommentsList(item: SubCommentsResponse.Comment) {
+fun DisplayComment(
+    item: CommentsItem,
+) {
+    when (item) {
+        is CommentsItem.CommentsResponse -> {
 
+        }
+
+        is CommentsItem.SubCommentsResponse.Comment -> {
+
+        }
+    }
 }
