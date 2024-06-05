@@ -1,4 +1,4 @@
-package kr.jm.salmal_android.ui.screen.home
+package kr.jm.salmal_android.ui.screen.home.vote
 
 import AnimatedProgressButton
 import android.annotation.SuppressLint
@@ -47,6 +47,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kr.jm.salmal_android.ui.screen.component.BasicDialog
+import kr.jm.salmal_android.ui.screen.home.comments.CommentsBottomSheet
+import kr.jm.salmal_android.ui.screen.home.ReportBottomSheet
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.gray1
 import kr.jm.salmal_android.ui.theme.gray2
@@ -117,7 +119,7 @@ fun VotesScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.readMemberId().firstOrNull()?.let {
+        viewModel.readMyMemberId().firstOrNull()?.let {
             memberId.intValue = it
         }
     }

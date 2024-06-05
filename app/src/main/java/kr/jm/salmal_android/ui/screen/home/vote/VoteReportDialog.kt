@@ -1,4 +1,4 @@
-package kr.jm.salmal_android.ui.screen.home
+package kr.jm.salmal_android.ui.screen.home.vote
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

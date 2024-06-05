@@ -1,27 +1,17 @@
 package kr.jm.salmal_android.ui.screen.profile
 
-import android.net.Uri
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonParser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kr.jm.salmal_android.BaseViewModel
 import kr.jm.salmal_android.data.request.SignUpRequest
-import kr.jm.salmal_android.data.response.SignUpResponse
 import kr.jm.salmal_android.repository.RepositoryImpl
 import retrofit2.HttpException
 import javax.inject.Inject
@@ -52,7 +42,7 @@ class SetProfileViewModel @Inject constructor(
                     )
                     saveAccessToken(signUpResponse.accessToken)
                     saveRefreshToken(signUpResponse.refreshToken)
-                    parseID(signUpResponse.accessToken)?.let { saveMemberId(it) }
+                    parseID(signUpResponse.accessToken)?.let { saveMyMemberId(it) }
                     _signUpSuccess.emit(true)
                 } catch (e: HttpException) {
                     val errorBody = e.response()?.errorBody()?.string()

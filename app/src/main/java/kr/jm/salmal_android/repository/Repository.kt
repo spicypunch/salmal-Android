@@ -5,6 +5,7 @@ import kr.jm.salmal_android.data.response.LoginResponse
 import kr.jm.salmal_android.data.request.SignUpRequest
 import kr.jm.salmal_android.data.response.CommentsItem
 import kr.jm.salmal_android.data.response.SignUpResponse
+import kr.jm.salmal_android.data.response.UserInfoResponse
 import kr.jm.salmal_android.data.response.VotesListResponse
 import retrofit2.Response
 
@@ -13,6 +14,8 @@ interface Repository {
     suspend fun login(loginRequest: LoginRequest): LoginResponse
 
     suspend fun signUp(signUpRequest: SignUpRequest): SignUpResponse
+
+    suspend fun getUserInfo(accessToken: String, memberId: Int): UserInfoResponse
 
     suspend fun getVote(
         accessToken: String,
@@ -70,4 +73,20 @@ interface Repository {
         cursorId: Int?,
         size: Int
     ): CommentsItem.SubCommentsResponse
+
+    suspend fun likeComment(
+        accessToken: String,
+        commentId: Int,
+    ): Response<Unit>
+
+    suspend fun disLikeComment(
+        accessToken: String,
+        commentId: Int,
+    ): Response<Unit>
+
+    suspend fun addComment(
+        accessToken: String,
+        voteId: String,
+        content: String
+    ): Response<Unit>
 }

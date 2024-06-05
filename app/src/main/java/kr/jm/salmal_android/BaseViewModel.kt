@@ -13,9 +13,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -71,14 +68,31 @@ open class BaseViewModel() : ViewModel() {
         }
     }
 
-    fun saveMemberId(memberId: Int) {
+    fun saveMyMemberId(memberId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             val memberIdKey = intPreferencesKey("memberId")
             dataStore.edit { settings ->
                 settings[memberIdKey] = memberId
             }
         }
+    }
 
+    fun saveMyNickName(nickName: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val myNickNameKey = stringPreferencesKey("myNickName")
+            dataStore.edit { settings ->
+                settings[myNickNameKey] = nickName
+            }
+        }
+    }
+
+    fun saveMyImageUrl(imageUrl: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val myImageUrlKey = stringPreferencesKey("myImageUrl")
+            dataStore.edit { settings ->
+                settings[myImageUrlKey] = imageUrl
+            }
+        }
     }
 
     fun readProviderId(): Flow<String?> {
@@ -121,11 +135,27 @@ open class BaseViewModel() : ViewModel() {
             }
     }
 
-    fun readMemberId(): Flow<Int?> {
+    fun readMyMemberId(): Flow<Int?> {
         val memberIdKey = intPreferencesKey("memberId")
         return dataStore.data
             .map { preferences ->
                 preferences[memberIdKey]
+            }
+    }
+
+    fun readMyNickName(): Flow<String?> {
+        val myNickNameKey = stringPreferencesKey("myNickName")
+        return dataStore.data
+            .map { preferences ->
+                preferences[myNickNameKey]
+            }
+    }
+
+    fun readMyImageUrl(): Flow<String?> {
+        val myImageUrlKey = stringPreferencesKey("myImageUrl")
+        return dataStore.data
+            .map { preferences ->
+                preferences[myImageUrlKey]
             }
     }
 

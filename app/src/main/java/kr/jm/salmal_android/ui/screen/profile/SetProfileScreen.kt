@@ -46,6 +46,7 @@ import kr.jm.salmal_android.ui.theme.black1b
 import kr.jm.salmal_android.ui.theme.primaryBlack
 import kr.jm.salmal_android.ui.theme.primaryGreen
 import kr.jm.salmal_android.ui.theme.primaryWhite
+import kr.jm.salmal_android.ui.theme.transparent
 import kr.jm.salmal_android.ui.theme.white36
 import kr.lifesemantics.salmal_android.R
 
@@ -214,7 +215,7 @@ fun SetFirstProfileScreen(
                         modifier = Modifier
                             .padding(top = 18.dp)
                             .width(180.dp),
-                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                         keyboardActions = KeyboardActions(
                             onDone = {
                                 isEditing = false
@@ -225,8 +226,8 @@ fun SetFirstProfileScreen(
                             focusedContainerColor = primaryBlack,
                             unfocusedContainerColor = primaryBlack,
                             disabledContainerColor = primaryBlack,
-                            focusedIndicatorColor = primaryGreen,
-                            unfocusedIndicatorColor = primaryGreen,
+                            focusedIndicatorColor = transparent,
+                            unfocusedIndicatorColor = transparent,
                             cursorColor = primaryGreen,
                         )
                     )

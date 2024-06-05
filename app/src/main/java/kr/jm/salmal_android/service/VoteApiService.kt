@@ -67,4 +67,10 @@ interface VoteApiService {
         @Path("voteId") voteId: String,
     ): List<CommentsItem.CommentsResponse>
 
+    @POST("votes/{voteId}/comments")
+    suspend fun addComment(
+        @Header("Authorization") accessToken: String,
+        @Path("voteId") voteId: String,
+        @Body comment: String
+    ): Response<Unit>
 }

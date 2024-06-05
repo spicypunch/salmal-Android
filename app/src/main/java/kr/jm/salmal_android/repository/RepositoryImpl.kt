@@ -6,6 +6,7 @@ import kr.jm.salmal_android.data.request.VoteEvaluationRequest
 import kr.jm.salmal_android.data.response.CommentsItem
 import kr.jm.salmal_android.data.response.LoginResponse
 import kr.jm.salmal_android.data.response.SignUpResponse
+import kr.jm.salmal_android.data.response.UserInfoResponse
 import kr.jm.salmal_android.data.response.VotesListResponse
 import kr.jm.salmal_android.service.CertifiedApiService
 import kr.jm.salmal_android.service.CommentsApiService
@@ -28,6 +29,10 @@ class RepositoryImpl @Inject constructor(
 
     override suspend fun signUp(signUpRequest: SignUpRequest): SignUpResponse {
         return certifiedApiService.signUp(signUpRequest)
+    }
+
+    override suspend fun getUserInfo(accessToken: String, memberId: Int): UserInfoResponse {
+        return memberApiService.getUserInfo(accessToken, memberId)
     }
 
     override suspend fun getVote(accessToken: String, voteId: String): VotesListResponse.Vote {
@@ -98,6 +103,22 @@ class RepositoryImpl @Inject constructor(
         size: Int
     ): CommentsItem.SubCommentsResponse {
         return commentsApiService.getSubCommentsList(accessToken, commentId, cursorId, size)
+    }
+
+    override suspend fun likeComment(accessToken: String, commentId: Int): Response<Unit> {
+        return commentsApiService.likeComment(accessToken, commentId)
+    }
+
+    override suspend fun disLikeComment(accessToken: String, commentId: Int): Response<Unit> {
+        return commentsApiService.disLikeComment(accessToken, commentId)
+    }
+
+    override suspend fun addComment(
+        accessToken: String,
+        voteId: String,
+        content: String
+    ): Response<Unit> {
+        return voteApiService.addComment(accessToken, voteId, content)
     }
 
 

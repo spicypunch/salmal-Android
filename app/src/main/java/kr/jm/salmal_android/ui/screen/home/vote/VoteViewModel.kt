@@ -1,4 +1,4 @@
-package kr.jm.salmal_android.ui.screen.home
+package kr.jm.salmal_android.ui.screen.home.vote
 
 import android.util.Log
 import androidx.datastore.core.DataStore
@@ -8,13 +8,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kr.jm.salmal_android.BaseViewModel
-import kr.jm.salmal_android.data.response.CommentsItem
 import kr.jm.salmal_android.data.response.VotesListResponse
 import kr.jm.salmal_android.repository.RepositoryImpl
 import retrofit2.HttpException
@@ -29,12 +27,6 @@ class VoteViewModel @Inject constructor(
 
     private val _votesList = MutableStateFlow<VotesListResponse?>(null)
     val votesList = _votesList.asStateFlow()
-
-    private val _commentsList = MutableStateFlow<List<CommentsItem.CommentsResponse>>(emptyList())
-    val commentsList = _commentsList.asStateFlow()
-
-//    private val _subCommentsList = MutableStateFlow<CommentsItem.SubCommentsResponse?>(null)
-//    val subCommentsList: StateFlow<CommentsItem.SubCommentsResponse?> = _subCommentsList
 
     private var _userBanSuccess = MutableSharedFlow<Boolean>()
     val userBanSuccess = _userBanSuccess.asSharedFlow()
@@ -84,7 +76,7 @@ class VoteViewModel @Inject constructor(
         }
     }
 
-    private fun getVote(
+    private fun getSingleVote(
         voteId: String,
         currentPage: Int
     ) {
@@ -115,7 +107,7 @@ class VoteViewModel @Inject constructor(
                 val response = repository.voteEvaluation(accessToken, voteId, voteEvaluationType)
                 if (response.isSuccessful) {
                     if (response.code() == 201) {
-                        getVote(voteId, currentPage)
+                        getSingleVote(voteId, currentPage)
                     }
                 } else {
                     Log.e("VoteViewModel", "voteEvaluation: Response was not successful")
@@ -138,7 +130,7 @@ class VoteViewModel @Inject constructor(
                 val response = repository.voteEvaluationDelete(accessToken, voteId)
                 if (response.isSuccessful) {
                     if (response.code() == 204) {
-                        getVote(voteId, currentPage)
+                        getSingleVote(voteId, currentPage)
                     }
                 } else {
                     Log.e("VoteViewModel", "voteEvaluationDelete: Response was not successful")
@@ -162,7 +154,7 @@ class VoteViewModel @Inject constructor(
                 val response = repository.addBookmark(accessToken, voteId)
                 if (response.isSuccessful) {
                     if (response.code() == 201) {
-                        getVote(voteId, currentPage)
+                        getSingleVote(voteId, currentPage)
                     }
                 } else {
                     Log.e("VoteViewModel", "addBookmark: Response was not successful")
@@ -185,7 +177,7 @@ class VoteViewModel @Inject constructor(
                 val response = repository.deleteBookmark(accessToken, voteId)
                 if (response.isSuccessful) {
                     if (response.code() == 204) {
-                        getVote(voteId, currentPage)
+                        getSingleVote(voteId, currentPage)
                     }
                 } else {
                     Log.e("VoteViewModel", "deleteBookmark: Response was not successful")
@@ -234,38 +226,6 @@ class VoteViewModel @Inject constructor(
                 Log.e("VoteViewModel", "userBan: ${e.message}")
             } catch (e: Exception) {
                 Log.e("VoteViewModel", "userBan: ${e.message}")
-            }
-        }
-    }
-
-    fun getCommentsList(
-        voteId: String,
-    ) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
-                _commentsList.value = repository.getCommentsList(accessToken, voteId)
-            } catch (e: HttpException) {
-                Log.e("VoteViewModel", "getCommentsList: ${e.message}")
-            }
-        }
-    }
-
-    fun getSubCommentsList(
-        commentId: Int,
-        index: Int
-    ) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
-                _commentsList.value.get(index).subComments = repository.getSubCommentsList(
-                    accessToken = accessToken,
-                    commentId = commentId,
-                    cursorId = null,
-                    size = 200
-                ).comments
-            } catch (e: HttpException) {
-                Log.e("VoteViewModel", "getSubCommentsList: ${e.message}")
             }
         }
     }

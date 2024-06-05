@@ -22,13 +22,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
+import kr.jm.salmal_android.ui.screen.home.vote.VotesScreen
 import kr.jm.salmal_android.ui.theme.primaryBlack
 import kr.jm.salmal_android.utils.Utils.requestPermissions
 import kr.lifesemantics.salmal_android.R
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    viewModel: HomeViewModel = hiltViewModel()
+) {
+    viewModel.getMyInfo()
+
     val snackbarHostState = remember { SnackbarHostState() }
     val permissionList =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) arrayOf(Manifest.permission.POST_NOTIFICATIONS) else arrayOf()
