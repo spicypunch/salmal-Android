@@ -121,5 +121,13 @@ class RepositoryImpl @Inject constructor(
         return voteApiService.addComment(accessToken, voteId, content)
     }
 
+    override suspend fun addSubComment(
+        accessToken: String,
+        commentId: Int,
+        content: String
+    ): Response<Unit> {
+        return commentsApiService.addSubComment(accessToken, commentId, content)
+    }
+
 
 }

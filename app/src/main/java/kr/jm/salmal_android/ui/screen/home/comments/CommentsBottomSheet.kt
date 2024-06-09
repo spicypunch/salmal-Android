@@ -2,11 +2,9 @@ package kr.jm.salmal_android.ui.screen.home.comments
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,10 +22,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -37,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -44,6 +41,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
@@ -54,17 +53,13 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.flow.firstOrNull
-import kr.jm.salmal_android.data.response.CommentsItem
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.gray2
 import kr.jm.salmal_android.ui.theme.gray4
-import kr.jm.salmal_android.ui.theme.primaryBlack
 import kr.jm.salmal_android.ui.theme.primaryGreen
-import kr.jm.salmal_android.ui.theme.primaryRed
 import kr.jm.salmal_android.ui.theme.primaryWhite
 import kr.jm.salmal_android.ui.theme.transparent
 import kr.jm.salmal_android.ui.theme.white36
-import kr.jm.salmal_android.utils.Utils
 import kr.lifesemantics.salmal_android.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,10 +70,20 @@ fun CommentsBottomSheet(
     viewModel: CommentsViewModel = hiltViewModel(),
     showCommentsBottomSheet: () -> Unit
 ) {
+    var myMemberId by remember { mutableIntStateOf(0) }
     val sheetState = rememberModalBottomSheetState(true)
     val commentsList by viewModel.commentsList.collectAsState()
+    var commentId by remember {
+        mutableIntStateOf(0)
+    }
+    var sunCommentIndex by remember {
+        mutableIntStateOf(0)
+    }
     var myImage by remember {
         mutableStateOf("")
+    }
+    val focusRequester = remember {
+        FocusRequester()
     }
     val (comment, setComment) = rememberSaveable {
         mutableStateOf("")
@@ -92,6 +97,11 @@ fun CommentsBottomSheet(
     LaunchedEffect(Unit) {
         viewModel.readMyImageUrl().firstOrNull()?.let {
             myImage = it
+        }
+    }
+    LaunchedEffect(Unit) {
+        viewModel.readMyMemberId().firstOrNull()?.let {
+            myMemberId = it
         }
     }
 
@@ -152,273 +162,95 @@ fun CommentsBottomSheet(
                 modifier = Modifier.weight(1f)
             ) {
                 itemsIndexed(items = commentsList, key = { _, item -> item.id }) { index, item ->
-                    CommentsList(item, index) {
-                        viewModel.getSubCommentsList(item.id, index)
-                    }
+                    CommentsList(
+                        item,
+                        index,
+                        myMemberId,
+                        onShowReplyClick = {
+                            viewModel.getSubCommentsList(item.id, index)
+                        },
+                        onAddSubComment = {
+                            commentId = item.id
+                            sunCommentIndex = index
+                            focusRequester.requestFocus()
+                        }
+                    )
                 }
             }
 
-            Box {
-                Row(
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = rememberAsyncImagePainter(model = myImage),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                ) {
-                    Image(
-                        painter = rememberAsyncImagePainter(model = myImage),
-                        modifier = Modifier
-                            .size(48.dp)
-                            .clip(CircleShape),
-                        contentScale = ContentScale.Crop,
-                        contentDescription = "member_image_url"
-                    )
-                    TextField(
-                        value = comment,
-                        onValueChange = setComment,
-                        placeholder = { Text("눌러서 댓글 입력") },
-                        textStyle = TextStyle(
-                            color = primaryWhite,
-                            fontSize = 14.sp
+                        .size(48.dp)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop,
+                    contentDescription = "member_image_url"
+                )
+                TextField(
+                    value = comment,
+                    onValueChange = setComment,
+                    placeholder = { Text("눌러서 댓글 입력") },
+                    textStyle = TextStyle(
+                        color = primaryWhite,
+                        fontSize = 14.sp
+                    ),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 8.dp)
+                        .height(54.dp)
+                        .focusRequester(focusRequester)
+                        .border(
+                            BorderStroke(1.dp, primaryGreen),
+                            shape = CircleShape
                         ),
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 8.dp)
-                            .height(54.dp)
-                            .border(
-                                BorderStroke(1.dp, primaryGreen),
-                                shape = CircleShape
-                            ),
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-                        keyboardActions = KeyboardActions(
-                            onSend = {
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            keyboardController?.hide()
+                        }
+                    ),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = gray4,
+                        unfocusedContainerColor = gray4,
+                        disabledContainerColor = gray4,
+                        focusedIndicatorColor = transparent,
+                        unfocusedIndicatorColor = transparent,
+                        cursorColor = primaryGreen,
+                    )
+                )
+                Text(
+                    text = "전송",
+                    fontFamily = Pretendard,
+                    fontWeight = FontWeight.Medium,
+                    color = if (comment.isNotBlank()) primaryGreen else white36,
+                    fontSize = 24.sp,
+                    modifier = Modifier
+                        .padding(start = 4.dp)
+                        .clickable {
+                            if (comment.isNotBlank()) {
+                                if (commentId != 0 || sunCommentIndex != 0) {
+                                    viewModel.addSubComment(
+                                        commentId,
+                                        comment,
+                                        sunCommentIndex,
+                                        voteId
+                                    )
+                                } else {
+                                    viewModel.addComment(voteId, comment)
+                                }
                                 keyboardController?.hide()
-                                viewModel.addComment(voteId, comment)
                                 setComment("")
                             }
-                        ),
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = gray4,
-                            unfocusedContainerColor = gray4,
-                            disabledContainerColor = gray4,
-                            focusedIndicatorColor = transparent,
-                            unfocusedIndicatorColor = transparent,
-                            cursorColor = primaryGreen,
-                        )
-                    )
-                    Box() {
-                        Text(text = "확인")
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun CommentsList(
-    item: CommentsItem.CommentsResponse,
-    commentsIndex: Int,
-    viewModel: CommentsViewModel = hiltViewModel(),
-    onReplyClick: () -> Unit
-) {
-    val duration = Utils.calculateRelativeTime(item.updatedAt)
-
-    Row(
-        modifier = Modifier.padding(top = 24.dp, start = 15.dp, end = 15.dp),
-    ) {
-        Image(
-            painter = rememberAsyncImagePainter(model = item.memberImageUrl),
-            modifier = Modifier
-                .size(36.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop,
-            contentDescription = "member_image_url"
-        )
-        Column(
-            modifier = Modifier
-                .padding(start = 15.dp)
-                .weight(1f)
-        ) {
-            Row {
-                Text(
-                    text = item.nickName,
-                    fontFamily = Pretendard,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = primaryWhite
-                )
-                Text(
-                    text = duration,
-                    fontFamily = Pretendard,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(start = 8.dp),
-                    color = gray2
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Icon(
-                    painter = rememberAsyncImagePainter(model = R.drawable.meetball_icon),
-                    modifier = Modifier,
-                    tint = primaryWhite,
-                    contentDescription = "meetball_icon"
+                        }
                 )
             }
-            Text(
-                text = item.content,
-                fontFamily = Pretendard,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(top = 4.dp),
-                color = primaryWhite
-            )
-            Row(
-                modifier = Modifier.padding(top = 4.dp)
-            ) {
-                Icon(
-                    painter = rememberAsyncImagePainter(model = R.drawable.like_icon),
-                    contentDescription = "like_icon",
-                    tint = if (item.liked) primaryRed else primaryWhite,
-                    modifier = Modifier.clickable {
-                        viewModel.likeComment(item.id, commentsIndex)
-                    }
-                )
-                Text(
-                    text = item.likeCount.toString(),
-                    fontFamily = Pretendard,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = primaryWhite
-                )
-                Text(
-                    text = "답글 달기",
-                    fontFamily = Pretendard,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(start = 16.dp),
-                    color = gray2
-                )
-            }
-            if (item.replyCount != 0) {
-                Text(
-                    text = "답글 ${item.replyCount}개 보기",
-                    fontFamily = Pretendard,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier
-                        .padding(top = 14.dp)
-                        .clickable {
-                            onReplyClick()
-                        },
-                    color = primaryGreen
-                )
-                item.subComments?.let {
-                    it.forEachIndexed { subCommentsIndex, subItem ->
-                        SubCommentsList(
-                            item = subItem,
-                            commentsIndex = commentsIndex,
-                            subCommentsIndex = subCommentsIndex
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun SubCommentsList(
-    item: CommentsItem.SubCommentsResponse.Comment,
-    commentsIndex: Int,
-    subCommentsIndex: Int,
-    viewModel: CommentsViewModel = hiltViewModel()
-) {
-    val duration = Utils.calculateRelativeTime(item.updatedAt)
-    Row(
-        modifier = Modifier.padding(top = 18.dp),
-    ) {
-        Image(
-            painter = rememberAsyncImagePainter(model = item.memberImageUrl),
-            modifier = Modifier
-                .size(36.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop,
-            contentDescription = "member_image_url"
-        )
-        Column(
-            modifier = Modifier
-                .padding(start = 15.dp)
-                .weight(1f)
-        ) {
-            Row {
-                Text(
-                    text = item.nickName,
-                    fontFamily = Pretendard,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = primaryWhite
-                )
-                Text(
-                    text = duration,
-                    fontFamily = Pretendard,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(start = 6.dp),
-                    color = gray2
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Icon(
-                    painter = rememberAsyncImagePainter(model = R.drawable.meetball_icon),
-                    tint = primaryWhite,
-                    contentDescription = "meetball_icon",
-                )
-            }
-            Text(
-                text = item.content,
-                fontFamily = Pretendard,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(top = 4.dp),
-                color = primaryWhite
-            )
-            Row(
-                modifier = Modifier.padding(top = 4.dp)
-            ) {
-                Icon(
-                    painter = rememberAsyncImagePainter(model = R.drawable.like_icon),
-                    contentDescription = "like_icon",
-                    tint = if (item.liked) primaryRed else primaryWhite,
-                    modifier = Modifier.clickable {
-                        viewModel.likeSubComment(
-                            item.id,
-                            commentsIndex,
-                            subCommentsIndex,
-                            item.liked,
-                        )
-                    }
-                )
-                Text(
-                    text = item.likeCount.toString(),
-                    fontFamily = Pretendard,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = primaryWhite
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun DisplayComment(
-    item: CommentsItem,
-) {
-    when (item) {
-        is CommentsItem.CommentsResponse -> {
-
-        }
-
-        is CommentsItem.SubCommentsResponse.Comment -> {
-
         }
     }
 }

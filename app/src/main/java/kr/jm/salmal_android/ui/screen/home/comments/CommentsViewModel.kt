@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
@@ -51,11 +52,9 @@ class CommentsViewModel @Inject constructor(
                     cursorId = null,
                     size = 200
                 ).comments
-
                 val updatedCommentsList = _commentsList.value.toMutableList().apply {
                     this[index] = this[index].copy(subComments = subComments)
                 }
-
                 _commentsList.value = updatedCommentsList
             } catch (e: HttpException) {
                 Log.e("CommentsViewModel", "getSubCommentsList: ${e.message}")
@@ -154,9 +153,30 @@ class CommentsViewModel @Inject constructor(
         }
     }
 
+    fun addSubComment(commentId: Int, content: String, index: Int ,voteId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                val response = repository.addSubComment(accessToken, commentId, content)
+                if (response.isSuccessful) {
+                    if (response.code() == 201) {
+                        getCommentsList(voteId)
+                        getSubCommentsList(commentId, index)
+                    }
+                }
+            } catch (e: HttpException) {
+                Log.e("CommentsViewModel", "addSubComment: ${e.message}")
+            } catch (e: Exception) {
+                Log.e("CommentsViewModel", "addSubComment: ${e.message}")
+            }
+        }
+    }
+
+
     private fun CommentsItem.CommentsResponse.toggleLike(): CommentsItem.CommentsResponse =
         this.copy(liked = !liked, likeCount = if (liked) likeCount - 1 else likeCount + 1)
 
     private fun CommentsItem.SubCommentsResponse.Comment.toggleLike(): CommentsItem.SubCommentsResponse.Comment =
         this.copy(liked = !liked, likeCount = if (liked) likeCount - 1 else likeCount + 1)
+
 }

@@ -89,4 +89,10 @@ interface Repository {
         voteId: String,
         content: String
     ): Response<Unit>
+
+    suspend fun addSubComment(
+        accessToken: String,
+        commentId: Int,
+        content: String
+    ): Response<Unit>
 }

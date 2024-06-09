@@ -1,4 +1,4 @@
-package kr.jm.salmal_android.ui.screen.home
+package kr.jm.salmal_android.ui.screen.home.comments
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -18,10 +18,9 @@ import kr.lifesemantics.salmal_android.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReportBottomSheet(
+fun CommentsReportBottomSheet(
     showBottomSheet: () -> Unit,
-    voteReport: () -> Unit,
-    userBan: () -> Unit
+    onReport: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(true)
 
@@ -37,16 +36,11 @@ fun ReportBottomSheet(
         ) {
             BottomSheetRowComponent(
                 iconResource = R.drawable.user_report_icon,
-                content = "해당 게시물 신고하기",
+                content = "신고",
             ) {
-                voteReport()
-            }
-            BottomSheetRowComponent(
-                iconResource = R.drawable.user_block_icon,
-                content = "이 사용자 차단하기",
-            ) {
-                userBan()
+                onReport()
             }
         }
     }
+
 }
