@@ -7,6 +7,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -37,6 +38,25 @@ interface CommentsApiService {
         @Header("Authorization") accessToken: String,
         @Path("commentId") commentId: Int,
         @Body content: String
+    ): Response<Unit>
+
+    @POST("comments/{commentId}/reports")
+    suspend fun reportComment(
+        @Header("Authorization") accessToken: String,
+        @Path("commentId") commentId: Int,
+    ): Response<Unit>
+
+    @PUT("comments/{commentId}")
+    suspend fun updateComment(
+        @Header("Authorization") accessToken: String,
+        @Path("commentId") commentId: Int,
+        @Body content: String
+    ): Response<Unit>
+
+    @DELETE("comments/{commentId}")
+    suspend fun deleteComment(
+        @Header("Authorization") accessToken: String,
+        @Path("commentId") commentId: Int,
     ): Response<Unit>
 
 }

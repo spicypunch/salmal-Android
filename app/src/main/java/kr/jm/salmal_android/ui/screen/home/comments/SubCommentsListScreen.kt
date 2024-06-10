@@ -11,6 +11,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -32,9 +36,20 @@ fun SubCommentsList(
     item: CommentsItem.SubCommentsResponse.Comment,
     commentsIndex: Int,
     subCommentsIndex: Int,
+    myMemberId: Int,
+    voteId: String,
+    commentId: Int,
+    updateSubComment: (subCommentId: Int) -> Unit,
     viewModel: CommentsViewModel = hiltViewModel()
 ) {
     val duration = Utils.calculateRelativeTime(item.updatedAt)
+    var showReportCommentBottomSheet by remember {
+        mutableStateOf(false)
+    }
+    var showCommentUpdateBottomSheet by remember {
+        mutableStateOf(false)
+    }
+
     Row(
         modifier = Modifier.padding(top = 18.dp),
     ) {
@@ -70,6 +85,13 @@ fun SubCommentsList(
                 Spacer(modifier = Modifier.weight(1f))
                 Icon(
                     painter = rememberAsyncImagePainter(model = R.drawable.meetball_icon),
+                    modifier = Modifier.clickable {
+                        if (myMemberId != item.memberId) {
+                            showReportCommentBottomSheet = true
+                        } else {
+                            showCommentUpdateBottomSheet = true
+                        }
+                    },
                     tint = primaryWhite,
                     contentDescription = "meetball_icon",
                 )
@@ -91,10 +113,10 @@ fun SubCommentsList(
                     tint = if (item.liked) primaryRed else primaryWhite,
                     modifier = Modifier.clickable {
                         viewModel.likeSubComment(
-                            item.id,
-                            commentsIndex,
-                            subCommentsIndex,
-                            item.liked,
+                            subCommentId = item.id,
+                            commentIndex = commentsIndex,
+                            subCommentIndex = subCommentsIndex,
+                            liked = item.liked,
                         )
                     }
                 )
@@ -107,5 +129,35 @@ fun SubCommentsList(
                 )
             }
         }
+    }
+    if (showReportCommentBottomSheet) {
+        CommentsReportBottomSheet(
+            showBottomSheet = {
+                showReportCommentBottomSheet = false
+            }, onReport = {
+                viewModel.reportComment(item.id)
+            })
+    }
+
+    if (showCommentUpdateBottomSheet) {
+        CommentsUpdateBottomSheet(
+            showBottomSheet = {
+                showCommentUpdateBottomSheet = false
+            },
+            onClickUpdate = {
+                showCommentUpdateBottomSheet = false
+                updateSubComment(item.id)
+            },
+            onClickDelete = {
+                showCommentUpdateBottomSheet = false
+                viewModel.deleteComment(
+                    targetId = item.id,
+                    voteId = voteId,
+                    subCommentDelete = true,
+                    index = commentsIndex,
+                    commentId = commentId
+                )
+            }
+        )
     }
 }

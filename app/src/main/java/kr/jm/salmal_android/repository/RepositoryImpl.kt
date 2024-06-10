@@ -129,5 +129,21 @@ class RepositoryImpl @Inject constructor(
         return commentsApiService.addSubComment(accessToken, commentId, content)
     }
 
+    override suspend fun reportComment(accessToken: String, commentId: Int): Response<Unit> {
+        return commentsApiService.reportComment(accessToken, commentId)
+    }
+
+    override suspend fun updateComment(
+        accessToken: String,
+        commentId: Int,
+        content: String
+    ): Response<Unit> {
+        return commentsApiService.updateComment(accessToken, commentId, content)
+    }
+
+    override suspend fun deleteComment(accessToken: String, commentId: Int): Response<Unit> {
+        return commentsApiService.deleteComment(accessToken, commentId)
+    }
+
 
 }

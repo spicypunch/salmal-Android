@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,7 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
+import kotlinx.coroutines.flow.collectLatest
 import kr.jm.salmal_android.data.response.CommentsItem
+import kr.jm.salmal_android.ui.screen.component.BasicDialog
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.gray2
 import kr.jm.salmal_android.ui.theme.primaryGreen
@@ -37,9 +40,12 @@ fun CommentsList(
     item: CommentsItem.CommentsResponse,
     commentsIndex: Int,
     myMemberId: Int,
+    voteId: String,
     viewModel: CommentsViewModel = hiltViewModel(),
     onShowReplyClick: () -> Unit,
     onAddSubComment: () -> Unit,
+    onClickUpdate: () -> Unit,
+    updateSubComment: (subCommentId: Int) -> Unit,
 ) {
     val duration = Utils.calculateRelativeTime(item.updatedAt)
     var showReportCommentBottomSheet by remember {
@@ -47,6 +53,24 @@ fun CommentsList(
     }
     var showCommentUpdateBottomSheet by remember {
         mutableStateOf(false)
+    }
+    var showReportResultDialog by remember {
+        mutableStateOf(false)
+    }
+    var showAlreadyReportDialog by remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(viewModel.commentReportSuccess) {
+        viewModel.commentReportSuccess.collectLatest {
+            showReportResultDialog = it
+        }
+    }
+
+    LaunchedEffect(viewModel.alreadyReportDialog) {
+        viewModel.alreadyReportDialog.collectLatest {
+            showAlreadyReportDialog = it
+        }
     }
 
     Row(
@@ -87,8 +111,8 @@ fun CommentsList(
                     modifier = Modifier.clickable {
                         if (myMemberId != item.memberId) {
                             showReportCommentBottomSheet = true
-                        } else if (myMemberId == item.memberId) {
-
+                        } else {
+                            showCommentUpdateBottomSheet = true
                         }
                     },
                     tint = primaryWhite,
@@ -150,11 +174,51 @@ fun CommentsList(
                         SubCommentsList(
                             item = subItem,
                             commentsIndex = commentsIndex,
-                            subCommentsIndex = subCommentsIndex
+                            subCommentsIndex = subCommentsIndex,
+                            myMemberId = myMemberId,
+                            voteId = voteId,
+                            commentId = item.id,
+                            updateSubComment = { subCommentId ->
+                                updateSubComment(subCommentId)
+                            }
                         )
                     }
                 }
             }
+        }
+    }
+    if (showReportCommentBottomSheet) {
+        CommentsReportBottomSheet(
+            showBottomSheet = {
+                showReportCommentBottomSheet = false
+            }, onReport = {
+                viewModel.reportComment(item.id)
+            })
+    }
+
+    if (showCommentUpdateBottomSheet) {
+        CommentsUpdateBottomSheet(
+            showBottomSheet = {
+                showCommentUpdateBottomSheet = false
+            },
+            onClickUpdate = {
+                showCommentUpdateBottomSheet = false
+                onClickUpdate()
+            },
+            onClickDelete = {
+                showCommentUpdateBottomSheet = false
+                viewModel.deleteComment(targetId = item.id, voteId = voteId, subCommentDelete = false)
+            }
+        )
+    }
+    if (showReportResultDialog) {
+        BasicDialog(content = "해당 댓글을 신고했어요.") {
+            showReportResultDialog = false
+        }
+    }
+    if (showAlreadyReportDialog) {
+        BasicDialog(content = "이미 신고한 댓글입니다.") {
+            showAlreadyReportDialog = false
         }
     }
 }

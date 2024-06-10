@@ -73,11 +73,20 @@ fun CommentsBottomSheet(
     var myMemberId by remember { mutableIntStateOf(0) }
     val sheetState = rememberModalBottomSheetState(true)
     val commentsList by viewModel.commentsList.collectAsState()
+    var targetId by remember {
+        mutableIntStateOf(0)
+    }
     var commentId by remember {
         mutableIntStateOf(0)
     }
-    var sunCommentIndex by remember {
+    var commentIndex by remember {
         mutableIntStateOf(0)
+    }
+    var updateComment by remember {
+        mutableStateOf(false)
+    }
+    var updateSubComment by remember {
+        mutableStateOf(false)
     }
     var myImage by remember {
         mutableStateOf("")
@@ -166,12 +175,27 @@ fun CommentsBottomSheet(
                         item,
                         index,
                         myMemberId,
+                        voteId,
                         onShowReplyClick = {
                             viewModel.getSubCommentsList(item.id, index)
                         },
                         onAddSubComment = {
+                            targetId = item.id
+                            commentIndex = index
+                            focusRequester.requestFocus()
+                        },
+                        onClickUpdate = {
+                            targetId = item.id
+                            updateComment = true
+                            updateSubComment = false
+                            focusRequester.requestFocus()
+                        },
+                        updateSubComment = { subCommentId ->
+                            targetId = subCommentId
                             commentId = item.id
-                            sunCommentIndex = index
+                            commentIndex = index
+                            updateComment = true
+                            updateSubComment = true
                             focusRequester.requestFocus()
                         }
                     )
@@ -235,18 +259,34 @@ fun CommentsBottomSheet(
                         .padding(start = 4.dp)
                         .clickable {
                             if (comment.isNotBlank()) {
-                                if (commentId != 0 || sunCommentIndex != 0) {
-                                    viewModel.addSubComment(
-                                        commentId,
-                                        comment,
-                                        sunCommentIndex,
-                                        voteId
+                                if (updateComment) {
+                                    viewModel.updateComment(
+                                        targetId = targetId,
+                                        content = comment,
+                                        voteId = voteId,
+                                        subCommentUpdate = updateSubComment,
+                                        index = commentIndex,
+                                        commentId = commentId
                                     )
                                 } else {
-                                    viewModel.addComment(voteId, comment)
+                                    if (targetId != 0 || commentIndex != 0) {
+                                        viewModel.addSubComment(
+                                            commentId = targetId,
+                                            content = comment,
+                                            index = commentIndex,
+                                            voteId = voteId
+                                        )
+                                    } else {
+                                        viewModel.addComment(voteId, comment)
+                                    }
                                 }
+
                                 keyboardController?.hide()
                                 setComment("")
+                                updateComment = false
+                                targetId = 0
+                                commentId = 0
+                                commentIndex = 0
                             }
                         }
                 )

@@ -4,10 +4,12 @@ import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.viewModelScope
+import com.google.gson.JsonParser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -25,6 +27,12 @@ class CommentsViewModel @Inject constructor(
 
     private val _commentsList = MutableStateFlow<List<CommentsItem.CommentsResponse>>(emptyList())
     val commentsList = _commentsList.asStateFlow()
+
+    private var _commentReportSuccess = MutableSharedFlow<Boolean>()
+    val commentReportSuccess = _commentReportSuccess.asSharedFlow()
+
+    private var _alreadyReportDialog = MutableSharedFlow<Boolean>()
+    val alreadyReportDialog = _alreadyReportDialog.asSharedFlow()
 
     fun getCommentsList(
         voteId: String,
@@ -95,7 +103,7 @@ class CommentsViewModel @Inject constructor(
     }
 
     fun likeSubComment(
-        commentId: Int,
+        subCommentId: Int,
         commentIndex: Int,
         subCommentIndex: Int,
         liked: Boolean,
@@ -110,9 +118,9 @@ class CommentsViewModel @Inject constructor(
                     targetComment?.subComments?.getOrNull(subCommentIndex) ?: return@launch
 
                 if (liked) {
-                    repository.disLikeComment(accessToken, commentId)
+                    repository.disLikeComment(accessToken, subCommentId)
                 } else {
-                    repository.likeComment(accessToken, commentId)
+                    repository.likeComment(accessToken, subCommentId)
                 }
 
                 // SubComment 업데이트
@@ -153,7 +161,7 @@ class CommentsViewModel @Inject constructor(
         }
     }
 
-    fun addSubComment(commentId: Int, content: String, index: Int ,voteId: String) {
+    fun addSubComment(commentId: Int, content: String, index: Int, voteId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
@@ -172,11 +180,98 @@ class CommentsViewModel @Inject constructor(
         }
     }
 
+    fun reportComment(commentId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                val response = repository.reportComment(accessToken, commentId)
+                if (response.isSuccessful) {
+                    if (response.code() == 201) {
+                        _commentReportSuccess.emit(true)
+                    }
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    if (errorBody != null) {
+                        val jsonObject = JsonParser.parseString(errorBody).asJsonObject
+                        val errorCode = jsonObject.get("code").asInt
+                        when (errorCode) {
+                            2201 -> {
+                                _alreadyReportDialog.emit(true)
+                            }
+                        }
+                    }
+                }
+            } catch (e: HttpException) {
+                Log.e("CommentsViewModel", "reportComment: ${e.message}")
+            } catch (e: Exception) {
+                Log.e("CommentsViewModel", "addSubComment: ${e.message}")
+            }
+        }
+    }
+
+    fun updateComment(
+        targetId: Int,
+        content: String,
+        voteId: String,
+        subCommentUpdate: Boolean,
+        index: Int,
+        commentId: Int
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                val response = repository.updateComment(accessToken, targetId, content)
+                if (response.isSuccessful) {
+                    if (response.code() == 200) {
+                        if (!subCommentUpdate) {
+                            getCommentsList(voteId)
+                        } else {
+                            getCommentsList(voteId)
+                            getSubCommentsList(commentId, index)
+                        }
+                    }
+                }
+            } catch (e: HttpException) {
+                Log.e("CommentsViewModel", "updateComment: ${e.message}")
+            } catch (e: Exception) {
+                Log.e("CommentsViewModel", "updateComment: ${e.message}")
+            }
+        }
+    }
+
+    fun deleteComment(
+        targetId: Int,
+        voteId: String,
+        subCommentDelete: Boolean,
+        index: Int = 0,
+        commentId: Int = 0
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                val response = repository.deleteComment(accessToken, targetId)
+                if (response.isSuccessful) {
+                    if (response.code() == 204) {
+                        if (!subCommentDelete) {
+                            getCommentsList(voteId)
+                        } else {
+                            getCommentsList(voteId)
+                            getSubCommentsList(commentId, index)
+                        }
+                    }
+                }
+            } catch (e: HttpException) {
+                Log.e("CommentsViewModel", "deleteComment: ${e.message}")
+            } catch (e: Exception) {
+                Log.e("CommentsViewModel", "deleteComment: ${e.message}")
+            }
+
+        }
+    }
 
     private fun CommentsItem.CommentsResponse.toggleLike(): CommentsItem.CommentsResponse =
         this.copy(liked = !liked, likeCount = if (liked) likeCount - 1 else likeCount + 1)
 
     private fun CommentsItem.SubCommentsResponse.Comment.toggleLike(): CommentsItem.SubCommentsResponse.Comment =
         this.copy(liked = !liked, likeCount = if (liked) likeCount - 1 else likeCount + 1)
-
 }

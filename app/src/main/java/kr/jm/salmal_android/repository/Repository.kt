@@ -95,4 +95,20 @@ interface Repository {
         commentId: Int,
         content: String
     ): Response<Unit>
+
+    suspend fun reportComment(
+        accessToken: String,
+        commentId: Int,
+    ): Response<Unit>
+
+    suspend fun updateComment(
+        accessToken: String,
+        commentId: Int,
+        content: String
+    ): Response<Unit>
+
+    suspend fun deleteComment(
+        accessToken: String,
+        commentId: Int,
+    ): Response<Unit>
 }
