@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonParser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -168,7 +169,8 @@ class CommentsViewModel @Inject constructor(
                 val response = repository.addSubComment(accessToken, commentId, content)
                 if (response.isSuccessful) {
                     if (response.code() == 201) {
-                        getCommentsList(voteId)
+                        val getCommentsListResult = async { getCommentsList(voteId) }
+                        getCommentsListResult.await()
                         getSubCommentsList(commentId, index)
                     }
                 }
@@ -223,10 +225,9 @@ class CommentsViewModel @Inject constructor(
                 val response = repository.updateComment(accessToken, targetId, content)
                 if (response.isSuccessful) {
                     if (response.code() == 200) {
-                        if (!subCommentUpdate) {
-                            getCommentsList(voteId)
-                        } else {
-                            getCommentsList(voteId)
+                        val getCommentsListResult = async { getCommentsList(voteId) }
+                        getCommentsListResult.await()
+                        if (subCommentUpdate) {
                             getSubCommentsList(commentId, index)
                         }
                     }
@@ -252,10 +253,9 @@ class CommentsViewModel @Inject constructor(
                 val response = repository.deleteComment(accessToken, targetId)
                 if (response.isSuccessful) {
                     if (response.code() == 204) {
-                        if (!subCommentDelete) {
-                            getCommentsList(voteId)
-                        } else {
-                            getCommentsList(voteId)
+                        val getCommentsListResult = async { getCommentsList(voteId) }
+                        getCommentsListResult.await()
+                        if (subCommentDelete) {
                             getSubCommentsList(commentId, index)
                         }
                     }

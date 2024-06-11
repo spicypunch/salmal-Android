@@ -16,13 +16,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import kr.jm.salmal_android.data.domain.BottomNavItem
-import kr.jm.salmal_android.ui.screen.add.AddScreen
 import kr.jm.salmal_android.ui.screen.agreement.AgreementScreen
 import kr.jm.salmal_android.ui.screen.component.MyBottomNavigation
 import kr.jm.salmal_android.ui.screen.home.HomeScreen
 import kr.jm.salmal_android.ui.screen.login.LoginScreen
 import kr.jm.salmal_android.ui.screen.mypage.MyPageScreen
 import kr.jm.salmal_android.ui.screen.profile.SetFirstProfileScreen
+import kr.jm.salmal_android.ui.screen.register.GetImageUriScreen
 import kr.jm.salmal_android.ui.screen.splash.SplashScreen
 import kr.jm.salmal_android.ui.screen.webview.WebViewScreen
 import kr.jm.salmal_android.utils.Utils
@@ -87,7 +87,9 @@ fun App() {
                     HomeScreen()
                 }
                 composable(route = BottomNavItem.Add.route) {
-                    AddScreen()
+                    GetImageUriScreen() {
+                        navController.popBackStack()
+                    }
                 }
                 composable(route = BottomNavItem.MyPage.route) {
                     MyPageScreen()

@@ -175,7 +175,7 @@ fun SetFirstProfileScreen(
 //                    contentDescription = "salmal_logo"
 //                )
                 Image(
-                    painter =  rememberAsyncImagePainter(model = R.drawable.salmal_icon_circle),
+                    painter = rememberAsyncImagePainter(model = R.drawable.salmal_icon_circle),
                     modifier = Modifier
                         .size(89.dp)
                         .clip(CircleShape)
@@ -189,7 +189,7 @@ fun SetFirstProfileScreen(
 //                            ) {
 //                            }
 //                        },
-                            ,
+                    ,
                     contentScale = ContentScale.Crop,
                     contentDescription = "salmal_logo"
                 )

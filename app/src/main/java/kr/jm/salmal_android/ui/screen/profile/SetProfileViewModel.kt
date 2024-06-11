@@ -57,9 +57,7 @@ class SetProfileViewModel @Inject constructor(
                         }
                     }
                 }
-
             }
-
         }
     }
 }
