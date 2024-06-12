@@ -47,7 +47,8 @@ import kr.lifesemantics.salmal_android.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GetImageUriScreen(
-    onClickCancel: () -> Unit
+    onClickCancel: () -> Unit,
+    sendUriInfo: (Uri) -> Unit
 ) {
     val permissionList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         arrayOf(
@@ -103,8 +104,8 @@ fun GetImageUriScreen(
         }
 
     LaunchedEffect(imageUri) {
-        imageUri?.let {
-            Log.e("imageUri", imageUri.toString())
+        imageUri?.let { uri ->
+            sendUriInfo(uri)
         }
     }
 

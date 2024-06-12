@@ -21,7 +21,7 @@ import kr.jm.salmal_android.ui.theme.transparent
 fun MyBottomNavigation(navController: NavController) {
     val navItems = listOf(
         BottomNavItem.Home,
-        BottomNavItem.Add,
+        BottomNavItem.Register,
         BottomNavItem.MyPage
     )
     NavigationBar(

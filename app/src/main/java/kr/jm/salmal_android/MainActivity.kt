@@ -10,10 +10,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
 import kr.jm.salmal_android.data.domain.BottomNavItem
 import kr.jm.salmal_android.ui.screen.agreement.AgreementScreen
@@ -23,6 +25,7 @@ import kr.jm.salmal_android.ui.screen.login.LoginScreen
 import kr.jm.salmal_android.ui.screen.mypage.MyPageScreen
 import kr.jm.salmal_android.ui.screen.profile.SetFirstProfileScreen
 import kr.jm.salmal_android.ui.screen.register.GetImageUriScreen
+import kr.jm.salmal_android.ui.screen.register.ImageRegisterScreen
 import kr.jm.salmal_android.ui.screen.splash.SplashScreen
 import kr.jm.salmal_android.ui.screen.webview.WebViewScreen
 import kr.jm.salmal_android.utils.Utils
@@ -86,9 +89,28 @@ fun App() {
                 composable(route = BottomNavItem.Home.route) {
                     HomeScreen()
                 }
-                composable(route = BottomNavItem.Add.route) {
-                    GetImageUriScreen() {
+                composable(route = BottomNavItem.Register.route) {
+                    GetImageUriScreen(onClickCancel = {
                         navController.popBackStack()
+                    },
+                        sendUriInfo = { uri ->
+                            val uriEncode =
+                                URLEncoder.encode(uri.toString(), StandardCharsets.UTF_8.toString())
+                            navController.navigate("register/$uriEncode")
+                        })
+                }
+                composable(
+                    route = "register/{uri}",
+                    arguments = listOf(navArgument("uri") {
+                        type = NavType.StringType
+                    })
+                ) { backStackEntry ->
+                    val uri = backStackEntry.arguments?.getString("uri")
+                    uri?.let { uriInfo ->
+                        val uriDecode = URLDecoder.decode(uriInfo, StandardCharsets.UTF_8.toString())
+                        ImageRegisterScreen(uri = uriDecode) {
+                            navController.popBackStack()
+                        }
                     }
                 }
                 composable(route = BottomNavItem.MyPage.route) {

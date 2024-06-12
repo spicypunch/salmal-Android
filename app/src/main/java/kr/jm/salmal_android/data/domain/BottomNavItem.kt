@@ -9,6 +9,6 @@ sealed class BottomNavItem(
     val selectedIcon: Int,
 ) {
     data object Home : BottomNavItem(route = "home", title = "Home", basicIcon = R.drawable.home_icon, selectedIcon = R.drawable.home_filled_icon)
-    data object Add : BottomNavItem(route = "add", title = "Add", basicIcon = R.drawable.add_btn, selectedIcon = R.drawable.add_btn)
+    data object Register : BottomNavItem(route = "register", title = "Register", basicIcon = R.drawable.add_btn, selectedIcon = R.drawable.add_btn)
     data object MyPage : BottomNavItem(route = "myPage", title = "MyPage", basicIcon = R.drawable.mypage_icon, selectedIcon = R.drawable.mypage_filled_icon)
 }
