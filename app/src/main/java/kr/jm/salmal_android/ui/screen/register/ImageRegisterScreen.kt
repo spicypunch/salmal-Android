@@ -2,6 +2,7 @@ package kr.jm.salmal_android.ui.screen.register
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,7 @@ import kr.jm.salmal_android.ui.theme.gray4
 import kr.jm.salmal_android.ui.theme.primaryBlack
 import kr.jm.salmal_android.ui.theme.primaryGreen
 import kr.jm.salmal_android.ui.theme.primaryWhite
+import kr.jm.salmal_android.ui.theme.transparent
 import kr.jm.salmal_android.ui.theme.white80
 import kr.jm.salmal_android.utils.FilterType
 
@@ -122,7 +124,13 @@ fun ImageRegisterScreen(
             items(items = filterTypeList) { filterType ->
                 Spacer(modifier = Modifier.width(16.dp))
                 Card(
-                    modifier = Modifier.size(90.dp),
+                    modifier = Modifier
+                        .size(90.dp)
+                        .border(
+                            width = if (currentFilterType == filterType) 3.dp else 0.dp,
+                            color = if (currentFilterType == filterType) primaryGreen else transparent,
+                            shape = RoundedCornerShape(18.dp)
+                        ),
                     shape = RoundedCornerShape(18.dp)
                 ) {
                     Image(
@@ -140,7 +148,9 @@ fun ImageRegisterScreen(
             }
         }
         Row(
-            modifier = Modifier.padding(vertical = 30.dp),
+            modifier = Modifier
+                .padding(vertical = 30.dp)
+                .clickable { },
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
