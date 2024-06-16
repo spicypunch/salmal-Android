@@ -2,6 +2,7 @@ package kr.jm.salmal_android.utils
 
 import android.content.ContentValues
 import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -12,6 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.LocalDateTime
@@ -96,5 +100,21 @@ object Utils {
             }
         }
         return updateAt
+    }
+
+    fun saveBitmapAsJpeg(bitmap: Bitmap, file: File) {
+        var out: FileOutputStream? = null
+        try {
+            out = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            try {
+                out?.close()
+            } catch (ioe: IOException) {
+                ioe.printStackTrace()
+            }
+        }
     }
 }

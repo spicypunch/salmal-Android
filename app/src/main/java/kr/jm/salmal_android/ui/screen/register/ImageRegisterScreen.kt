@@ -1,5 +1,9 @@
 package kr.jm.salmal_android.ui.screen.register
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -37,6 +41,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -46,13 +51,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.core.graphics.createBitmap
+import androidx.core.view.drawToBitmap
 import coil.compose.rememberAsyncImagePainter
+import kotlinx.coroutines.launch
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.gray4
 import kr.jm.salmal_android.ui.theme.primaryBlack
@@ -92,6 +103,10 @@ fun ImageRegisterScreen(
     }
     var showTextInput by remember { mutableStateOf(false) }
     var showColorPicker by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+    val scope = rememberCoroutineScope()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -99,7 +114,12 @@ fun ImageRegisterScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TopBar(onClickCancel)
+        TopBar(
+            onClickCancel = onClickCancel,
+            onClickOk = {
+
+            }
+        )
 
         Box(
             modifier = Modifier
@@ -127,12 +147,14 @@ fun ImageRegisterScreen(
             TextInputDialog(textProperties, onDismiss = { showTextInput = false })
         }
 
+
     }
 }
 
 @Composable
 fun TopBar(
-    onClickCancel: () -> Unit
+    onClickCancel: () -> Unit,
+    onClickOk: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -163,7 +185,7 @@ fun TopBar(
             modifier = Modifier
                 .padding(end = 16.dp)
                 .clickable {
-
+                    onClickOk()
                 }
         )
     }
@@ -265,7 +287,8 @@ fun TextInputDialog(textProperties: TextProperties, onDismiss: () -> Unit) {
         Row(
             modifier = Modifier
                 .background(transparent)
-                .fillMaxWidth().height(70.dp),
+                .fillMaxWidth()
+                .height(70.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -283,7 +306,9 @@ fun TextInputDialog(textProperties: TextProperties, onDismiss: () -> Unit) {
                     disabledLabelColor = primaryWhite,
                     cursorColor = primaryWhite
                 ),
-                modifier = Modifier.weight(0.75f).fillMaxHeight()
+                modifier = Modifier
+                    .weight(0.75f)
+                    .fillMaxHeight()
             )
 //            ColorPicker("텍스트 색상", textColor) { color ->
 //                textColor = color
@@ -302,7 +327,9 @@ fun TextInputDialog(textProperties: TextProperties, onDismiss: () -> Unit) {
                     containerColor = transparent,
                     disabledContainerColor = transparent,
                 ),
-                modifier = Modifier.weight(0.25f).fillMaxHeight()
+                modifier = Modifier
+                    .weight(0.25f)
+                    .fillMaxHeight()
             ) {
                 Text(
                     text = "확인", fontSize = 14.sp, fontFamily = Pretendard, color = primaryGreen
@@ -345,4 +372,18 @@ fun DraggableText(textProperties: TextProperties) {
             modifier = Modifier.background(textProperties.backgroundColor)
         )
     }
+}
+
+fun captureComposableAsBitmap(context: Context, content: @Composable () -> Unit): Bitmap {
+    val composeView = ComposeView(context).apply {
+        setContent {
+            content()
+        }
+    }
+    composeView.measure(
+        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+    )
+    composeView.layout(0, 0, composeView.measuredWidth, composeView.measuredHeight)
+    return composeView.drawToBitmap()
 }
