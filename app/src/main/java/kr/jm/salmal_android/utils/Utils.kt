@@ -102,13 +102,15 @@ object Utils {
         return updateAt
     }
 
-    fun saveBitmapAsJpeg(bitmap: Bitmap, file: File) {
+    fun saveBitmapAsJpeg(bitmap: Bitmap, file: File): File? {
         var out: FileOutputStream? = null
-        try {
+        return try {
             out = FileOutputStream(file)
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+            file
         } catch (e: Exception) {
             e.printStackTrace()
+            null
         } finally {
             try {
                 out?.close()
@@ -117,4 +119,5 @@ object Utils {
             }
         }
     }
+
 }

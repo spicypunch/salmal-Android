@@ -3,6 +3,7 @@ package kr.jm.salmal_android.ui.screen.register
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.util.Log
 import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -73,6 +74,8 @@ import kr.jm.salmal_android.ui.theme.transparent
 import kr.jm.salmal_android.ui.theme.white80
 import kr.jm.salmal_android.utils.FilterType
 import kr.jm.salmal_android.utils.TextProperties
+import kr.jm.salmal_android.utils.Utils
+import java.io.File
 import kotlin.math.roundToInt
 
 @Composable
@@ -117,7 +120,21 @@ fun ImageRegisterScreen(
         TopBar(
             onClickCancel = onClickCancel,
             onClickOk = {
-
+                val bitmap1 = captureComposableAsBitmap(context) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 8.dp)
+                            .weight(1f)
+                    ) {
+                        MainImage(uri = uri, currentFilterType = filterTypeList[currentFilterIndex])
+                        DraggableText(textProperties)
+                    }
+                }
+                val file = File(context.cacheDir, "captured_image.jpeg")
+                val imageJpeg = Utils.saveBitmapAsJpeg(bitmap1, file)
+                Log.e("123", imageJpeg.toString())
             }
         )
 
