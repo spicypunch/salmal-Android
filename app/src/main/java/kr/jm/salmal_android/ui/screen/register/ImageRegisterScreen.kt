@@ -2,9 +2,12 @@ package kr.jm.salmal_android.ui.screen.register
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Canvas
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -38,12 +41,12 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,17 +57,19 @@ import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.core.graphics.createBitmap
+import androidx.core.view.doOnLayout
 import androidx.core.view.drawToBitmap
 import coil.compose.rememberAsyncImagePainter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.gray4
 import kr.jm.salmal_android.ui.theme.primaryBlack
@@ -74,7 +79,7 @@ import kr.jm.salmal_android.ui.theme.transparent
 import kr.jm.salmal_android.ui.theme.white80
 import kr.jm.salmal_android.utils.FilterType
 import kr.jm.salmal_android.utils.TextProperties
-import kr.jm.salmal_android.utils.Utils
+import kr.jm.salmal_android.utils.Utils.saveBitmapAsJpeg
 import java.io.File
 import kotlin.math.roundToInt
 
@@ -108,7 +113,7 @@ fun ImageRegisterScreen(
     var showColorPicker by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
-    var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+    var imageFile by remember { mutableStateOf<File?>(null) }
     val scope = rememberCoroutineScope()
     Column(
         modifier = Modifier
@@ -120,21 +125,31 @@ fun ImageRegisterScreen(
         TopBar(
             onClickCancel = onClickCancel,
             onClickOk = {
-                val bitmap1 = captureComposableAsBitmap(context) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                            .padding(top = 8.dp)
-                            .weight(1f)
-                    ) {
-                        MainImage(uri = uri, currentFilterType = filterTypeList[currentFilterIndex])
-                        DraggableText(textProperties)
+                captureComposableAsBitmap(
+                    context,
+                    content = {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .padding(top = 8.dp)
+                                .weight(1f)
+                        ) {
+                            MainImage(
+                                uri = uri,
+                                currentFilterType = filterTypeList[currentFilterIndex]
+                            )
+                            DraggableText(textProperties)
+                        }
+                    },
+                    callback = { bitmap ->
+                        val file = File(context.cacheDir, "captured_image.jpeg")
+                        val jpegFile = saveBitmapAsJpeg(bitmap, file)
+                        jpegFile?.let {
+                            imageFile = it
+                        }
                     }
-                }
-                val file = File(context.cacheDir, "captured_image.jpeg")
-                val imageJpeg = Utils.saveBitmapAsJpeg(bitmap1, file)
-                Log.e("123", imageJpeg.toString())
+                )
             }
         )
 
@@ -145,8 +160,17 @@ fun ImageRegisterScreen(
                 .padding(top = 8.dp)
                 .weight(1f)
         ) {
-            MainImage(uri = uri, currentFilterType = filterTypeList[currentFilterIndex])
-            DraggableText(textProperties)
+            if (imageFile != null) {
+                Image(
+                    painter = rememberAsyncImagePainter(model = imageFile),
+                    contentDescription = "imageFile",
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                MainImage(uri = uri, currentFilterType = filterTypeList[currentFilterIndex])
+                DraggableText(textProperties)
+            }
+
         }
 
         FilterOptions(
@@ -391,16 +415,62 @@ fun DraggableText(textProperties: TextProperties) {
     }
 }
 
-fun captureComposableAsBitmap(context: Context, content: @Composable () -> Unit): Bitmap {
+//fun captureComposableAsBitmap(
+//    context: Context,
+//    content: @Composable () -> Unit,
+//    callback: (Bitmap) -> Unit
+//) {
+//    val composeView = ComposeView(context).apply {
+//        setContent { content() }
+//    }
+//
+//    val rootView =
+//        (context as ComponentActivity).window.decorView.findViewById<ViewGroup>(android.R.id.content)
+//    rootView.addView(composeView)
+//
+//    composeView.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
+//        override fun onLayoutChange(
+//            v: View?,
+//            left: Int,
+//            top: Int,
+//            right: Int,
+//            bottom: Int,
+//            oldLeft: Int,
+//            oldTop: Int,
+//            oldRight: Int,
+//            oldBottom: Int
+//        ) {
+//            if ((v?.width ?: 0) > 0 && (v?.height ?: 0) > 0) {
+//                v?.removeOnLayoutChangeListener(this)
+//                Handler(Looper.getMainLooper()).post {
+//                    val bitmap = composeView.drawToBitmap()
+//                    // Remove the ComposeView after capturing the bitmap
+//                    rootView.removeView(composeView)
+//                    callback(bitmap)
+//                }
+//            }
+//        }
+//    })
+//}
+
+fun captureComposableAsBitmap(
+    context: Context,
+    content: @Composable () -> Unit,
+    callback: (Bitmap) -> Unit
+) {
     val composeView = ComposeView(context).apply {
-        setContent {
-            content()
+        setContent { content() }
+    }
+
+    val rootView =
+        (context as ComponentActivity).window.decorView.findViewById<ViewGroup>(android.R.id.content)
+    rootView.addView(composeView)
+
+    composeView.doOnLayout {
+        Handler(Looper.getMainLooper()).post {
+            val bitmap = composeView.drawToBitmap(config = Bitmap.Config.ARGB_8888)
+            rootView.removeView(composeView)
+            callback(bitmap)
         }
     }
-    composeView.measure(
-        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-    )
-    composeView.layout(0, 0, composeView.measuredWidth, composeView.measuredHeight)
-    return composeView.drawToBitmap()
 }
