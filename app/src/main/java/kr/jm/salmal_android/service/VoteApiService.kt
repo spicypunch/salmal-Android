@@ -11,6 +11,7 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
+import java.io.File
 
 interface VoteApiService {
 
@@ -72,5 +73,11 @@ interface VoteApiService {
         @Header("Authorization") accessToken: String,
         @Path("voteId") voteId: String,
         @Body comment: String
+    ): Response<Unit>
+
+    @POST("votes")
+    suspend fun registerVote(
+        @Header("Authorization") accessToken: String,
+        @Body imageFile: File
     ): Response<Unit>
 }

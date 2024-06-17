@@ -107,6 +107,7 @@ object Utils {
         return try {
             out = FileOutputStream(file)
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+            out.flush()
             file
         } catch (e: Exception) {
             e.printStackTrace()

@@ -107,10 +107,11 @@ fun App() {
                 ) { backStackEntry ->
                     val uri = backStackEntry.arguments?.getString("uri")
                     uri?.let { uriInfo ->
-                        val uriDecode = URLDecoder.decode(uriInfo, StandardCharsets.UTF_8.toString())
-                        ImageRegisterScreen(uri = uriDecode) {
+                        val uriDecode =
+                            URLDecoder.decode(uriInfo, StandardCharsets.UTF_8.toString())
+                        ImageRegisterScreen(uri = uriDecode, onClickCancel = {
                             navController.popBackStack()
-                        }
+                        })
                     }
                 }
                 composable(route = BottomNavItem.MyPage.route) {

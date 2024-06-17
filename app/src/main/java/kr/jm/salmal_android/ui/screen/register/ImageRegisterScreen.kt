@@ -4,8 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
-import android.view.View
 import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
@@ -41,7 +39,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -65,11 +62,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.core.view.doOnLayout
 import androidx.core.view.drawToBitmap
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.gray4
 import kr.jm.salmal_android.ui.theme.primaryBlack
@@ -87,6 +81,7 @@ import kotlin.math.roundToInt
 fun ImageRegisterScreen(
     uri: String,
     onClickCancel: () -> Unit,
+    viewModel: RegisterViewModel = hiltViewModel()
 ) {
     val filterTypeList = arrayOf(
         FilterType.getFilter(FilterType.DEFAULT),
@@ -146,7 +141,7 @@ fun ImageRegisterScreen(
                         val file = File(context.cacheDir, "captured_image.jpeg")
                         val jpegFile = saveBitmapAsJpeg(bitmap, file)
                         jpegFile?.let {
-                            imageFile = it
+                            viewModel.registerVote(it)
                         }
                     }
                 )

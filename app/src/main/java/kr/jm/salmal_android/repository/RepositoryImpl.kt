@@ -14,6 +14,7 @@ import kr.jm.salmal_android.service.MemberApiService
 import kr.jm.salmal_android.service.NotificationApiService
 import kr.jm.salmal_android.service.VoteApiService
 import retrofit2.Response
+import java.io.File
 import javax.inject.Inject
 
 class RepositoryImpl @Inject constructor(
@@ -145,5 +146,7 @@ class RepositoryImpl @Inject constructor(
         return commentsApiService.deleteComment(accessToken, commentId)
     }
 
-
+    override suspend fun registerVote(accessToken: String, imageFile: File): Response<Unit> {
+        return voteApiService.registerVote(accessToken, imageFile)
+    }
 }

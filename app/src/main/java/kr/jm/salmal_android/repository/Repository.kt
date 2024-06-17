@@ -8,6 +8,7 @@ import kr.jm.salmal_android.data.response.SignUpResponse
 import kr.jm.salmal_android.data.response.UserInfoResponse
 import kr.jm.salmal_android.data.response.VotesListResponse
 import retrofit2.Response
+import java.io.File
 
 interface Repository {
 
@@ -110,5 +111,10 @@ interface Repository {
     suspend fun deleteComment(
         accessToken: String,
         commentId: Int,
+    ): Response<Unit>
+
+    suspend fun registerVote(
+        accessToken: String,
+        imageFile: File
     ): Response<Unit>
 }
