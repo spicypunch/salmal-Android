@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kr.jm.salmal_android.BaseViewModel
 import kr.jm.salmal_android.repository.RepositoryImpl
+import okhttp3.MultipartBody
 import retrofit2.HttpException
 import java.io.File
 import javax.inject.Inject
@@ -20,7 +21,7 @@ class RegisterViewModel @Inject constructor(
     override var dataStore: DataStore<Preferences>
 ) : BaseViewModel() {
 
-    fun registerVote(imageFile: File) {
+    fun registerVote(imageFile: MultipartBody.Part) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val accessToken = "Bearer ${readAccessToken().firstOrNull()}"

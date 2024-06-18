@@ -7,6 +7,7 @@ import kr.jm.salmal_android.data.response.CommentsItem
 import kr.jm.salmal_android.data.response.SignUpResponse
 import kr.jm.salmal_android.data.response.UserInfoResponse
 import kr.jm.salmal_android.data.response.VotesListResponse
+import okhttp3.MultipartBody
 import retrofit2.Response
 import java.io.File
 
@@ -115,6 +116,6 @@ interface Repository {
 
     suspend fun registerVote(
         accessToken: String,
-        imageFile: File
+        imageFile: MultipartBody.Part
     ): Response<Unit>
 }

@@ -73,6 +73,7 @@ import kr.jm.salmal_android.ui.theme.transparent
 import kr.jm.salmal_android.ui.theme.white80
 import kr.jm.salmal_android.utils.FilterType
 import kr.jm.salmal_android.utils.TextProperties
+import kr.jm.salmal_android.utils.Utils.encodeMultipart
 import kr.jm.salmal_android.utils.Utils.saveBitmapAsJpeg
 import java.io.File
 import kotlin.math.roundToInt
@@ -140,8 +141,9 @@ fun ImageRegisterScreen(
                     callback = { bitmap ->
                         val file = File(context.cacheDir, "captured_image.jpeg")
                         val jpegFile = saveBitmapAsJpeg(bitmap, file)
-                        jpegFile?.let {
-                            viewModel.registerVote(it)
+                        jpegFile?.let { imageFile ->
+                            val multiPartBody = encodeMultipart(imageFile)
+                            viewModel.registerVote(multiPartBody)
                         }
                     }
                 )

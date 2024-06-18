@@ -3,12 +3,15 @@ package kr.jm.salmal_android.service
 import kr.jm.salmal_android.data.request.VoteEvaluationRequest
 import kr.jm.salmal_android.data.response.CommentsItem
 import kr.jm.salmal_android.data.response.VotesListResponse
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 import java.io.File
@@ -75,9 +78,10 @@ interface VoteApiService {
         @Body comment: String
     ): Response<Unit>
 
+    @Multipart
     @POST("votes")
     suspend fun registerVote(
         @Header("Authorization") accessToken: String,
-        @Body imageFile: File
+        @Part imageFile: MultipartBody.Part
     ): Response<Unit>
 }
