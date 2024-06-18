@@ -13,9 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -125,7 +127,7 @@ object Utils {
     }
 
     fun encodeMultipart(file: File): MultipartBody.Part {
-        val requestFile = RequestBody.create("image/jpeg".toMediaTypeOrNull(), file)
+        val requestFile = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
 
         return MultipartBody.Part.createFormData("image", file.name, requestFile)
     }

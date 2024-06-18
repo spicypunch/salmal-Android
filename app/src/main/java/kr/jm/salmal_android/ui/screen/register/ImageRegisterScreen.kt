@@ -141,9 +141,10 @@ fun ImageRegisterScreen(
                     callback = { bitmap ->
                         val file = File(context.cacheDir, "captured_image.jpeg")
                         val jpegFile = saveBitmapAsJpeg(bitmap, file)
-                        jpegFile?.let { imageFile ->
-                            val multiPartBody = encodeMultipart(imageFile)
+                        jpegFile?.let { jpegImgFile ->
+                            val multiPartBody = encodeMultipart(jpegImgFile)
                             viewModel.registerVote(multiPartBody)
+                            imageFile = jpegImgFile
                         }
                     }
                 )
