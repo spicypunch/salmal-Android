@@ -4,6 +4,8 @@ import kr.jm.salmal_android.data.request.LoginRequest
 import kr.jm.salmal_android.data.response.LoginResponse
 import kr.jm.salmal_android.data.request.SignUpRequest
 import kr.jm.salmal_android.data.response.CommentsItem
+import kr.jm.salmal_android.data.response.MyEvaluations
+import kr.jm.salmal_android.data.response.MyVotesResponse
 import kr.jm.salmal_android.data.response.SignUpResponse
 import kr.jm.salmal_android.data.response.UserInfoResponse
 import kr.jm.salmal_android.data.response.VotesListResponse
@@ -118,4 +120,14 @@ interface Repository {
         accessToken: String,
         imageFile: MultipartBody.Part
     ): Response<Unit>
+
+    suspend fun getMyVotes(
+        accessToken: String,
+        memberId: String,
+    ): MyVotesResponse
+
+    suspend fun getMyEvaluations(
+        accessToken: String,
+        memberId: String,
+    ): MyEvaluations
 }

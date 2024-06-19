@@ -143,7 +143,7 @@ fun ImageRegisterScreen(
                         val jpegFile = saveBitmapAsJpeg(bitmap, file)
                         jpegFile?.let { jpegImgFile ->
                             val multiPartBody = encodeMultipart(jpegImgFile)
-                            viewModel.registerVote(multiPartBody)
+//                            viewModel.registerVote(multiPartBody)
                             imageFile = jpegImgFile
                         }
                     }

@@ -5,6 +5,8 @@ import kr.jm.salmal_android.data.request.SignUpRequest
 import kr.jm.salmal_android.data.request.VoteEvaluationRequest
 import kr.jm.salmal_android.data.response.CommentsItem
 import kr.jm.salmal_android.data.response.LoginResponse
+import kr.jm.salmal_android.data.response.MyEvaluations
+import kr.jm.salmal_android.data.response.MyVotesResponse
 import kr.jm.salmal_android.data.response.SignUpResponse
 import kr.jm.salmal_android.data.response.UserInfoResponse
 import kr.jm.salmal_android.data.response.VotesListResponse
@@ -147,7 +149,21 @@ class RepositoryImpl @Inject constructor(
         return commentsApiService.deleteComment(accessToken, commentId)
     }
 
-    override suspend fun registerVote(accessToken: String, imageFile: MultipartBody.Part): Response<Unit> {
+    override suspend fun registerVote(
+        accessToken: String,
+        imageFile: MultipartBody.Part
+    ): Response<Unit> {
         return voteApiService.registerVote(accessToken, imageFile)
+    }
+
+    override suspend fun getMyVotes(
+        accessToken: String,
+        memberId: String,
+    ): MyVotesResponse {
+        return memberApiService.getMyVotes(accessToken, memberId, null, null)
+    }
+
+    override suspend fun getMyEvaluations(accessToken: String, memberId: String): MyEvaluations {
+        return memberApiService.getMyEvaluations(accessToken, memberId, null, null)
     }
 }
