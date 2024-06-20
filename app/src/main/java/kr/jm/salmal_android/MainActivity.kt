@@ -20,6 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kr.jm.salmal_android.data.domain.BottomNavItem
 import kr.jm.salmal_android.ui.screen.agreement.AgreementScreen
 import kr.jm.salmal_android.ui.screen.component.MyBottomNavigation
+import kr.jm.salmal_android.ui.screen.mypage.detail.SingleVoteScreen
 import kr.jm.salmal_android.ui.screen.home.HomeScreen
 import kr.jm.salmal_android.ui.screen.login.LoginScreen
 import kr.jm.salmal_android.ui.screen.mypage.MyPageScreen
@@ -115,7 +116,11 @@ fun App() {
                     }
                 }
                 composable(route = BottomNavItem.MyPage.route) {
-                    MyPageScreen()
+                    MyPageScreen { voteId ->
+                        navController.navigate(
+                            "singlevote/$voteId"
+                        )
+                    }
                 }
                 composable(route = "agreement") {
                     Utils.ScreenTransition(navController = navController, route = "agreement") {
@@ -155,6 +160,12 @@ fun App() {
                                 navController.popBackStack()
                             }
                         }
+                    }
+                }
+                composable(route = "singlevote/{voteId}") { backStackEntry ->
+                    val voteId = backStackEntry.arguments?.getString("voteId")
+                    if (voteId != null) {
+                        SingleVoteScreen(voteId = voteId)
                     }
                 }
             }

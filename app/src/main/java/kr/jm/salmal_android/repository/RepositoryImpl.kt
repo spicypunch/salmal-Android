@@ -160,10 +160,10 @@ class RepositoryImpl @Inject constructor(
         accessToken: String,
         memberId: String,
     ): MyVotesResponse {
-        return memberApiService.getMyVotes(accessToken, memberId, null, null)
+        return memberApiService.getMyVotes(accessToken, memberId, null, 100)
     }
 
     override suspend fun getMyEvaluations(accessToken: String, memberId: String): MyEvaluations {
-        return memberApiService.getMyEvaluations(accessToken, memberId, null, null)
+        return memberApiService.getMyEvaluations(accessToken, memberId, null, 100)
     }
 }

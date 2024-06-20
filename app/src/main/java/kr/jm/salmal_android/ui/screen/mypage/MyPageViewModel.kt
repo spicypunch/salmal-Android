@@ -14,6 +14,7 @@ import kr.jm.salmal_android.BaseViewModel
 import kr.jm.salmal_android.data.response.MyEvaluations
 import kr.jm.salmal_android.data.response.MyVotesResponse
 import kr.jm.salmal_android.data.response.UserInfoResponse
+import kr.jm.salmal_android.data.response.VotesListResponse
 import kr.jm.salmal_android.repository.RepositoryImpl
 import retrofit2.HttpException
 import javax.inject.Inject
@@ -32,6 +33,9 @@ class MyPageViewModel @Inject constructor(
 
     private val _myEvaluations = MutableStateFlow<MyEvaluations?>(null)
     val myEvaluations = _myEvaluations.asStateFlow()
+
+    private val _voteDetail = MutableStateFlow<VotesListResponse.Vote?>(null)
+    val voteDetail = _voteDetail.asStateFlow()
 
     fun getMyInfo() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -67,7 +71,12 @@ class MyPageViewModel @Inject constructor(
                 val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
                 val memberId = readMyMemberId().firstOrNull()
                 if (memberId != null) {
-                    _myEvaluations.emit(repository.getMyEvaluations(accessToken, memberId.toString()))
+                    _myEvaluations.emit(
+                        repository.getMyEvaluations(
+                            accessToken,
+                            memberId.toString()
+                        )
+                    )
                 }
             } catch (e: HttpException) {
                 Log.e("MyPageViewModel", "getMyVotes: ${e.message}")

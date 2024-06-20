@@ -1,8 +1,6 @@
 package kr.jm.salmal_android.ui.screen.mypage
 
-import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
@@ -28,7 +27,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -36,23 +34,29 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
+import kr.jm.salmal_android.data.response.MyEvaluations
 import kr.jm.salmal_android.data.response.MyVotesResponse
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.gray2
 import kr.jm.salmal_android.ui.theme.primaryBlack
 import kr.jm.salmal_android.ui.theme.primaryGreen
 import kr.jm.salmal_android.ui.theme.primaryWhite
-import kr.jm.salmal_android.ui.theme.white20
+import kr.jm.salmal_android.ui.theme.transparent
 import kr.jm.salmal_android.ui.theme.white36
 import kr.lifesemantics.salmal_android.R
 
 @Composable
 fun MyPageScreen(
+    onClick: (String) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -80,13 +84,16 @@ fun MyPageScreen(
         },
         containerColor = primaryBlack,
     ) { innerPadding ->
-        MyInfoCardView(innerPadding)
+        MyInfoCardView(innerPadding, onClick = {
+            onClick(it)
+        })
     }
 }
 
 @Composable
 fun MyInfoCardView(
     innerPadding: PaddingValues,
+    onClick: (String) -> Unit,
     viewModel: MyPageViewModel = hiltViewModel()
 ) {
     viewModel.getMyInfo()
@@ -182,12 +189,16 @@ fun MyInfoCardView(
                 }
             }
         }
-        TabBar()
+        TabBar(onClick = {
+            onClick(it)
+        })
     }
 }
 
 @Composable
-fun TabBar() {
+fun TabBar(
+    onClick: (String) -> Unit
+) {
     var tabIndex by remember {
         mutableIntStateOf(0)
     }
@@ -233,49 +244,96 @@ fun TabBar() {
     }
     when (tabIndex) {
         0 -> {
-            GetMyVotes()
+            GetMyVotes(onClick = {
+                onClick(it)
+            })
         }
 
         1 -> {
-            GetMyEvaluations()
+            GetMyEvaluations(onClick = {
+                onClick(it)
+            })
         }
     }
 }
 
 @Composable
 fun GetMyVotes(
+    onClick: (String) -> Unit,
     viewModel: MyPageViewModel = hiltViewModel()
 ) {
-    viewModel.getMyInfo()
+    viewModel.getMyVotes()
     val myVotes = viewModel.myVotes.collectAsState()
     LazyGridView(
-        myVotes.value?.let {
-            it.votes
-        }
-
-    )
+        myVotes.value?.votes ?: emptyList(),
+    ) {
+        onClick(it)
+    }
 }
 
 @Composable
 fun GetMyEvaluations(
+    onClick: (String) -> Unit,
     viewModel: MyPageViewModel = hiltViewModel()
 ) {
     viewModel.getMyEvaluations()
     val myEvaluations = viewModel.myEvaluations.collectAsState()
     LazyGridView(
-        myEvaluations
-    )
+        myEvaluations.value?.votes ?: emptyList(),
+    ) {
+        onClick(it)
+    }
 }
 
 @Composable
 fun <T> LazyGridView(
-    myVotes: List<T>
+    items: List<T>,
+    onClick: (String) -> Unit
 ) {
-    LazyVerticalGrid(columns = GridCells.Fixed(2)) {
-        myVotes.value?.let {
-            itemsIndexed(it.votes) { index, item ->
+    LazyVerticalGrid(columns = GridCells.Fixed(2), modifier = Modifier.padding(top = 12.dp)) {
+        itemsIndexed(items) { index, item ->
+            when (item) {
+                is MyVotesResponse.Vote -> {
+                    VoteImageListView(item.imageUrl) {
+                        onClick(item.id.toString())
+                    }
+                }
 
+                is MyEvaluations.Vote -> {
+                    VoteImageListView(item.imageUrl) {
+                        onClick(item.id.toString())
+                    }
+                }
             }
         }
+    }
+}
+
+@Composable
+fun VoteImageListView(
+    imageUrl: String,
+    onClick: () -> Unit
+) {
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    Card(
+        modifier = Modifier
+            .padding(all = 8.dp)
+            .width(screenWidth / 2)
+            .height(screenWidth / 2)
+            .clickable {
+                onClick()
+            },
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(transparent)
+    ) {
+        Image(
+            painter = rememberAsyncImagePainter(model = imageUrl),
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(24.dp)),
+            contentScale = ContentScale.Crop,
+            contentDescription = "image_url"
+        )
     }
 }
