@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyPageViewModel @Inject constructor(
-    private val repository: RepositoryImpl,
+    override var repository: RepositoryImpl,
     override var dataStore: DataStore<Preferences>
 ) : BaseViewModel() {
 
@@ -33,9 +33,6 @@ class MyPageViewModel @Inject constructor(
 
     private val _myEvaluations = MutableStateFlow<MyEvaluations?>(null)
     val myEvaluations = _myEvaluations.asStateFlow()
-
-    private val _voteDetail = MutableStateFlow<VotesListResponse.Vote?>(null)
-    val voteDetail = _voteDetail.asStateFlow()
 
     fun getMyInfo() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -70,14 +67,12 @@ class MyPageViewModel @Inject constructor(
             try {
                 val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
                 val memberId = readMyMemberId().firstOrNull()
-                if (memberId != null) {
-                    _myEvaluations.emit(
-                        repository.getMyEvaluations(
-                            accessToken,
-                            memberId.toString()
-                        )
+                _myEvaluations.emit(
+                    repository.getMyEvaluations(
+                        accessToken,
+                        memberId.toString()
                     )
-                }
+                )
             } catch (e: HttpException) {
                 Log.e("MyPageViewModel", "getMyVotes: ${e.message}")
             }

@@ -2,6 +2,7 @@ package kr.jm.salmal_android
 
 import android.net.Uri
 import android.util.Base64
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -13,13 +14,25 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kr.jm.salmal_android.repository.RepositoryImpl
 import org.json.JSONObject
+import retrofit2.HttpException
 
 open class BaseViewModel() : ViewModel() {
 
+    open lateinit var repository: RepositoryImpl
     open lateinit var dataStore: DataStore<Preferences>
+
+    private var _userBanSuccess = MutableSharedFlow<Boolean>()
+    val userBanSuccess = _userBanSuccess.asSharedFlow()
+
+    private var _voteReportSuccess = MutableSharedFlow<Boolean>()
+    val voteReportSuccess = _voteReportSuccess.asSharedFlow()
 
     val isLoading = mutableStateOf(false)
 
@@ -157,6 +170,46 @@ open class BaseViewModel() : ViewModel() {
             .map { preferences ->
                 preferences[myImageUrlKey]
             }
+    }
+
+    fun voteReport(voteId: String, reason: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                val response = repository.voteReport(accessToken, voteId, reason)
+                if (response.isSuccessful) {
+                    if (response.code() == 201) {
+                        _voteReportSuccess.emit(true)
+                    }
+                } else {
+                    Log.e("VoteViewModel", "voteReport: Response was not successful")
+                }
+            } catch (e: HttpException) {
+                Log.e("VoteViewModel", "voteReport: ${e.message}")
+            } catch (e: Exception) {
+                Log.e("VoteViewModel", "voteReport: ${e.message}")
+            }
+        }
+    }
+
+    fun userBan(memberId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                val response = repository.userBan(accessToken, memberId)
+                if (response.isSuccessful) {
+                    if (response.code() == 201) {
+                        _userBanSuccess.emit(true)
+                    }
+                } else {
+                    Log.e("VoteViewModel", "userBan: Response was not successful")
+                }
+            } catch (e: HttpException) {
+                Log.e("VoteViewModel", "userBan: ${e.message}")
+            } catch (e: Exception) {
+                Log.e("VoteViewModel", "userBan: ${e.message}")
+            }
+        }
     }
 
     fun showIndicator() {

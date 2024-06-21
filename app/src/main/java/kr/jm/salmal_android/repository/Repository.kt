@@ -3,6 +3,7 @@ package kr.jm.salmal_android.repository
 import kr.jm.salmal_android.data.request.LoginRequest
 import kr.jm.salmal_android.data.response.LoginResponse
 import kr.jm.salmal_android.data.request.SignUpRequest
+import kr.jm.salmal_android.data.response.BookMarkResponse
 import kr.jm.salmal_android.data.response.CommentsItem
 import kr.jm.salmal_android.data.response.MyEvaluations
 import kr.jm.salmal_android.data.response.MyVotesResponse
@@ -130,4 +131,9 @@ interface Repository {
         accessToken: String,
         memberId: String,
     ): MyEvaluations
+
+    suspend fun getMyBookMarks(
+        accessToken: String,
+        memberId: String,
+    ): BookMarkResponse
 }

@@ -1,5 +1,7 @@
 package kr.jm.salmal_android.ui.screen.webview
 
+import android.content.Intent
+import android.net.Uri
 import android.net.http.SslError
 import android.os.Message
 import android.view.View
@@ -41,7 +43,7 @@ fun WebViewScreen(url: String, backStack: () -> Unit) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(text = "이용약관", color = primaryWhite) },
+                title = { Text(text = "", color = primaryWhite) },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = primaryBlack),
                 navigationIcon = {
                     Icon(
@@ -59,7 +61,9 @@ fun WebViewScreen(url: String, backStack: () -> Unit) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it),
-            factory = { webView }
+            factory = {
+                webView
+            }
         )
     }
 }
@@ -80,9 +84,31 @@ fun rememberWebView(url: String): WebView {
                     view: WebView?,
                     request: WebResourceRequest?
                 ): Boolean {
-                    view?.loadUrl(request?.url.toString())
-                    Logger.i(request?.url.toString())
-                    return true
+                    val url = request?.url.toString()
+                    return if (url.startsWith("intent://") || url.startsWith("kakao")) {
+                        try {
+                            val intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME)
+                            if (intent != null) {
+                                val existPackage = context.packageManager.getLaunchIntentForPackage(intent.`package`!!)
+                                if (existPackage != null) {
+                                    context.startActivity(intent)
+                                } else {
+                                    val marketIntent = Intent(Intent.ACTION_VIEW)
+                                    marketIntent.data = Uri.parse("market://details?id=" + intent.`package`)
+                                    context.startActivity(marketIntent)
+                                }
+                                true
+                            } else {
+                                false
+                            }
+                        } catch (e: Exception) {
+                            false
+                        }
+                    } else {
+                        view?.loadUrl(url)
+                        Logger.i(url)
+                        true
+                    }
                 }
 
                 override fun onReceivedError(
@@ -104,7 +130,6 @@ fun rememberWebView(url: String): WebView {
                     handler: SslErrorHandler?,
                     error: SslError?
                 ) {
-                    super.onReceivedSslError(view, handler, error)
                     handler?.proceed()
                     Logger.e("handler: %s\nerror: %s", handler, error)
                     Logger.e(
@@ -140,7 +165,6 @@ fun rememberWebView(url: String): WebView {
                     val transport = resultMsg?.obj as WebView.WebViewTransport
                     transport.webView = newWebView
                     resultMsg.sendToTarget()
-
                     return true
                 }
 

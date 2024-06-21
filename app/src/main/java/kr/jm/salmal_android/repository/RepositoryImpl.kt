@@ -3,6 +3,7 @@ package kr.jm.salmal_android.repository
 import kr.jm.salmal_android.data.request.LoginRequest
 import kr.jm.salmal_android.data.request.SignUpRequest
 import kr.jm.salmal_android.data.request.VoteEvaluationRequest
+import kr.jm.salmal_android.data.response.BookMarkResponse
 import kr.jm.salmal_android.data.response.CommentsItem
 import kr.jm.salmal_android.data.response.LoginResponse
 import kr.jm.salmal_android.data.response.MyEvaluations
@@ -165,5 +166,9 @@ class RepositoryImpl @Inject constructor(
 
     override suspend fun getMyEvaluations(accessToken: String, memberId: String): MyEvaluations {
         return memberApiService.getMyEvaluations(accessToken, memberId, null, 100)
+    }
+
+    override suspend fun getMyBookMarks(accessToken: String, memberId: String): BookMarkResponse {
+        return memberApiService.getMyBookmarks(accessToken, memberId, null, 100)
     }
 }

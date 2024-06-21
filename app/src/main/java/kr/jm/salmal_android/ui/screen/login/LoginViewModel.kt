@@ -23,7 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val repository: RepositoryImpl,
+    override var repository: RepositoryImpl,
     override var dataStore: DataStore<Preferences>
 ) : BaseViewModel() {
 

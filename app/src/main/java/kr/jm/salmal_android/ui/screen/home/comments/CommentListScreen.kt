@@ -27,6 +27,8 @@ import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.flow.collectLatest
 import kr.jm.salmal_android.data.response.CommentsItem
 import kr.jm.salmal_android.ui.screen.component.BasicDialog
+import kr.jm.salmal_android.ui.screen.home.comments.bottomsheet.CommentsReportBottomSheet
+import kr.jm.salmal_android.ui.screen.home.comments.bottomsheet.CommentsUpdateBottomSheet
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.gray2
 import kr.jm.salmal_android.ui.theme.primaryGreen

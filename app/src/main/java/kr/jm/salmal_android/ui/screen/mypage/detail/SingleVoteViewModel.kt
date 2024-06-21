@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SingleVoteViewModel @Inject constructor(
-    private val repository: RepositoryImpl,
+    override var repository: RepositoryImpl,
     override var dataStore: DataStore<Preferences>
 ) : BaseViewModel() {
     private val _voteDetail = MutableStateFlow<VotesListResponse.Vote?>(null)

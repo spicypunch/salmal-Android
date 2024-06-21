@@ -21,18 +21,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class VoteViewModel @Inject constructor(
-    private val repository: RepositoryImpl,
+    override var repository: RepositoryImpl,
     override var dataStore: DataStore<Preferences>
 ) : BaseViewModel() {
 
     private val _votesList = MutableStateFlow<VotesListResponse?>(null)
     val votesList = _votesList.asStateFlow()
-
-    private var _userBanSuccess = MutableSharedFlow<Boolean>()
-    val userBanSuccess = _userBanSuccess.asSharedFlow()
-
-    private var _voteReportSuccess = MutableSharedFlow<Boolean>()
-    val voteReportSuccess = _voteReportSuccess.asSharedFlow()
 
     private var currentSearchType = ""
 
@@ -186,46 +180,6 @@ class VoteViewModel @Inject constructor(
                 Log.e("VoteViewModel", "deleteBookmark: ${e.message}")
             } catch (e: Exception) {
                 Log.e("VoteViewModel", "deleteBookmark: ${e.message}")
-            }
-        }
-    }
-
-    fun voteReport(voteId: String, reason: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
-                val response = repository.voteReport(accessToken, voteId, reason)
-                if (response.isSuccessful) {
-                    if (response.code() == 201) {
-                        _voteReportSuccess.emit(true)
-                    }
-                } else {
-                    Log.e("VoteViewModel", "voteReport: Response was not successful")
-                }
-            } catch (e: HttpException) {
-                Log.e("VoteViewModel", "voteReport: ${e.message}")
-            } catch (e: Exception) {
-                Log.e("VoteViewModel", "voteReport: ${e.message}")
-            }
-        }
-    }
-
-    fun userBan(memberId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
-                val response = repository.userBan(accessToken, memberId)
-                if (response.isSuccessful) {
-                    if (response.code() == 201) {
-                        _userBanSuccess.emit(true)
-                    }
-                } else {
-                    Log.e("VoteViewModel", "userBan: Response was not successful")
-                }
-            } catch (e: HttpException) {
-                Log.e("VoteViewModel", "userBan: ${e.message}")
-            } catch (e: Exception) {
-                Log.e("VoteViewModel", "userBan: ${e.message}")
             }
         }
     }

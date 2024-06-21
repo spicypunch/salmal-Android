@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import kr.jm.salmal_android.data.response.CommentsItem
+import kr.jm.salmal_android.ui.screen.home.comments.bottomsheet.CommentsReportBottomSheet
+import kr.jm.salmal_android.ui.screen.home.comments.bottomsheet.CommentsUpdateBottomSheet
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.gray2
 import kr.jm.salmal_android.ui.theme.primaryRed

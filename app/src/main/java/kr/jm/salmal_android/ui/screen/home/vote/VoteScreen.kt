@@ -47,7 +47,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kr.jm.salmal_android.ui.screen.component.BasicDialog
-import kr.jm.salmal_android.ui.screen.home.comments.CommentsBottomSheet
+import kr.jm.salmal_android.ui.screen.home.comments.bottomsheet.CommentsBottomSheet
 import kr.jm.salmal_android.ui.screen.home.ReportBottomSheet
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.gray1

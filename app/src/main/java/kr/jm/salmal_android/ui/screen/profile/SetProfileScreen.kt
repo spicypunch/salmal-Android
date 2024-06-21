@@ -50,7 +50,6 @@ import kr.jm.salmal_android.ui.theme.transparent
 import kr.jm.salmal_android.ui.theme.white36
 import kr.lifesemantics.salmal_android.R
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SetFirstProfileScreen(
     viewModel: SetProfileViewModel = hiltViewModel(),
@@ -65,67 +64,6 @@ fun SetFirstProfileScreen(
     var showText by rememberSaveable {
         mutableStateOf(false)
     }
-//    var imageUri: Uri? by rememberSaveable {
-//        mutableStateOf(null)
-//    }
-
-    val context = LocalContext.current
-
-//    /**
-//     * Modal
-//     */
-//    var showBottomSheet by rememberSaveable { mutableStateOf(false) }
-//    val sheetState = rememberModalBottomSheetState()
-//
-//    /**
-//     * Gallery
-//     */
-//    val galleryLauncher =
-//        rememberLauncherForActivityResult(
-//            contract = ActivityResultContracts.GetContent(),
-//            onResult = { uri ->
-//                if (uri != null) {
-//                    imageUri = uri
-//                }
-//            }
-//        )
-//    val openGallery = {
-//        galleryLauncher.launch("image/*")
-//    }
-//
-//    /**
-//     * Camera
-//     */
-//    var cameraImageFile: Uri? by rememberSaveable {
-//        mutableStateOf(null)
-//    }
-//    val cameraLauncher =
-//        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-//            if (success) {
-//                imageUri = cameraImageFile
-//            }
-//        }
-//
-//    /**
-//     * PermissionList
-//     */
-//    val permissionsList: Array<String> =
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-//            arrayOf(
-//                Manifest.permission.READ_MEDIA_IMAGES,
-//                Manifest.permission.CAMERA,
-//            )
-//        } else {
-//            arrayOf(
-//                Manifest.permission.READ_EXTERNAL_STORAGE,
-//                Manifest.permission.CAMERA,
-//            )
-//        }
-
-//    LaunchedEffect(imageUri) {
-//        imageUri?.let { viewModel.saveProfileImage(it) }
-//    }
-
 
     LaunchedEffect(Unit) {
         viewModel.signUpSuccess.collectLatest {
@@ -152,44 +90,11 @@ fun SetFirstProfileScreen(
                     .background(color = black1b)
                     .padding(it)
             ) {
-//                Image(
-//                    painter = if (imageUri == null) rememberAsyncImagePainter(
-//                        model = R.drawable.salmal_icon_circle
-//                    ) else rememberAsyncImagePainter(
-//                        model = ImageRequest.Builder(context).data(imageUri).build()
-//                    ),
-//                    modifier = Modifier
-//                        .size(89.dp)
-//                        .clip(CircleShape)
-//                        .clickable {
-//                            Utils.requestPermissions(
-//                                permissionsList,
-//                                true,
-//                                onGranted = {
-//                                    showBottomSheet = true
-//                                }
-//                            ) {
-//                            }
-//                        },
-//                    contentScale = ContentScale.Crop,
-//                    contentDescription = "salmal_logo"
-//                )
                 Image(
                     painter = rememberAsyncImagePainter(model = R.drawable.salmal_icon_circle),
                     modifier = Modifier
                         .size(89.dp)
-                        .clip(CircleShape)
-//                        .clickable {
-//                            Utils.requestPermissions(
-//                                permissionsList,
-//                                true,
-//                                onGranted = {
-//                                    showBottomSheet = true
-//                                }
-//                            ) {
-//                            }
-//                        },
-                    ,
+                        .clip(CircleShape),
                     contentScale = ContentScale.Crop,
                     contentDescription = "salmal_logo"
                 )
@@ -264,66 +169,6 @@ fun SetFirstProfileScreen(
                 ) {
                     viewModel.signUp(nickName)
                 }
-
-//                if (showBottomSheet) {
-//                    ModalBottomSheet(
-//                        onDismissRequest = { showBottomSheet = false },
-//                        sheetState = sheetState,
-//                        containerColor = Gray4
-//                    ) {
-//                        Column(
-//                        ) {
-//                            Row(
-//                                verticalAlignment = Alignment.CenterVertically,
-//                                modifier = Modifier.clickable {
-//                                    openGallery()
-//                                    showBottomSheet = false
-//                                }
-//                            ) {
-//                                Image(
-//                                    painter = rememberAsyncImagePainter(model = R.drawable.modal_gallery_icon),
-//                                    modifier = Modifier.padding(start = 18.dp),
-//                                    contentDescription = "modal_gallery_icon"
-//                                )
-//                                Text(
-//                                    text = "사진첩에서 선택하기",
-//                                    fontFamily = Pretendard,
-//                                    fontWeight = FontWeight.Medium,
-//                                    fontSize = 16.sp,
-//                                    color = primaryWhite,
-//                                    modifier = Modifier.padding(start = 6.dp)
-//                                )
-//                            }
-//                            Row(
-//                                verticalAlignment = Alignment.CenterVertically,
-//                                modifier = Modifier
-//                                    .padding(top = 32.dp)
-//                                    .clickable {
-//                                        cameraImageFile = Utils.createImageFile(context)
-//                                        cameraImageFile?.let {
-//                                            cameraLauncher.launch(it)
-//                                        }
-//                                        showBottomSheet = false
-//                                    }
-//                            ) {
-//                                Image(
-//                                    painter = rememberAsyncImagePainter(model = R.drawable.modal_camera_icon),
-//                                    modifier = Modifier.padding(start = 18.dp),
-//                                    contentDescription = "modal_camera_icon"
-//                                )
-//                                Text(
-//                                    text = "촬영하기",
-//                                    fontFamily = Pretendard,
-//                                    fontWeight = FontWeight.Medium,
-//                                    fontSize = 16.sp,
-//                                    color = primaryWhite,
-//                                    modifier = Modifier.padding(start = 6.dp)
-//                                )
-//                            }
-//                            Spacer(modifier = Modifier.height(64.dp))
-//                        }
-//                    }
-//                }
             }
         }
     }

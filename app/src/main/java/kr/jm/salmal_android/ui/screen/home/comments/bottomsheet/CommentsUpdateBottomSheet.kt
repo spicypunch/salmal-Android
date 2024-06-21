@@ -1,4 +1,4 @@
-package kr.jm.salmal_android.ui.screen.home.comments
+package kr.jm.salmal_android.ui.screen.home.comments.bottomsheet
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -18,9 +18,10 @@ import kr.lifesemantics.salmal_android.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommentsReportBottomSheet(
+fun CommentsUpdateBottomSheet(
     showBottomSheet: () -> Unit,
-    onReport: () -> Unit
+    onClickUpdate: () -> Unit,
+    onClickDelete: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(true)
 
@@ -35,10 +36,16 @@ fun CommentsReportBottomSheet(
             modifier = Modifier.padding(WindowInsets.navigationBars.asPaddingValues())
         ) {
             BottomSheetRowComponent(
-                iconResource = R.drawable.user_report_icon,
-                content = "신고",
+                iconResource = R.drawable.pencil_icon,
+                content = "수정",
             ) {
-                onReport()
+                onClickUpdate()
+            }
+            BottomSheetRowComponent(
+                iconResource = R.drawable.delete_icon,
+                content = "삭제",
+            ) {
+                onClickDelete()
             }
         }
     }

@@ -1,4 +1,4 @@
-package kr.jm.salmal_android.ui.screen.home.comments
+package kr.jm.salmal_android.ui.screen.home.comments.bottomsheet
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -53,6 +53,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.flow.firstOrNull
+import kr.jm.salmal_android.ui.screen.home.comments.CommentsList
+import kr.jm.salmal_android.ui.screen.home.comments.CommentsViewModel
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.gray2
 import kr.jm.salmal_android.ui.theme.gray4

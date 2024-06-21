@@ -1,5 +1,6 @@
 package kr.jm.salmal_android.service
 
+import kr.jm.salmal_android.data.response.BookMarkResponse
 import kr.jm.salmal_android.data.response.MyEvaluations
 import kr.jm.salmal_android.data.response.MyVotesResponse
 import kr.jm.salmal_android.data.response.UserInfoResponse
@@ -39,5 +40,13 @@ interface MemberApiService {
         @Query("cursorId") cursorId: String?,
         @Query("size") size: Int?,
     ): MyEvaluations
+
+    @GET("members/{memberId}/bookmarks")
+    suspend fun getMyBookmarks(
+        @Header("Authorization") accessToken: String,
+        @Path("memberId") memberId: String,
+        @Query("cursorId") cursorId: String?,
+        @Query("size") size: Int?,
+    ): BookMarkResponse
 
 }
