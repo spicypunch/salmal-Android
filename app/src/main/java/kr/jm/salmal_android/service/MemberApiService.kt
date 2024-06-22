@@ -1,13 +1,17 @@
 package kr.jm.salmal_android.service
 
+import kr.jm.salmal_android.data.request.UpdateMyInfoRequest
 import kr.jm.salmal_android.data.response.BookMarkResponse
 import kr.jm.salmal_android.data.response.MyEvaluations
 import kr.jm.salmal_android.data.response.MyVotesResponse
 import kr.jm.salmal_android.data.response.UserInfoResponse
 import retrofit2.Response
+import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -49,4 +53,25 @@ interface MemberApiService {
         @Query("size") size: Int?,
     ): BookMarkResponse
 
+    @DELETE("members/{memberId}")
+    suspend fun withdrawal(
+        @Header("Authorization") accessToken: String,
+        @Path("memberId") memberId: String,
+    ): Response<Unit>
+
+    /**
+     * Todo 파일 업로드 하는 법?
+     */
+    @POST("members/{memberId}/images")
+    suspend fun updateProfileImage(
+        @Header("Authorization") accessToken: String,
+        @Path("memberId") memberId: String,
+    ): Response<Unit>
+
+    @PUT("members/{memberId}")
+    suspend fun updateMyInfo(
+        @Header("Authorization") accessToken: String,
+        @Path("memberId") memberId: String,
+        @Body updateMyInfoRequest: UpdateMyInfoRequest
+    ): Response<Unit>
 }

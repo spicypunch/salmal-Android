@@ -19,19 +19,4 @@ class HomeViewModel @Inject constructor(
     override var dataStore: DataStore<Preferences>
 ) : BaseViewModel() {
 
-    fun getMyInfo() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
-                val memberId = readMyMemberId().firstOrNull()
-                if (memberId != null) {
-                    val myInfo = repository.getUserInfo(accessToken, memberId)
-                    saveMyNickName(myInfo.nickName)
-                    saveMyImageUrl(myInfo.imageUrl)
-                }
-            } catch (e: HttpException) {
-                Log.e("HomeViewModel", "getMyInfo: ${e.message}")
-            }
-        }
-    }
 }

@@ -3,6 +3,7 @@ package kr.jm.salmal_android.repository
 import kr.jm.salmal_android.data.request.LoginRequest
 import kr.jm.salmal_android.data.response.LoginResponse
 import kr.jm.salmal_android.data.request.SignUpRequest
+import kr.jm.salmal_android.data.request.UpdateMyInfoRequest
 import kr.jm.salmal_android.data.response.BookMarkResponse
 import kr.jm.salmal_android.data.response.CommentsItem
 import kr.jm.salmal_android.data.response.MyEvaluations
@@ -136,4 +137,20 @@ interface Repository {
         accessToken: String,
         memberId: String,
     ): BookMarkResponse
+
+    suspend fun logout(
+        accessToken: String,
+        refreshToken: String,
+    ): Response<Unit>
+
+    suspend fun withdrawal(
+        accessToken: String,
+        memberId: String,
+    ): Response<Unit>
+
+    suspend fun updateMyInfo(
+        accessToken: String,
+        memberId: String,
+        updateMyInfoRequest: UpdateMyInfoRequest
+    ): Response<Unit>
 }

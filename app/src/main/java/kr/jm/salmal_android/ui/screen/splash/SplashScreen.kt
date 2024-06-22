@@ -22,6 +22,7 @@ fun SplashScreen(
     loginResult: (Boolean) -> Unit
 ) {
     viewModel.attemptLogin()
+
     LaunchedEffect(Unit) {
         viewModel.loginResult.collectLatest {
             delay(2000)
@@ -32,8 +33,13 @@ fun SplashScreen(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize().background(color = primaryBlack)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = primaryBlack)
     ) {
-        Image(painter = rememberAsyncImagePainter(model = R.drawable.salmal_icon), contentDescription = "splashIcon")
+        Image(
+            painter = rememberAsyncImagePainter(model = R.drawable.salmal_icon),
+            contentDescription = "splashIcon"
+        )
     }
 }

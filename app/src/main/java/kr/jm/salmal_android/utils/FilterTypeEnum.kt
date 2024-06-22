@@ -2,7 +2,7 @@ package kr.jm.salmal_android.utils
 
 import androidx.compose.ui.graphics.ColorMatrix
 
-enum class FilterType {
+enum class FilterTypeEnum {
     DEFAULT,
     SEPIA,
     BRIGHTNESS,
@@ -11,7 +11,7 @@ enum class FilterType {
     BLACK_WHITE;
 
     companion object {
-        fun getFilter(type: FilterType): ColorMatrix {
+        fun getFilter(type: FilterTypeEnum): ColorMatrix {
             return when (type) {
                 DEFAULT -> {
                     ColorMatrix(

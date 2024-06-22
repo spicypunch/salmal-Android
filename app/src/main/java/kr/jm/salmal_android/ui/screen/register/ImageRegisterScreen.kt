@@ -71,7 +71,7 @@ import kr.jm.salmal_android.ui.theme.primaryGreen
 import kr.jm.salmal_android.ui.theme.primaryWhite
 import kr.jm.salmal_android.ui.theme.transparent
 import kr.jm.salmal_android.ui.theme.white80
-import kr.jm.salmal_android.utils.FilterType
+import kr.jm.salmal_android.utils.FilterTypeEnum
 import kr.jm.salmal_android.utils.TextProperties
 import kr.jm.salmal_android.utils.Utils.encodeMultipart
 import kr.jm.salmal_android.utils.Utils.saveBitmapAsJpeg
@@ -84,13 +84,13 @@ fun ImageRegisterScreen(
     onClickCancel: () -> Unit,
     viewModel: RegisterViewModel = hiltViewModel()
 ) {
-    val filterTypeList = arrayOf(
-        FilterType.getFilter(FilterType.DEFAULT),
-        FilterType.getFilter(FilterType.SEPIA),
-        FilterType.getFilter(FilterType.BRIGHTNESS),
-        FilterType.getFilter(FilterType.CONTRAST),
-        FilterType.getFilter(FilterType.NEGATIVE),
-        FilterType.getFilter(FilterType.BLACK_WHITE)
+    val filterTypeEnumList = arrayOf(
+        FilterTypeEnum.getFilter(FilterTypeEnum.DEFAULT),
+        FilterTypeEnum.getFilter(FilterTypeEnum.SEPIA),
+        FilterTypeEnum.getFilter(FilterTypeEnum.BRIGHTNESS),
+        FilterTypeEnum.getFilter(FilterTypeEnum.CONTRAST),
+        FilterTypeEnum.getFilter(FilterTypeEnum.NEGATIVE),
+        FilterTypeEnum.getFilter(FilterTypeEnum.BLACK_WHITE)
     )
     var currentFilterIndex by remember {
         mutableIntStateOf(0)
@@ -133,7 +133,7 @@ fun ImageRegisterScreen(
                         ) {
                             MainImage(
                                 uri = uri,
-                                currentFilterType = filterTypeList[currentFilterIndex]
+                                currentFilterType = filterTypeEnumList[currentFilterIndex]
                             )
                             DraggableText(textProperties)
                         }
@@ -165,7 +165,7 @@ fun ImageRegisterScreen(
                     modifier = Modifier.fillMaxSize()
                 )
             } else {
-                MainImage(uri = uri, currentFilterType = filterTypeList[currentFilterIndex])
+                MainImage(uri = uri, currentFilterType = filterTypeEnumList[currentFilterIndex])
                 DraggableText(textProperties)
             }
 
@@ -173,7 +173,7 @@ fun ImageRegisterScreen(
 
         FilterOptions(
             uri = uri,
-            filterTypeList = filterTypeList,
+            filterTypeList = filterTypeEnumList,
             currentFilterIndex = currentFilterIndex
         ) { index ->
             currentFilterIndex = index

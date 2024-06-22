@@ -26,6 +26,7 @@ import kr.jm.salmal_android.ui.screen.mypage.MyPageScreen
 import kr.jm.salmal_android.ui.screen.mypage.bookmark.BookMarkScreen
 import kr.jm.salmal_android.ui.screen.mypage.detail.SingleVoteScreen
 import kr.jm.salmal_android.ui.screen.mypage.setting.SettingScreen
+import kr.jm.salmal_android.ui.screen.mypage.setting.edit.EditMyInfoScreen
 import kr.jm.salmal_android.ui.screen.profile.SetFirstProfileScreen
 import kr.jm.salmal_android.ui.screen.register.GetImageUriScreen
 import kr.jm.salmal_android.ui.screen.register.ImageRegisterScreen
@@ -121,7 +122,7 @@ fun App() {
                     MyPageScreen(
                         onClick = { voteId ->
                             navController.navigate(
-                                "singlevote/$voteId"
+                                "single_vote/$voteId"
                             )
                         },
                         onClickSetting = {
@@ -150,12 +151,12 @@ fun App() {
                                 )
                             },
                             moveToSetProfile = {
-                                navController.navigate("setprofile")
+                                navController.navigate("set_profile")
                             })
                     }
                 }
-                composable(route = "setprofile") {
-                    Utils.ScreenTransition(navController = navController, route = "setprofile") {
+                composable(route = "set_profile") {
+                    Utils.ScreenTransition(navController = navController, route = "set_profile") {
                         SetFirstProfileScreen() {
                             navController.navigate("home")
                         }
@@ -176,7 +177,7 @@ fun App() {
                         }
                     }
                 }
-                composable(route = "singlevote/{voteId}") { backStackEntry ->
+                composable(route = "single_vote/{voteId}") { backStackEntry ->
                     val voteId = backStackEntry.arguments?.getString("voteId")
                     if (voteId != null) {
                         SingleVoteScreen(voteId = voteId)
@@ -210,8 +211,33 @@ fun App() {
                                     )
                                 }"
                             )
+                        },
+                        moveToEditInfo = {
+                            navController.navigate("edit_my_info")
+                        },
+                        moveToUserBan = {
+
                         }
                     )
+                }
+                composable(route = "edit_my_info") {
+                    Utils.ScreenTransition(navController = navController, route = "edit_my_info") {
+                        EditMyInfoScreen(
+                            goToLogin = {
+                                navController.navigate("login") {
+                                    // 전체 내비게이션 스택을 지움
+                                    popUpTo(0) { inclusive = true }
+                                    // 새 목적지를 스택의 맨 위에 단일 인스턴스로 시작함
+                                    launchSingleTop = true
+                                    // 이전 상태를 복원하지 않음
+                                    restoreState = true
+                                }
+                            },
+                            goBack = {
+                                navController.popBackStack()
+                            }
+                        )
+                    }
                 }
             }
         }

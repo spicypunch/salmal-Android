@@ -25,28 +25,11 @@ class MyPageViewModel @Inject constructor(
     override var dataStore: DataStore<Preferences>
 ) : BaseViewModel() {
 
-    private val _myInfo = MutableStateFlow<UserInfoResponse?>(null)
-    val myInfo = _myInfo.asStateFlow()
-
     private val _myVotes = MutableStateFlow<MyVotesResponse?>(null)
     val myVotes = _myVotes.asStateFlow()
 
     private val _myEvaluations = MutableStateFlow<MyEvaluations?>(null)
     val myEvaluations = _myEvaluations.asStateFlow()
-
-    fun getMyInfo() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
-                val memberId = readMyMemberId().firstOrNull()
-                if (memberId != null) {
-                    _myInfo.emit(repository.getUserInfo(accessToken, memberId))
-                }
-            } catch (e: HttpException) {
-                Log.e("MyPageViewModel", "getMyInfo: ${e.message}")
-            }
-        }
-    }
 
     fun getMyVotes() {
         viewModelScope.launch(Dispatchers.IO) {

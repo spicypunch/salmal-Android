@@ -36,7 +36,9 @@ import kr.lifesemantics.salmal_android.R
 @Composable
 fun SettingScreen(
     onClickBack: () -> Unit,
-    moveToWebView: (String) -> Unit
+    moveToWebView: (String) -> Unit,
+    moveToEditInfo: () -> Unit,
+    moveToUserBan: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -75,7 +77,7 @@ fun SettingScreen(
                 title = "개인정보 수정",
                 iconResource = R.drawable.edit_icon,
                 onClick = {
-
+                    moveToEditInfo()
                 }
             )
             SettingRowItem(
@@ -110,7 +112,7 @@ fun SettingScreen(
                 title = "차단한 사용자",
                 iconResource = R.drawable.send_icon,
                 onClick = {
-
+                    moveToUserBan()
                 }
             )
         }

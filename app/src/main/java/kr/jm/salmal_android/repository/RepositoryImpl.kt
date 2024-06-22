@@ -2,6 +2,7 @@ package kr.jm.salmal_android.repository
 
 import kr.jm.salmal_android.data.request.LoginRequest
 import kr.jm.salmal_android.data.request.SignUpRequest
+import kr.jm.salmal_android.data.request.UpdateMyInfoRequest
 import kr.jm.salmal_android.data.request.VoteEvaluationRequest
 import kr.jm.salmal_android.data.response.BookMarkResponse
 import kr.jm.salmal_android.data.response.CommentsItem
@@ -18,7 +19,6 @@ import kr.jm.salmal_android.service.NotificationApiService
 import kr.jm.salmal_android.service.VoteApiService
 import okhttp3.MultipartBody
 import retrofit2.Response
-import java.io.File
 import javax.inject.Inject
 
 class RepositoryImpl @Inject constructor(
@@ -170,5 +170,21 @@ class RepositoryImpl @Inject constructor(
 
     override suspend fun getMyBookMarks(accessToken: String, memberId: String): BookMarkResponse {
         return memberApiService.getMyBookmarks(accessToken, memberId, null, 100)
+    }
+
+    override suspend fun logout(accessToken: String, refreshToken: String): Response<Unit> {
+        return certifiedApiService.logout(accessToken, refreshToken)
+    }
+
+    override suspend fun withdrawal(accessToken: String, memberId: String): Response<Unit> {
+        return memberApiService.withdrawal(accessToken, memberId)
+    }
+
+    override suspend fun updateMyInfo(
+        accessToken: String,
+        memberId: String,
+        updateMyInfoRequest: UpdateMyInfoRequest
+    ): Response<Unit> {
+        return memberApiService.updateMyInfo(accessToken, memberId, updateMyInfoRequest)
     }
 }

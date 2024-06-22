@@ -15,10 +15,13 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kr.jm.salmal_android.data.response.UserInfoResponse
 import kr.jm.salmal_android.repository.RepositoryImpl
 import org.json.JSONObject
 import retrofit2.HttpException
@@ -33,6 +36,9 @@ open class BaseViewModel() : ViewModel() {
 
     private var _voteReportSuccess = MutableSharedFlow<Boolean>()
     val voteReportSuccess = _voteReportSuccess.asSharedFlow()
+
+    private val _myInfo = MutableStateFlow<UserInfoResponse?>(null)
+    val myInfo = _myInfo.asStateFlow()
 
     val isLoading = mutableStateOf(false)
 
@@ -172,6 +178,14 @@ open class BaseViewModel() : ViewModel() {
             }
     }
 
+    fun clearAllDataStoreKey() {
+        viewModelScope.launch(Dispatchers.IO) {
+            dataStore.edit { settings ->
+                settings.clear()
+            }
+        }
+    }
+
     fun voteReport(voteId: String, reason: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -182,12 +196,12 @@ open class BaseViewModel() : ViewModel() {
                         _voteReportSuccess.emit(true)
                     }
                 } else {
-                    Log.e("VoteViewModel", "voteReport: Response was not successful")
+                    Log.e("BaseViewModel", "voteReport: Response was not successful")
                 }
             } catch (e: HttpException) {
-                Log.e("VoteViewModel", "voteReport: ${e.message}")
+                Log.e("BaseViewModel", "voteReport: ${e.message}")
             } catch (e: Exception) {
-                Log.e("VoteViewModel", "voteReport: ${e.message}")
+                Log.e("BaseViewModel", "voteReport: ${e.message}")
             }
         }
     }
@@ -202,12 +216,30 @@ open class BaseViewModel() : ViewModel() {
                         _userBanSuccess.emit(true)
                     }
                 } else {
-                    Log.e("VoteViewModel", "userBan: Response was not successful")
+                    Log.e("BaseViewModel", "userBan: Response was not successful")
                 }
             } catch (e: HttpException) {
-                Log.e("VoteViewModel", "userBan: ${e.message}")
+                Log.e("BaseViewModel", "userBan: ${e.message}")
             } catch (e: Exception) {
-                Log.e("VoteViewModel", "userBan: ${e.message}")
+                Log.e("BaseViewModel", "userBan: ${e.message}")
+            }
+        }
+    }
+
+    fun getMyInfo() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                val memberId = readMyMemberId().firstOrNull()
+                if (memberId != null) {
+                    _myInfo.emit(repository.getUserInfo(accessToken, memberId))
+                    _myInfo.value?.let {
+                        saveMyNickName(it.nickName)
+                        saveMyImageUrl(it.imageUrl)
+                    }
+                }
+            } catch (e: HttpException) {
+                Log.e("BaseViewModel", "getMyInfo: ${e.message}")
             }
         }
     }
