@@ -1,5 +1,6 @@
 package kr.jm.salmal_android.ui.screen.mypage
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -50,7 +51,8 @@ import kr.lifesemantics.salmal_android.R
 fun MyPageScreen(
     onClick: (String) -> Unit,
     onClickSetting: () -> Unit,
-    onClickBookmark: () -> Unit
+    onClickBookmark: () -> Unit,
+    goToDeleteMyVote: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -78,19 +80,29 @@ fun MyPageScreen(
         },
         containerColor = primaryBlack,
     ) { innerPadding ->
-        MyInfoCardView(innerPadding, onClick = {
-            onClick(it)
-        })
+        MyInfoCardView(
+            innerPadding,
+            onClick = {
+                onClick(it)
+            },
+            goToDeleteMyVote = {
+                goToDeleteMyVote()
+            }
+        )
     }
 }
 
+@SuppressLint("RememberReturnType")
 @Composable
 fun MyInfoCardView(
     innerPadding: PaddingValues,
     onClick: (String) -> Unit,
+    goToDeleteMyVote: () -> Unit,
     viewModel: MyPageViewModel = hiltViewModel()
 ) {
-    viewModel.getMyInfo()
+    remember {
+        viewModel.getMyInfo()
+    }
 
     val myInfo = viewModel.myInfo.collectAsState()
     Column(
@@ -185,15 +197,21 @@ fun MyInfoCardView(
                 }
             }
         }
-        TabBar(onClick = {
-            onClick(it)
-        })
+        TabBar(
+            onClick = {
+                onClick(it)
+            },
+            goToDeleteMyVote = {
+                goToDeleteMyVote()
+            }
+        )
     }
 }
 
 @Composable
 fun TabBar(
-    onClick: (String) -> Unit
+    onClick: (String) -> Unit,
+    goToDeleteMyVote: () -> Unit
 ) {
     var tabIndex by remember {
         mutableIntStateOf(0)
@@ -234,7 +252,9 @@ fun TabBar(
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
             color = gray2,
-            modifier = Modifier
+            modifier = Modifier.clickable {
+                goToDeleteMyVote()
+            }
         )
 
     }
@@ -253,12 +273,16 @@ fun TabBar(
     }
 }
 
+@SuppressLint("RememberReturnType")
 @Composable
 fun GetMyVotes(
     onClick: (String) -> Unit,
     viewModel: MyPageViewModel = hiltViewModel()
 ) {
-    viewModel.getMyVotes()
+    remember {
+        viewModel.getMyVotes()
+    }
+
     val myVotes = viewModel.myVotes.collectAsState()
     LazyGridView(
         myVotes.value?.votes ?: emptyList(),

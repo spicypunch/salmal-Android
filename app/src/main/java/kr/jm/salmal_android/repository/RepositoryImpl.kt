@@ -4,6 +4,7 @@ import kr.jm.salmal_android.data.request.LoginRequest
 import kr.jm.salmal_android.data.request.SignUpRequest
 import kr.jm.salmal_android.data.request.UpdateMyInfoRequest
 import kr.jm.salmal_android.data.request.VoteEvaluationRequest
+import kr.jm.salmal_android.data.response.BanListResponse
 import kr.jm.salmal_android.data.response.BookMarkResponse
 import kr.jm.salmal_android.data.response.CommentsItem
 import kr.jm.salmal_android.data.response.LoginResponse
@@ -186,5 +187,20 @@ class RepositoryImpl @Inject constructor(
         updateMyInfoRequest: UpdateMyInfoRequest
     ): Response<Unit> {
         return memberApiService.updateMyInfo(accessToken, memberId, updateMyInfoRequest)
+    }
+
+    override suspend fun getBanList(
+        accessToken: String,
+        memberId: String,
+    ): BanListResponse {
+        return memberApiService.getBanList(accessToken, memberId, null, 100)
+    }
+
+    override suspend fun cancelUserBan(accessToken: String, memberId: String): Response<Unit> {
+        return memberApiService.cancelUserBan(accessToken, memberId)
+    }
+
+    override suspend fun deleteVote(accessToken: String, voteId: String): Response<Unit> {
+        return voteApiService.deleteVote(accessToken, voteId)
     }
 }

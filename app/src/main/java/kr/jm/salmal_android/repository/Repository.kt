@@ -4,6 +4,7 @@ import kr.jm.salmal_android.data.request.LoginRequest
 import kr.jm.salmal_android.data.response.LoginResponse
 import kr.jm.salmal_android.data.request.SignUpRequest
 import kr.jm.salmal_android.data.request.UpdateMyInfoRequest
+import kr.jm.salmal_android.data.response.BanListResponse
 import kr.jm.salmal_android.data.response.BookMarkResponse
 import kr.jm.salmal_android.data.response.CommentsItem
 import kr.jm.salmal_android.data.response.MyEvaluations
@@ -152,5 +153,20 @@ interface Repository {
         accessToken: String,
         memberId: String,
         updateMyInfoRequest: UpdateMyInfoRequest
+    ): Response<Unit>
+
+    suspend fun getBanList(
+        accessToken: String,
+        memberId: String,
+    ): BanListResponse
+
+    suspend fun cancelUserBan(
+        accessToken: String,
+        memberId: String,
+    ): Response<Unit>
+
+    suspend fun deleteVote(
+        accessToken: String,
+        voteId: String
     ): Response<Unit>
 }

@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kr.jm.salmal_android.data.response.MyVotesResponse
 import kr.jm.salmal_android.data.response.UserInfoResponse
 import kr.jm.salmal_android.repository.RepositoryImpl
 import org.json.JSONObject
@@ -39,6 +40,9 @@ open class BaseViewModel() : ViewModel() {
 
     private val _myInfo = MutableStateFlow<UserInfoResponse?>(null)
     val myInfo = _myInfo.asStateFlow()
+
+    private val _myVotes = MutableStateFlow<MyVotesResponse?>(null)
+    val myVotes = _myVotes.asStateFlow()
 
     val isLoading = mutableStateOf(false)
 
@@ -240,6 +244,20 @@ open class BaseViewModel() : ViewModel() {
                 }
             } catch (e: HttpException) {
                 Log.e("BaseViewModel", "getMyInfo: ${e.message}")
+            }
+        }
+    }
+
+    fun getMyVotes() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                val memberId = readMyMemberId().firstOrNull()
+                if (memberId != null) {
+                    _myVotes.emit(repository.getMyVotes(accessToken, memberId.toString()))
+                }
+            } catch (e: HttpException) {
+                Log.e("MyPageViewModel", "getMyVotes: ${e.message}")
             }
         }
     }

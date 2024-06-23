@@ -42,9 +42,11 @@ class EditMyInfoViewModel @Inject constructor(
                 val refreshToken = readRefreshToken().firstOrNull()
                 if (refreshToken != null) {
                     val response = repository.logout(accessToken, refreshToken)
-                    if (response.code() == 200) {
-                        clearAllDataStoreKey()
-                        _logoutResult.emit(true)
+                    if (response.isSuccessful) {
+                        if (response.code() == 200) {
+                            clearAllDataStoreKey()
+                            _logoutResult.emit(true)
+                        }
                     }
                 }
             } catch (e: HttpException) {
@@ -60,9 +62,11 @@ class EditMyInfoViewModel @Inject constructor(
                 val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
                 val memberId = readMyMemberId().firstOrNull()
                 val response = repository.withdrawal(accessToken, memberId.toString())
-                if (response.code() == 204) {
-                    clearAllDataStoreKey()
-                    _withdrawalResult.emit(true)
+                if (response.isSuccessful) {
+                    if (response.code() == 204) {
+                        clearAllDataStoreKey()
+                        _withdrawalResult.emit(true)
+                    }
                 }
             } catch (e: HttpException) {
                 Log.e("EditMyInfoViewModel", "withdrawal: ${e.message}")

@@ -26,6 +26,8 @@ import kr.jm.salmal_android.ui.screen.mypage.MyPageScreen
 import kr.jm.salmal_android.ui.screen.mypage.bookmark.BookMarkScreen
 import kr.jm.salmal_android.ui.screen.mypage.detail.SingleVoteScreen
 import kr.jm.salmal_android.ui.screen.mypage.setting.SettingScreen
+import kr.jm.salmal_android.ui.screen.mypage.setting.ban_list.BanListScreen
+import kr.jm.salmal_android.ui.screen.mypage.setting.delete.DeleteMyVoteScreen
 import kr.jm.salmal_android.ui.screen.mypage.setting.edit.EditMyInfoScreen
 import kr.jm.salmal_android.ui.screen.profile.SetFirstProfileScreen
 import kr.jm.salmal_android.ui.screen.register.GetImageUriScreen
@@ -134,6 +136,11 @@ fun App() {
                             navController.navigate(
                                 "bookmark"
                             )
+                        },
+                        goToDeleteMyVote = {
+                            navController.navigate(
+                                "delete_my_vote"
+                            )
                         }
                     )
                 }
@@ -216,7 +223,7 @@ fun App() {
                             navController.navigate("edit_my_info")
                         },
                         moveToUserBan = {
-
+                            navController.navigate("ban_list")
                         }
                     )
                 }
@@ -238,6 +245,20 @@ fun App() {
                             }
                         )
                     }
+                }
+                composable(route = "ban_list") {
+                    Utils.ScreenTransition(navController = navController, route = "ban_list") {
+                        BanListScreen(
+                            onClickBack = {
+                                navController.popBackStack()
+                            }
+                        )
+                    }
+                }
+                composable(route = "delete_my_vote") {
+                    DeleteMyVoteScreen(onClickBack = {
+                        navController.popBackStack()
+                    })
                 }
             }
         }

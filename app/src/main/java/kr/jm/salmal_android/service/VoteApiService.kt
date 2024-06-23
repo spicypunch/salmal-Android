@@ -84,4 +84,10 @@ interface VoteApiService {
         @Header("Authorization") accessToken: String,
         @Part imageFile: MultipartBody.Part
     ): Response<Unit>
+
+    @DELETE("votes/{voteId}")
+    suspend fun deleteVote(
+        @Header("Authorization") accessToken: String,
+        @Path("voteId") voteId: String,
+    ): Response<Unit>
 }

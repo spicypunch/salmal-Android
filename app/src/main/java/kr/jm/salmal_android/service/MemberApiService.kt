@@ -1,6 +1,7 @@
 package kr.jm.salmal_android.service
 
 import kr.jm.salmal_android.data.request.UpdateMyInfoRequest
+import kr.jm.salmal_android.data.response.BanListResponse
 import kr.jm.salmal_android.data.response.BookMarkResponse
 import kr.jm.salmal_android.data.response.MyEvaluations
 import kr.jm.salmal_android.data.response.MyVotesResponse
@@ -73,5 +74,19 @@ interface MemberApiService {
         @Header("Authorization") accessToken: String,
         @Path("memberId") memberId: String,
         @Body updateMyInfoRequest: UpdateMyInfoRequest
+    ): Response<Unit>
+
+    @GET("members/{memberId}/blocks")
+    suspend fun getBanList(
+        @Header("Authorization") accessToken: String,
+        @Path("memberId") memberId: String,
+        @Query("cursorId") cursorId: String?,
+        @Query("size") size: Int?,
+    ): BanListResponse
+
+    @DELETE("members/{memberId}/blocks")
+    suspend fun cancelUserBan(
+        @Header("Authorization") accessToken: String,
+        @Path("memberId") memberId: String,
     ): Response<Unit>
 }
