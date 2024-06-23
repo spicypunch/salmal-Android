@@ -40,6 +40,13 @@
 - 신고 및 차단
 <img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/a1ab7fc9-d03b-415a-aa02-cf587752f5f3" width = "200">
 
+그 외의 메인화면 기능
+- 투표 북마크
+- 내가 단 댓글 수정
+- 댓글 좋아요, 좋아요 취소
+- 다른 사람 댓글 신고
+- 투표 게시한 사용자 페이지 보기
+- 알림 모아보기
 
 
 ### 살말 투표 등록
@@ -59,8 +66,6 @@
 <img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/303394e6-6c5a-4bae-8feb-4eeb20fa8bcc" width = "200">
 
 
-
-
 ### 마이페이지
 
 개인정보 변경이나, 등록한 투표 삭제, 북마크한 투표등을 관리할수 있는 마이페이지
@@ -77,6 +82,12 @@
 
 - 차단한 유저 차단 해제
 <img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/752a2b84-11b9-4a8f-8a89-409bd6a392e8" width = "200">
+
+그 외의 메인화면 기능
+- 내가 북마크한 투표 모아보기
+- 개인정보 수정
+- 약관 보기
+- 개발자한테 카카오톡으로 연락하기
 
 ## 기술스택
 - Jetpack Compose
