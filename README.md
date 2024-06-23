@@ -71,12 +71,12 @@
 <br>
 
 - 내가 올린 글 삭제
-<img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/752a2b84-11b9-4a8f-8a89-409bd6a392e8" width = "200">
+<img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/8cce21da-cf57-4843-aee9-d7e2718b8da7" width = "200">
 
 <br>
 
 - 차단한 유저 차단 해제
-<img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/8cce21da-cf57-4843-aee9-d7e2718b8da7" width = "200">
+<img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/752a2b84-11b9-4a8f-8a89-409bd6a392e8" width = "200">
 
 ## 기술스택
 - Jetpack Compose
