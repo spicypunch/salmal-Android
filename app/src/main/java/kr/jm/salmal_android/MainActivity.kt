@@ -198,7 +198,7 @@ fun App() {
                             },
                             onClickItem = { id ->
                                 navController.navigate(
-                                    "singlevote/$id"
+                                    "single_vote/$id"
                                 )
                             }
                         )
