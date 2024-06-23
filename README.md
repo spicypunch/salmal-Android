@@ -20,8 +20,12 @@
 <img src = "https://github.com/Sal-Mal/salmal-iOS/assets/69573768/5c0009e5-0f6b-4ead-a1ee-a547c69bb10e" width = "200">
 <img src = "https://github.com/Sal-Mal/salmal-iOS/assets/69573768/468b4cd4-6d54-494e-9e6e-d2b1230af18f" width = "200">
 
+<br>
+
 ### Store 링크
 배포 예정
+
+<br>
 
 ### 메인화면
 
@@ -48,6 +52,7 @@
 - 투표 게시한 사용자 페이지 보기
 - 알림 모아보기
 
+<br>
 
 ### 살말 투표 등록
 
@@ -65,6 +70,7 @@
 - 텍스트 등록
 <img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/303394e6-6c5a-4bae-8feb-4eeb20fa8bcc" width = "200">
 
+<br>
 
 ### 마이페이지
 
