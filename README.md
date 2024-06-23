@@ -28,7 +28,7 @@
 
 투표(살까, 말까), 북마크, 댓글 기능등이 있는 무한스크롤 피드
 - 투표
-![Screen_Recording_20240623_230700_3](https://github.com/spicypunch/salmal-Android/assets/72846127/54fe17db-d65b-4e9d-861d-b4ac67251057)
+<img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/54fe17db-d65b-4e9d-861d-b4ac67251057" width = "200">
 
 - 댓글, 대댓글
 ![Screen_Recording_20240623_230700_2](https://github.com/spicypunch/salmal-Android/assets/72846127/4414507a-5df1-434e-8449-f6c7ab837c66)
