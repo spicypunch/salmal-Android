@@ -83,7 +83,7 @@
 - 차단한 유저 차단 해제
 <img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/752a2b84-11b9-4a8f-8a89-409bd6a392e8" width = "200">
 
-그 외의 메인화면 기능
+그 외의 마이 페이지 기능
 - 내가 북마크한 투표 모아보기
 - 개인정보 수정
 - 약관 보기
