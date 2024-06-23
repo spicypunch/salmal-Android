@@ -34,7 +34,7 @@
 <img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/3a983774-b2eb-484c-97ae-a6f297ed73c1" width = "200">
 
 - 신고 및 차단
-- <img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/a1ab7fc9-d03b-415a-aa02-cf587752f5f3" width = "200">
+<img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/a1ab7fc9-d03b-415a-aa02-cf587752f5f3" width = "200">
 
 
 
