@@ -45,7 +45,7 @@
 <img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/a1ab7fc9-d03b-415a-aa02-cf587752f5f3" width = "200">
 
 그 외의 메인화면 기능
-- 투표 북마크
+- 투표 북마크, 북마크 취소
 - 내가 단 댓글 수정
 - 댓글 좋아요, 좋아요 취소
 - 다른 사람 댓글 신고
