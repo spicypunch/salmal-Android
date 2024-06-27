@@ -203,4 +203,12 @@ class RepositoryImpl @Inject constructor(
     override suspend fun deleteVote(accessToken: String, voteId: String): Response<Unit> {
         return voteApiService.deleteVote(accessToken, voteId)
     }
+
+    override suspend fun updateProfileImage(
+        accessToken: String,
+        memberId: String,
+        imageFile: MultipartBody.Part
+    ): Response<Unit> {
+        return memberApiService.updateProfileImage(accessToken, memberId, imageFile)
+    }
 }

@@ -14,6 +14,10 @@ import kotlinx.coroutines.launch
 import kr.jm.salmal_android.BaseViewModel
 import kr.jm.salmal_android.data.request.UpdateMyInfoRequest
 import kr.jm.salmal_android.repository.RepositoryImpl
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
 import javax.inject.Inject
 
@@ -34,6 +38,9 @@ class EditMyInfoViewModel @Inject constructor(
 
     private val _duplicateNickname = MutableSharedFlow<Boolean>()
     val duplicateNickname = _duplicateNickname.asSharedFlow()
+
+    private val _updateProfileImageResult = MutableSharedFlow<Boolean>()
+    val updateProfileImageResult = _updateProfileImageResult.asSharedFlow()
 
     fun logout() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -91,6 +98,7 @@ class EditMyInfoViewModel @Inject constructor(
                         when (errorCode) {
                             1005 -> {
                                 _duplicateNickname.emit(true)
+                                getMyInfo()
                             }
                         }
                     }
@@ -98,6 +106,35 @@ class EditMyInfoViewModel @Inject constructor(
 
             } catch (e: HttpException) {
                 Log.e("EditMyInfoViewModel", "updateMyInfo: ${e.message}")
+            }
+        }
+    }
+
+    fun updateProfileImage(imageInfo: ByteArray) {
+        viewModelScope.launch(Dispatchers.IO) {
+            showIndicator()
+            try {
+                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                val memberId = readMyMemberId().firstOrNull()
+
+                val requestFile =
+                    imageInfo.toRequestBody("image/jpeg".toMediaTypeOrNull())
+                val imageFile = MultipartBody.Part.createFormData("imageFile", "image.jpeg", requestFile)
+
+                val response = repository.updateProfileImage(
+                    accessToken,
+                    memberId.toString(), imageFile
+                )
+                if (response.isSuccessful) {
+                    if (response.code() == 200) {
+                        _updateProfileImageResult.emit(true)
+                        getMyInfo()
+                    }
+                }
+            } catch (e: HttpException) {
+                Log.e("EditMyInfoViewModel", "updateProfileImage: ${e.message}")
+            } finally {
+                hideIndicator()
             }
         }
     }

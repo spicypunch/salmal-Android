@@ -3,6 +3,7 @@ package kr.jm.salmal_android.utils
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -13,11 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -107,24 +107,36 @@ object Utils {
         return updateAt
     }
 
-    fun saveBitmapAsJpeg(bitmap: Bitmap, file: File): File? {
-        var out: FileOutputStream? = null
+    fun bitmapToJpeg(bitmap: Bitmap, file: File): File? {
+        var outputFile: FileOutputStream? = null
         return try {
-            out = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
-            out.flush()
+            outputFile = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputFile)
+            outputFile.flush()
             file
         } catch (e: Exception) {
             e.printStackTrace()
             null
         } finally {
             try {
-                out?.close()
+                outputFile?.close()
             } catch (ioe: IOException) {
                 ioe.printStackTrace()
             }
         }
     }
+
+    fun uriToByteArray(context: Context, uri: Uri): ByteArray {
+        val inputStream = context.contentResolver.openInputStream(uri) ?: throw IOException("InputStream is null")
+        val bitmap = BitmapFactory.decodeStream(inputStream)
+        inputStream.close()
+
+        val outputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream)
+        return outputStream.toByteArray()
+
+    }
+
 
     fun encodeMultipart(file: File): MultipartBody.Part {
         val requestFile = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
