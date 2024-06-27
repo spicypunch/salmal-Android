@@ -6,13 +6,16 @@ import kr.jm.salmal_android.data.response.BookMarkResponse
 import kr.jm.salmal_android.data.response.MyEvaluations
 import kr.jm.salmal_android.data.response.MyVotesResponse
 import kr.jm.salmal_android.data.response.UserInfoResponse
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -63,10 +66,12 @@ interface MemberApiService {
     /**
      * Todo 파일 업로드 하는 법?
      */
+    @Multipart
     @POST("members/{memberId}/images")
     suspend fun updateProfileImage(
         @Header("Authorization") accessToken: String,
         @Path("memberId") memberId: String,
+        @Part imageFile: MultipartBody.Part
     ): Response<Unit>
 
     @PUT("members/{memberId}")

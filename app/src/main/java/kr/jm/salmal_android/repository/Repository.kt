@@ -169,4 +169,10 @@ interface Repository {
         accessToken: String,
         voteId: String
     ): Response<Unit>
+
+    suspend fun updateProfileImage(
+        accessToken: String,
+        memberId: String,
+        imageFile: MultipartBody.Part
+    ): Response<Unit>
 }
