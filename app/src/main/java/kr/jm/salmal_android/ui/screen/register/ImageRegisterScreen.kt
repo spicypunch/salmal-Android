@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.os.Handler
 import android.os.Looper
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -73,8 +74,7 @@ import kr.jm.salmal_android.ui.theme.transparent
 import kr.jm.salmal_android.ui.theme.white80
 import kr.jm.salmal_android.utils.FilterTypeEnum
 import kr.jm.salmal_android.utils.TextProperties
-import kr.jm.salmal_android.utils.Utils.encodeMultipart
-import kr.jm.salmal_android.utils.Utils.bitmapToJpeg
+import kr.jm.salmal_android.utils.Utils.bitmapToByteArray
 import java.io.File
 import kotlin.math.roundToInt
 
@@ -139,13 +139,8 @@ fun ImageRegisterScreen(
                         }
                     },
                     callback = { bitmap ->
-                        val file = File(context.cacheDir, "captured_image.jpeg")
-                        val jpegFile = bitmapToJpeg(bitmap, file)
-                        jpegFile?.let { jpegImgFile ->
-                            val multiPartBody = encodeMultipart(jpegImgFile)
-//                            viewModel.registerVote(multiPartBody)
-                            imageFile = jpegImgFile
-                        }
+                        val byteArray = bitmapToByteArray(bitmap)
+                        viewModel.registerVote(byteArray)
                     }
                 )
             }
@@ -158,17 +153,8 @@ fun ImageRegisterScreen(
                 .padding(top = 8.dp)
                 .weight(1f)
         ) {
-            if (imageFile != null) {
-                Image(
-                    painter = rememberAsyncImagePainter(model = imageFile),
-                    contentDescription = "imageFile",
-                    modifier = Modifier.fillMaxSize()
-                )
-            } else {
-                MainImage(uri = uri, currentFilterType = filterTypeEnumList[currentFilterIndex])
-                DraggableText(textProperties)
-            }
-
+            MainImage(uri = uri, currentFilterType = filterTypeEnumList[currentFilterIndex])
+            DraggableText(textProperties)
         }
 
         FilterOptions(
@@ -413,44 +399,6 @@ fun DraggableText(textProperties: TextProperties) {
     }
 }
 
-//fun captureComposableAsBitmap(
-//    context: Context,
-//    content: @Composable () -> Unit,
-//    callback: (Bitmap) -> Unit
-//) {
-//    val composeView = ComposeView(context).apply {
-//        setContent { content() }
-//    }
-//
-//    val rootView =
-//        (context as ComponentActivity).window.decorView.findViewById<ViewGroup>(android.R.id.content)
-//    rootView.addView(composeView)
-//
-//    composeView.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
-//        override fun onLayoutChange(
-//            v: View?,
-//            left: Int,
-//            top: Int,
-//            right: Int,
-//            bottom: Int,
-//            oldLeft: Int,
-//            oldTop: Int,
-//            oldRight: Int,
-//            oldBottom: Int
-//        ) {
-//            if ((v?.width ?: 0) > 0 && (v?.height ?: 0) > 0) {
-//                v?.removeOnLayoutChangeListener(this)
-//                Handler(Looper.getMainLooper()).post {
-//                    val bitmap = composeView.drawToBitmap()
-//                    // Remove the ComposeView after capturing the bitmap
-//                    rootView.removeView(composeView)
-//                    callback(bitmap)
-//                }
-//            }
-//        }
-//    })
-//}
-
 fun captureComposableAsBitmap(
     context: Context,
     content: @Composable () -> Unit,
@@ -465,10 +413,18 @@ fun captureComposableAsBitmap(
     rootView.addView(composeView)
 
     composeView.doOnLayout {
-        Handler(Looper.getMainLooper()).post {
-            val bitmap = composeView.drawToBitmap(config = Bitmap.Config.ARGB_8888)
-            rootView.removeView(composeView)
-            callback(bitmap)
-        }
+        composeView.viewTreeObserver.addOnPreDrawListener(
+            object : ViewTreeObserver.OnPreDrawListener {
+                override fun onPreDraw(): Boolean {
+                    composeView.viewTreeObserver.removeOnPreDrawListener(this)
+                    Handler(Looper.getMainLooper()).post {
+                        val bitmap = composeView.drawToBitmap(config = Bitmap.Config.ARGB_8888)
+                        rootView.removeView(composeView)
+                        callback(bitmap)
+                    }
+                    return true
+                }
+            }
+        )
     }
 }

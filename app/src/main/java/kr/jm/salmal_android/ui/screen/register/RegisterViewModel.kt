@@ -10,7 +10,9 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kr.jm.salmal_android.BaseViewModel
 import kr.jm.salmal_android.repository.RepositoryImpl
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
 import java.io.File
 import javax.inject.Inject
@@ -21,10 +23,14 @@ class RegisterViewModel @Inject constructor(
     override var dataStore: DataStore<Preferences>
 ) : BaseViewModel() {
 
-    fun registerVote(imageFile: MultipartBody.Part) {
+    fun registerVote(imageInfo: ByteArray) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                val requestFile = imageInfo.toRequestBody("image/jpeg".toMediaTypeOrNull())
+                val imageFile =
+                    MultipartBody.Part.createFormData("imageFile", "image.jpeg", requestFile)
+
                 val response = repository.registerVote(accessToken, imageFile)
                 if (response.isSuccessful) {
                     if (response.code() == 201) {
