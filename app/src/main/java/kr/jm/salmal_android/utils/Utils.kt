@@ -14,12 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.time.Duration
@@ -107,23 +102,10 @@ object Utils {
         return updateAt
     }
 
-    fun bitmapToJpeg(bitmap: Bitmap, file: File): File? {
-        var outputFile: FileOutputStream? = null
-        return try {
-            outputFile = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputFile)
-            outputFile.flush()
-            file
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        } finally {
-            try {
-                outputFile?.close()
-            } catch (ioe: IOException) {
-                ioe.printStackTrace()
-            }
-        }
+    fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
+        val outputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream)
+        return outputStream.toByteArray()
     }
 
     fun uriToByteArray(context: Context, uri: Uri): ByteArray {
@@ -135,12 +117,5 @@ object Utils {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream)
         return outputStream.toByteArray()
 
-    }
-
-
-    fun encodeMultipart(file: File): MultipartBody.Part {
-        val requestFile = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-
-        return MultipartBody.Part.createFormData("image", file.name, requestFile)
     }
 }
