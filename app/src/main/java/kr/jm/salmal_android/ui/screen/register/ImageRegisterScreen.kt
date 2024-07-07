@@ -2,8 +2,10 @@ package kr.jm.salmal_android.ui.screen.register
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import androidx.activity.ComponentActivity
@@ -40,6 +42,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -52,6 +55,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
@@ -61,10 +66,14 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.core.net.toUri
 import androidx.core.view.doOnLayout
 import androidx.core.view.drawToBitmap
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.gray4
 import kr.jm.salmal_android.ui.theme.primaryBlack
@@ -76,6 +85,7 @@ import kr.jm.salmal_android.utils.FilterTypeEnum
 import kr.jm.salmal_android.utils.TextProperties
 import kr.jm.salmal_android.utils.Utils.bitmapToByteArray
 import java.io.File
+import java.net.URL
 import kotlin.math.roundToInt
 
 @Composable
@@ -107,10 +117,11 @@ fun ImageRegisterScreen(
     }
     var showTextInput by remember { mutableStateOf(false) }
     var showColorPicker by remember { mutableStateOf(false) }
+    var bitmap123 by remember {
+        mutableStateOf<Bitmap?>(null)
+    }
 
     val context = LocalContext.current
-    var imageFile by remember { mutableStateOf<File?>(null) }
-    val scope = rememberCoroutineScope()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -141,6 +152,7 @@ fun ImageRegisterScreen(
                     callback = { bitmap ->
                         val byteArray = bitmapToByteArray(bitmap)
                         viewModel.registerVote(byteArray)
+                        bitmap123 = bitmap
                     }
                 )
             }
@@ -153,8 +165,16 @@ fun ImageRegisterScreen(
                 .padding(top = 8.dp)
                 .weight(1f)
         ) {
-            MainImage(uri = uri, currentFilterType = filterTypeEnumList[currentFilterIndex])
-            DraggableText(textProperties)
+            if (bitmap123 != null) {
+                Image(
+                    painter = rememberAsyncImagePainter(model = bitmap123),
+                    contentDescription = "imageFile",
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                MainImage(uri = uri, currentFilterType = filterTypeEnumList[currentFilterIndex])
+                DraggableText(textProperties)
+            }
         }
 
         FilterOptions(
@@ -309,56 +329,52 @@ fun TextInputDialog(textProperties: TextProperties, onDismiss: () -> Unit) {
     var backgroundColor by remember { mutableStateOf(textProperties.backgroundColor) }
 
     Dialog(onDismissRequest = onDismiss) {
-        Row(
-            modifier = Modifier
-                .background(transparent)
-                .fillMaxWidth()
-                .height(70.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            OutlinedTextField(
-                value = text,
-                onValueChange = { text = it },
-                label = { Text("텍스트 입력", fontFamily = Pretendard, color = primaryWhite) },
-                textStyle = TextStyle(color = primaryWhite),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = primaryGreen,
-                    unfocusedBorderColor = primaryGreen,
-                    disabledBorderColor = primaryGreen,
-                    focusedLabelColor = primaryWhite,
-                    unfocusedLabelColor = primaryWhite,
-                    disabledLabelColor = primaryWhite,
-                    cursorColor = primaryWhite
-                ),
+        Column {
+            Row(
                 modifier = Modifier
-                    .weight(0.75f)
-                    .fillMaxHeight()
-            )
-//            ColorPicker("텍스트 색상", textColor) { color ->
-//                textColor = color
-//            }
-//            ColorPicker("배경 색상", backgroundColor) { color ->
-//                backgroundColor = color
-//            }
-            Button(
-                onClick = {
-                    textProperties.text = text
-                    textProperties.color = textColor
-                    textProperties.backgroundColor = backgroundColor
-                    onDismiss()
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = transparent,
-                    disabledContainerColor = transparent,
-                ),
-                modifier = Modifier
-                    .weight(0.25f)
-                    .fillMaxHeight()
+                    .background(transparent)
+                    .fillMaxWidth()
+                    .height(70.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "확인", fontSize = 14.sp, fontFamily = Pretendard, color = primaryGreen
+                OutlinedTextField(
+                    value = text,
+                    onValueChange = { text = it },
+                    label = { Text("텍스트 입력", fontFamily = Pretendard, color = primaryWhite) },
+                    textStyle = TextStyle(color = primaryWhite),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = primaryGreen,
+                        unfocusedBorderColor = primaryGreen,
+                        disabledBorderColor = primaryGreen,
+                        focusedLabelColor = primaryWhite,
+                        unfocusedLabelColor = primaryWhite,
+                        disabledLabelColor = primaryWhite,
+                        cursorColor = primaryWhite
+                    ),
+                    modifier = Modifier
+                        .weight(0.75f)
+                        .fillMaxHeight()
                 )
+                Button(
+                    onClick = {
+                        textProperties.text = text
+                        textProperties.color = textColor
+                        textProperties.backgroundColor = backgroundColor
+                        onDismiss()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = transparent,
+                        disabledContainerColor = transparent,
+                    ),
+                    modifier = Modifier
+                        .weight(0.25f)
+                        .fillMaxHeight()
+                ) {
+                    Text(
+                        text = "확인", fontSize = 14.sp, fontFamily = Pretendard, color = primaryGreen
+                    )
+                }
             }
         }
     }
