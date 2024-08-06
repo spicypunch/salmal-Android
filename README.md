@@ -74,7 +74,7 @@
 
 ### 마이페이지
 
-개인정보 변경이나, 등록한 투표 삭제, 북마크한 투표등을 관리할수 있는 마이페이지
+개인정보 변경이나, 등록한 투표 삭제, 북마크한 투표등을 관리할 수 있는 마이페이지
 - 내가 업로드 또는 투표한 게시물 보기
 <img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/30fa80c5-6651-4bc4-9f2c-fb4b84f4c853" width = "200">
 <img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/e8485514-2d75-4e80-8438-65b453065f54" width = "200">
