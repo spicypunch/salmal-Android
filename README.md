@@ -33,7 +33,7 @@
 - 투표
 <img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/54fe17db-d65b-4e9d-861d-b4ac67251057" width = "200">
 
-<br>
+<br><br>
 
 - 댓글, 대댓글
 <img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/4414507a-5df1-434e-8449-f6c7ab837c66" width = "200">
@@ -52,7 +52,7 @@
 - 투표 게시한 사용자 페이지 보기
 - 알림 모아보기
 
-<br>
+<br><br>
 
 ### 살말 투표 등록
 
@@ -60,17 +60,17 @@
 - 이미지 등록
 <img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/ce8604be-4bd6-43d1-b20d-6901dcaa8328" width = "200">
 
-<br>
+<br><br>
 
 - 필터 적용
 <img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/aeb73f0a-40db-4c0b-86c1-1aa9ca80ae00" width = "200">
 
-<br>
+<br><br>
 
 - 텍스트 등록
 <img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/303394e6-6c5a-4bae-8feb-4eeb20fa8bcc" width = "200">
 
-<br>
+<br><br>
 
 ### 마이페이지
 
@@ -79,12 +79,12 @@
 <img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/30fa80c5-6651-4bc4-9f2c-fb4b84f4c853" width = "200">
 <img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/e8485514-2d75-4e80-8438-65b453065f54" width = "200">
 
-<br>
+<br><br>
 
 - 내가 올린 글 삭제
 <img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/8cce21da-cf57-4843-aee9-d7e2718b8da7" width = "200">
 
-<br>
+<br><br>
 
 - 차단한 유저 차단 해제
 <img src = "https://github.com/spicypunch/salmal-Android/assets/72846127/752a2b84-11b9-4a8f-8a89-409bd6a392e8" width = "200">
