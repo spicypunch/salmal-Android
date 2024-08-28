@@ -63,9 +63,6 @@ interface MemberApiService {
         @Path("memberId") memberId: String,
     ): Response<Unit>
 
-    /**
-     * Todo 파일 업로드 하는 법?
-     */
     @Multipart
     @POST("members/{memberId}/images")
     suspend fun updateProfileImage(
