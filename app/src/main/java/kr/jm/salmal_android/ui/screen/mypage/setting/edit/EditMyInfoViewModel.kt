@@ -123,7 +123,8 @@ class EditMyInfoViewModel @Inject constructor(
 
                 val response = repository.updateProfileImage(
                     accessToken,
-                    memberId.toString(), imageFile
+                    memberId.toString(),
+                    imageFile
                 )
                 if (response.isSuccessful) {
                     if (response.code() == 200) {
