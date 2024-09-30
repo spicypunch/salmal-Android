@@ -20,7 +20,7 @@
 <img src = "https://github.com/Sal-Mal/salmal-iOS/assets/69573768/5c0009e5-0f6b-4ead-a1ee-a547c69bb10e" width = "200">
 <img src = "https://github.com/Sal-Mal/salmal-iOS/assets/69573768/468b4cd4-6d54-494e-9e6e-d2b1230af18f" width = "200">
 
-<br>
+<br><br><br>
 
 ### 메인화면
 
