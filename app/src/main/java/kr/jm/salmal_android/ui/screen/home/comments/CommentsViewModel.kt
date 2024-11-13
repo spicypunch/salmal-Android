@@ -1,8 +1,7 @@
 package kr.jm.salmal_android.ui.screen.home.comments
 
 import android.util.Log
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonParser
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,7 +13,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import kr.jm.salmal_android.BaseViewModel
 import kr.jm.salmal_android.data.response.CommentsItem
 import kr.jm.salmal_android.repository.RepositoryImpl
 import retrofit2.HttpException
@@ -22,9 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CommentsViewModel @Inject constructor(
-    override var repository: RepositoryImpl,
-    override var dataStore: DataStore<Preferences>
-) : BaseViewModel() {
+    val repository: RepositoryImpl,
+) : ViewModel() {
 
     private val _commentsList = MutableStateFlow<List<CommentsItem.CommentsResponse>>(emptyList())
     val commentsList = _commentsList.asStateFlow()
@@ -35,12 +32,30 @@ class CommentsViewModel @Inject constructor(
     private var _alreadyReportDialog = MutableSharedFlow<Boolean>()
     val alreadyReportDialog = _alreadyReportDialog.asSharedFlow()
 
+    private var _myMemberId = MutableStateFlow<Int?>(null)
+    val myMemberId = _myMemberId.asStateFlow()
+
+    private var _myImageUrl = MutableStateFlow<String?>(null)
+    val myImageUrl = _myImageUrl.asStateFlow()
+
+    fun readMyImageUrl() {
+        viewModelScope.launch {
+            _myImageUrl.value = repository.readMyImageUrl().firstOrNull()
+        }
+    }
+
+    fun readMyMemberId() {
+        viewModelScope.launch {
+            _myMemberId.value = repository.readMyMemberId().firstOrNull()
+        }
+    }
+
     fun getCommentsList(
         voteId: String,
     ) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch  {
             try {
-                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                val accessToken = "Bearer ${repository.readAccessToken().firstOrNull()}"
                 _commentsList.value = repository.getCommentsList(accessToken, voteId)
             } catch (e: HttpException) {
                 Log.e("CommentsViewModel", "getCommentsList: ${e.message}")
@@ -52,9 +67,9 @@ class CommentsViewModel @Inject constructor(
         commentId: Int,
         index: Int
     ) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch  {
             try {
-                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                val accessToken = "Bearer ${repository.readAccessToken().firstOrNull()}"
                 val subComments = repository.getSubCommentsList(
                     accessToken = accessToken,
                     commentId = commentId,
@@ -72,9 +87,9 @@ class CommentsViewModel @Inject constructor(
     }
 
     fun likeComment(commentId: Int, commentIndex: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch  {
             try {
-                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                val accessToken = "Bearer ${repository.readAccessToken().firstOrNull()}"
                 val currentComments = _commentsList.value
                 val targetComment = currentComments.getOrNull(commentIndex) ?: return@launch
 
@@ -109,9 +124,9 @@ class CommentsViewModel @Inject constructor(
         subCommentIndex: Int,
         liked: Boolean,
     ) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch  {
             try {
-                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                val accessToken = "Bearer ${repository.readAccessToken().firstOrNull()}"
                 val currentComments = _commentsList.value.toMutableList()
                 val targetComment =
                     currentComments.getOrNull(commentIndex) as? CommentsItem.CommentsResponse
@@ -145,9 +160,9 @@ class CommentsViewModel @Inject constructor(
     }
 
     fun addComment(voteId: String, content: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch  {
             try {
-                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                val accessToken = "Bearer ${repository.readAccessToken().firstOrNull()}"
                 val response = repository.addComment(accessToken, voteId, content)
                 if (response.isSuccessful) {
                     if (response.code() == 201) {
@@ -163,9 +178,9 @@ class CommentsViewModel @Inject constructor(
     }
 
     fun addSubComment(commentId: Int, content: String, index: Int, voteId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch  {
             try {
-                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                val accessToken = "Bearer ${repository.readAccessToken().firstOrNull()}"
                 val response = repository.addSubComment(accessToken, commentId, content)
                 if (response.isSuccessful) {
                     if (response.code() == 201) {
@@ -183,9 +198,9 @@ class CommentsViewModel @Inject constructor(
     }
 
     fun reportComment(commentId: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch  {
             try {
-                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                val accessToken = "Bearer ${repository.readAccessToken().firstOrNull()}"
                 val response = repository.reportComment(accessToken, commentId)
                 if (response.isSuccessful) {
                     if (response.code() == 201) {
@@ -219,9 +234,9 @@ class CommentsViewModel @Inject constructor(
         index: Int,
         commentId: Int
     ) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch  {
             try {
-                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                val accessToken = "Bearer ${repository.readAccessToken().firstOrNull()}"
                 val response = repository.updateComment(accessToken, targetId, content)
                 if (response.isSuccessful) {
                     if (response.code() == 200) {
@@ -247,9 +262,9 @@ class CommentsViewModel @Inject constructor(
         index: Int = 0,
         commentId: Int = 0
     ) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch  {
             try {
-                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
+                val accessToken = "Bearer ${repository.readAccessToken().firstOrNull()}"
                 val response = repository.deleteComment(accessToken, targetId)
                 if (response.isSuccessful) {
                     if (response.code() == 204) {

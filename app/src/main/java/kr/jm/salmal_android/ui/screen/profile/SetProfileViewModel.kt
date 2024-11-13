@@ -1,7 +1,7 @@
 package kr.jm.salmal_android.ui.screen.profile
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonParser
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,27 +10,37 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import kr.jm.salmal_android.BaseViewModel
 import kr.jm.salmal_android.data.request.SignUpRequest
 import kr.jm.salmal_android.repository.RepositoryImpl
+import kr.jm.salmal_android.utils.LoadingHandler
+import kr.jm.salmal_android.utils.Utils.parseID
 import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
 class SetProfileViewModel @Inject constructor(
-    override var repository: RepositoryImpl,
-    override var dataStore: DataStore<Preferences>
-) : BaseViewModel() {
+     val repository: RepositoryImpl,
+) : ViewModel(), LoadingHandler {
 
     private val _signUpSuccess = MutableSharedFlow<Boolean>()
     val signUpSuccess = _signUpSuccess.asSharedFlow()
 
+    override val isLoading = mutableStateOf(false)
+
+    override fun showIndicator() {
+        isLoading.value = true
+    }
+
+    override fun hideIndicator() {
+        isLoading.value = false
+    }
+
     fun signUp(nickName: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch  {
             showIndicator()
-            val providerId: String? = readProviderId().firstOrNull()
+            val providerId: String? = repository.readProviderId().firstOrNull()
             val marketingInformationConsent: Boolean? =
-                readMarketingInformationConsent().firstOrNull()
+                repository.readMarketingInformationConsent().firstOrNull()
             if (providerId != null && marketingInformationConsent != null) {
                 try {
                     val signUpResponse = repository.signUp(
@@ -40,9 +50,9 @@ class SetProfileViewModel @Inject constructor(
                             nickName = nickName
                         )
                     )
-                    saveAccessToken(signUpResponse.accessToken)
-                    saveRefreshToken(signUpResponse.refreshToken)
-                    parseID(signUpResponse.accessToken)?.let { saveMyMemberId(it) }
+                    repository.saveAccessToken(signUpResponse.accessToken)
+                    repository.saveRefreshToken(signUpResponse.refreshToken)
+                    signUpResponse.accessToken.parseID()?.let { repository.saveMyMemberId(it) }
                     _signUpSuccess.emit(true)
                 } catch (e: HttpException) {
                     val errorBody = e.response()?.errorBody()?.string()

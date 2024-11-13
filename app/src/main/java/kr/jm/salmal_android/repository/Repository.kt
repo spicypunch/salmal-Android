@@ -1,5 +1,8 @@
 package kr.jm.salmal_android.repository
 
+import android.net.Uri
+import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.flow.Flow
 import kr.jm.salmal_android.data.request.LoginRequest
 import kr.jm.salmal_android.data.response.LoginResponse
 import kr.jm.salmal_android.data.request.SignUpRequest
@@ -22,7 +25,10 @@ interface Repository {
 
     suspend fun signUp(signUpRequest: SignUpRequest): SignUpResponse
 
-    suspend fun getUserInfo(accessToken: String, memberId: Int): UserInfoResponse
+    suspend fun getUserInfo(
+        accessToken: String,
+        memberId: Int
+    ): UserInfoResponse
 
     suspend fun getVote(
         accessToken: String,
@@ -175,4 +181,38 @@ interface Repository {
         memberId: String,
         imageFile: MultipartBody.Part
     ): Response<Unit>
+
+    suspend fun saveProviderId(providerId: String)
+
+    suspend fun saveAccessToken(accessToken: String)
+
+    suspend fun saveRefreshToken(refreshToken: String)
+
+    suspend fun saveMarketingInformationConsent(marketingInfo: Boolean)
+
+    suspend fun saveProfileImage(imageUri: Uri)
+
+    suspend fun saveMyMemberId(memberId: Int)
+
+    suspend fun saveMyNickName(nickName: String)
+
+    suspend fun saveMyImageUrl(imageUrl: String)
+
+    suspend fun readProviderId(): Flow<String?>
+
+    suspend fun readAccessToken(): Flow<String?>
+
+    suspend fun readRefreshToken(): Flow<String?>
+
+    suspend fun readMarketingInformationConsent(): Flow<Boolean?>
+
+    suspend fun readProfileImage(): Flow<String?>
+
+    suspend fun readMyMemberId(): Flow<Int?>
+
+    suspend fun readMyNickName(): Flow<String?>
+
+    suspend fun readMyImageUrl(): Flow<String?>
+
+    suspend fun clearAllDataStoreKey()
 }

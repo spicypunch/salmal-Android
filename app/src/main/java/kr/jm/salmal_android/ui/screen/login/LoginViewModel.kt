@@ -2,8 +2,8 @@ package kr.jm.salmal_android.ui.screen.login
 
 import android.content.Context
 import android.util.Log
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonParser
 import com.kakao.sdk.auth.model.OAuthToken
@@ -15,20 +15,30 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import kr.jm.salmal_android.BaseViewModel
 import kr.jm.salmal_android.data.request.LoginRequest
 import kr.jm.salmal_android.repository.RepositoryImpl
+import kr.jm.salmal_android.utils.LoadingHandler
+import kr.jm.salmal_android.utils.Utils.parseID
 import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    override var repository: RepositoryImpl,
-    override var dataStore: DataStore<Preferences>
-) : BaseViewModel() {
+    val repository: RepositoryImpl,
+) : ViewModel(), LoadingHandler {
 
     private var _isMember = MutableSharedFlow<Boolean>()
     val isMember = _isMember.asSharedFlow()
+
+    override val isLoading = mutableStateOf(false)
+
+    override fun showIndicator() {
+        isLoading.value = true
+    }
+
+    override fun hideIndicator() {
+        isLoading.value = false
+    }
 
     fun requestKakaoToken(context: Context) {
         showIndicator()
@@ -67,23 +77,26 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun requestKakaoMyInfo() {
-        UserApiClient.instance.me { user, error ->
-            if (error != null) {
-                Log.e("Kakao", "사용자 정보 요청 실패", error)
-            } else if (user != null) {
-                saveProviderId(user.id!!.toString())
-                login(user.id!!.toString())
+
+            UserApiClient.instance.me { user, error ->
+                if (error != null) {
+                    Log.e("Kakao", "사용자 정보 요청 실패", error)
+                } else if (user != null) {
+                    viewModelScope.launch {
+                        repository.saveProviderId(user.id!!.toString())
+                        login(user.id!!.toString())
+                    }
+                }
             }
-        }
     }
 
     private fun login(providerId: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             try {
                 val tokenInfo = repository.login(LoginRequest(providerId = providerId))
-                saveAccessToken(tokenInfo.accessToken)
-                saveRefreshToken(tokenInfo.refreshToken)
-                parseID(tokenInfo.accessToken)?.let { saveMyMemberId(it) }
+                repository.saveAccessToken(tokenInfo.accessToken)
+                repository.saveRefreshToken(tokenInfo.refreshToken)
+                tokenInfo.accessToken.parseID()?.let { repository.saveMyMemberId(it) }
                 _isMember.emit(true)
             } catch (e: HttpException) {
                 val errorBody = e.response()?.errorBody()?.string()

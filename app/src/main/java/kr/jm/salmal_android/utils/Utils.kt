@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Base64
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
@@ -14,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
+import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -116,6 +118,30 @@ object Utils {
         val outputStream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream)
         return outputStream.toByteArray()
+    }
 
+    fun String.parseID(): Int? {
+
+        val value = this.split(".")[1]
+
+        val replacedValue = value
+            .replace("-", "+")
+            .replace("_", "/")
+
+        val finalValue = replacedValue.padEnd((replacedValue.length + 3) / 4 * 4, '=')
+
+        val data = try {
+            Base64.decode(finalValue, Base64.DEFAULT)
+        } catch (e: IllegalArgumentException) {
+            return null
+        }
+
+        val payload = try {
+            JSONObject(String(data))
+        } catch (e: Exception) {
+            return null
+        }
+
+        return payload.optInt("id", -1).takeIf { it != -1 }
     }
 }

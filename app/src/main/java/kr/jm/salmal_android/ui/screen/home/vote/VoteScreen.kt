@@ -44,11 +44,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kr.jm.salmal_android.ui.screen.component.BasicDialog
-import kr.jm.salmal_android.ui.screen.home.comments.bottomsheet.CommentsBottomSheet
+import kr.jm.salmal_android.ui.screen.home.HomeViewModel
 import kr.jm.salmal_android.ui.screen.home.ReportBottomSheet
+import kr.jm.salmal_android.ui.screen.home.comments.bottomsheet.CommentsBottomSheet
 import kr.jm.salmal_android.ui.theme.Pretendard
 import kr.jm.salmal_android.ui.theme.gray1
 import kr.jm.salmal_android.ui.theme.gray2
@@ -64,7 +64,7 @@ import kr.lifesemantics.salmal_android.R
 fun VotesScreen(
     type: String,
     snackbarHostState: SnackbarHostState,
-    viewModel: VoteViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
     LaunchedEffect(type) {
         viewModel.getVotesList(size = 5, searchType = type)
@@ -119,8 +119,10 @@ fun VotesScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.readMyMemberId().firstOrNull()?.let {
-            memberId.intValue = it
+        viewModel.myMemberId.collectLatest {
+            if (it != null) {
+                memberId.intValue = it
+            }
         }
     }
 

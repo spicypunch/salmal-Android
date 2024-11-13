@@ -1,31 +1,35 @@
 package kr.jm.salmal_android.ui.screen.mypage.setting.edit
 
 import android.util.Log
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonParser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import kr.jm.salmal_android.BaseViewModel
 import kr.jm.salmal_android.data.request.UpdateMyInfoRequest
+import kr.jm.salmal_android.data.response.UserInfoResponse
 import kr.jm.salmal_android.repository.RepositoryImpl
+import kr.jm.salmal_android.utils.LoadingHandler
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
 class EditMyInfoViewModel @Inject constructor(
-    override var repository: RepositoryImpl,
-    override var dataStore: DataStore<Preferences>
-) : BaseViewModel() {
+    val repository: RepositoryImpl,
+) : ViewModel(), LoadingHandler {
+
+    private val _myInfo = MutableStateFlow<UserInfoResponse?>(null)
+    val myInfo = _myInfo.asStateFlow()
 
     private val _logoutResult = MutableSharedFlow<Boolean>()
     val logoutResult = _logoutResult.asSharedFlow()
@@ -42,16 +46,44 @@ class EditMyInfoViewModel @Inject constructor(
     private val _updateProfileImageResult = MutableSharedFlow<Boolean>()
     val updateProfileImageResult = _updateProfileImageResult.asSharedFlow()
 
-    fun logout() {
-        viewModelScope.launch(Dispatchers.IO) {
+    override val isLoading = mutableStateOf(false)
+
+    override fun showIndicator() {
+        isLoading.value = true
+    }
+
+    override fun hideIndicator() {
+        isLoading.value = false
+    }
+
+    fun getMyInfo() {
+        viewModelScope.launch {
             try {
-                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
-                val refreshToken = readRefreshToken().firstOrNull()
+                val accessToken = "Bearer ${repository.readAccessToken().firstOrNull()}"
+                val memberId = repository.readMyMemberId().firstOrNull()
+                if (memberId != null) {
+                    _myInfo.emit(repository.getUserInfo(accessToken, memberId))
+                    _myInfo.value?.let {
+                        repository.saveMyNickName(it.nickName)
+                        repository.saveMyImageUrl(it.imageUrl)
+                    }
+                }
+            } catch (e: HttpException) {
+                Log.e("BaseViewModel", "getMyInfo: ${e.message}")
+            }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch  {
+            try {
+                val accessToken = "Bearer ${repository.readAccessToken().firstOrNull()}"
+                val refreshToken = repository.readRefreshToken().firstOrNull()
                 if (refreshToken != null) {
                     val response = repository.logout(accessToken, refreshToken)
                     if (response.isSuccessful) {
                         if (response.code() == 200) {
-                            clearAllDataStoreKey()
+                            repository.clearAllDataStoreKey()
                             _logoutResult.emit(true)
                         }
                     }
@@ -64,14 +96,14 @@ class EditMyInfoViewModel @Inject constructor(
     }
 
     fun withdrawal() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch  {
             try {
-                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
-                val memberId = readMyMemberId().firstOrNull()
+                val accessToken = "Bearer ${repository.readAccessToken().firstOrNull()}"
+                val memberId = repository.readMyMemberId().firstOrNull()
                 val response = repository.withdrawal(accessToken, memberId.toString())
                 if (response.isSuccessful) {
                     if (response.code() == 204) {
-                        clearAllDataStoreKey()
+                        repository.clearAllDataStoreKey()
                         _withdrawalResult.emit(true)
                     }
                 }
@@ -82,10 +114,10 @@ class EditMyInfoViewModel @Inject constructor(
     }
 
     fun updateMyInfo(updateMyInfoRequest: UpdateMyInfoRequest) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch  {
             try {
-                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
-                val memberId = readMyMemberId().firstOrNull()
+                val accessToken = "Bearer ${repository.readAccessToken().firstOrNull()}"
+                val memberId = repository.readMyMemberId().firstOrNull()
                 val response =
                     repository.updateMyInfo(accessToken, memberId.toString(), updateMyInfoRequest)
                 if (response.isSuccessful) {
@@ -98,7 +130,7 @@ class EditMyInfoViewModel @Inject constructor(
                         when (errorCode) {
                             1005 -> {
                                 _duplicateNickname.emit(true)
-                                getMyInfo()
+                                repository.getUserInfo(accessToken, memberId!!)
                             }
                         }
                     }
@@ -111,15 +143,16 @@ class EditMyInfoViewModel @Inject constructor(
     }
 
     fun updateProfileImage(imageInfo: ByteArray) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch  {
             showIndicator()
             try {
-                val accessToken = "Bearer ${readAccessToken().firstOrNull()}"
-                val memberId = readMyMemberId().firstOrNull()
+                val accessToken = "Bearer ${repository.readAccessToken().firstOrNull()}"
+                val memberId = repository.readMyMemberId().firstOrNull()
 
                 val requestFile =
                     imageInfo.toRequestBody("image/jpeg".toMediaTypeOrNull())
-                val imageFile = MultipartBody.Part.createFormData("imageFile", "image.jpeg", requestFile)
+                val imageFile =
+                    MultipartBody.Part.createFormData("imageFile", "image.jpeg", requestFile)
 
                 val response = repository.updateProfileImage(
                     accessToken,
@@ -129,7 +162,7 @@ class EditMyInfoViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     if (response.code() == 200) {
                         _updateProfileImageResult.emit(true)
-                        getMyInfo()
+                        repository.getUserInfo(accessToken, memberId!!)
                     }
                 }
             } catch (e: HttpException) {

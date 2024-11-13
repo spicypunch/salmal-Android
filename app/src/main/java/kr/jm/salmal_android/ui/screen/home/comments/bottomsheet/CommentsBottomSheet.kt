@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kr.jm.salmal_android.ui.screen.home.comments.CommentsList
 import kr.jm.salmal_android.ui.screen.home.comments.CommentsViewModel
@@ -106,13 +107,17 @@ fun CommentsBottomSheet(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.readMyImageUrl().firstOrNull()?.let {
-            myImage = it
+        viewModel.myImageUrl.collectLatest {
+            if (it != null) {
+                myImage = it
+            }
         }
     }
     LaunchedEffect(Unit) {
-        viewModel.readMyMemberId().firstOrNull()?.let {
-            myMemberId = it
+        viewModel.myMemberId.collectLatest {
+            if (it != null) {
+                myMemberId = it
+            }
         }
     }
 

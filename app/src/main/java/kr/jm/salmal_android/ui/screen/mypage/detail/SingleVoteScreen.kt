@@ -85,8 +85,10 @@ fun SingleVoteScreen(
         }
     }
     LaunchedEffect(Unit) {
-        viewModel.readMyMemberId().firstOrNull()?.let {
-            memberId.intValue = it
+        viewModel.myMemberId.collectLatest {
+            if (it != null) {
+                memberId.intValue = it
+            }
         }
     }
     voteDetail.value?.let { voteItem ->

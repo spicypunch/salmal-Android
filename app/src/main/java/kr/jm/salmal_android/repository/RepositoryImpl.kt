@@ -1,5 +1,14 @@
 package kr.jm.salmal_android.repository
 
+import android.net.Uri
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kr.jm.salmal_android.data.request.LoginRequest
 import kr.jm.salmal_android.data.request.SignUpRequest
 import kr.jm.salmal_android.data.request.UpdateMyInfoRequest
@@ -27,7 +36,8 @@ class RepositoryImpl @Inject constructor(
     private val commentsApiService: CommentsApiService,
     private val memberApiService: MemberApiService,
     private val notificationApiService: NotificationApiService,
-    private val voteApiService: VoteApiService
+    private val voteApiService: VoteApiService,
+    private val dataStore: DataStore<Preferences>
 ) : Repository {
     override suspend fun login(loginRequest: LoginRequest): LoginResponse {
         return certifiedApiService.login(loginRequest)
@@ -44,7 +54,6 @@ class RepositoryImpl @Inject constructor(
     override suspend fun getVote(accessToken: String, voteId: String): VotesListResponse.Vote {
         return voteApiService.vote(accessToken, voteId)
     }
-
 
     override suspend fun getVotesList(
         accessToken: String,
@@ -210,5 +219,131 @@ class RepositoryImpl @Inject constructor(
         imageFile: MultipartBody.Part
     ): Response<Unit> {
         return memberApiService.updateProfileImage(accessToken, memberId, imageFile)
+    }
+
+    override suspend fun saveProviderId(providerId: String) {
+        val providerIdKey = stringPreferencesKey("providerId")
+        dataStore.edit { settings ->
+            settings[providerIdKey] = providerId
+        }
+    }
+
+    override suspend fun saveAccessToken(accessToken: String) {
+        val accessTokenKey = stringPreferencesKey("accessToken")
+        dataStore.edit { settings ->
+            settings[accessTokenKey] = accessToken
+        }
+    }
+
+    override suspend fun saveRefreshToken(refreshToken: String) {
+        val refreshTokenKey = stringPreferencesKey("refreshToken")
+        dataStore.edit { settings ->
+            settings[refreshTokenKey] = refreshToken
+        }
+    }
+
+    override suspend fun saveMarketingInformationConsent(marketingInfo: Boolean) {
+        val marketingInfoKey = booleanPreferencesKey("marketingInfo")
+        dataStore.edit { settings ->
+            settings[marketingInfoKey] = marketingInfo
+        }
+    }
+
+    override suspend fun saveProfileImage(imageUri: Uri) {
+        val imageUriKey = stringPreferencesKey("imageUri")
+        dataStore.edit { settings ->
+            settings[imageUriKey] = imageUri.toString()
+        }
+    }
+
+    override suspend fun saveMyMemberId(memberId: Int) {
+        val memberIdKey = intPreferencesKey("memberId")
+        dataStore.edit { settings ->
+            settings[memberIdKey] = memberId
+        }
+    }
+
+    override suspend fun saveMyNickName(nickName: String) {
+        val myNickNameKey = stringPreferencesKey("myNickName")
+        dataStore.edit { settings ->
+            settings[myNickNameKey] = nickName
+        }
+    }
+
+    override suspend fun saveMyImageUrl(imageUrl: String) {
+        val myImageUrlKey = stringPreferencesKey("myImageUrl")
+        dataStore.edit { settings ->
+            settings[myImageUrlKey] = imageUrl
+        }
+    }
+
+    override suspend fun readProviderId(): Flow<String?> {
+        val providerIdKey = stringPreferencesKey("providerId")
+        return dataStore.data
+            .map { preferences ->
+                preferences[providerIdKey]
+            }
+    }
+
+    override suspend fun readAccessToken(): Flow<String?> {
+        val readAccessKey = stringPreferencesKey("accessToken")
+        return dataStore.data
+            .map { preferences ->
+                preferences[readAccessKey]
+            }
+    }
+
+    override suspend fun readRefreshToken(): Flow<String?> {
+        val readRefreshKey = stringPreferencesKey("refreshToken")
+        return dataStore.data
+            .map { preferences ->
+                preferences[readRefreshKey]
+            }
+    }
+
+    override suspend fun readMarketingInformationConsent(): Flow<Boolean?> {
+        val marketingInfoKey = booleanPreferencesKey("marketingInfo")
+        return dataStore.data
+            .map { preferences ->
+                preferences[marketingInfoKey]
+            }
+    }
+
+    override suspend fun readProfileImage(): Flow<String?> {
+        val imageUriKey = stringPreferencesKey("imageUri")
+        return dataStore.data
+            .map { preferences ->
+                preferences[imageUriKey]
+            }
+    }
+
+    override suspend fun readMyMemberId(): Flow<Int?> {
+        val memberIdKey = intPreferencesKey("memberId")
+        return dataStore.data
+            .map { preferences ->
+                preferences[memberIdKey]
+            }
+    }
+
+    override suspend fun readMyNickName(): Flow<String?> {
+        val myNickNameKey = stringPreferencesKey("myNickName")
+        return dataStore.data
+            .map { preferences ->
+                preferences[myNickNameKey]
+            }
+    }
+
+    override suspend fun readMyImageUrl(): Flow<String?> {
+        val myImageUrlKey = stringPreferencesKey("myImageUrl")
+        return dataStore.data
+            .map { preferences ->
+                preferences[myImageUrlKey]
+            }
+    }
+
+    override suspend fun clearAllDataStoreKey() {
+        dataStore.edit { settings ->
+            settings.clear()
+        }
     }
 }
