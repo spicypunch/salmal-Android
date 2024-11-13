@@ -2,7 +2,7 @@
 
 ## 프로젝트 소개
 
-살까 말까 더이상의 고민은 그만!
+살까 말까 더 이상의 고민은 그만!
 
 [투표 올리기]
 : 살까, 말까 고민될 때는 투표 게시글을 올리고 사람들의 의견을 받아볼 수 있어요!
@@ -20,12 +20,7 @@
 <img src = "https://github.com/Sal-Mal/salmal-iOS/assets/69573768/5c0009e5-0f6b-4ead-a1ee-a547c69bb10e" width = "200">
 <img src = "https://github.com/Sal-Mal/salmal-iOS/assets/69573768/468b4cd4-6d54-494e-9e6e-d2b1230af18f" width = "200">
 
-<br>
-
-### Store 링크
-배포 예정
-
-<br>
+<br><br><br>
 
 ### 메인화면
 
